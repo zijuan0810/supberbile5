@@ -1,0 +1,59 @@
+# Ignore thumbnails created by windows
+Thumbs.db
+
+# Ignore files build by Visual Studio
+[Bb]in
+[Dd]ebug*/
+obj/
+[Rr]elease*/
+_ReSharper*/
+[Tt]est[Rr]esult*
+ipch/
+Generated Files
+AppPackages
+SubmissionInfo
+
+# Ignore Visual Studio Debug files
+*.i
+*.obj
+*.idb
+*.pdb
+*.log
+*.tlog
+*.exe
+*.pdb
+*.aps
+*_i.c
+*.icf
+*.hps
+*_p.c
+*.ncb
+*.sbr
+*.suo
+*.tlb
+*.tlh
+*.bak
+*.ilk
+*.sdf
+*.cache
+*.opensdf
+*.vspscc
+*.vcproj.*.user
+*.vcxproj.user
+*.ib_pdb_index
+*.lastbuildstate
+
+# Ignore files build by Visual Studio
+Debug.win32/
+freeglut-2.8.1/VisualStudio/2012/build/Debug/
+glew-1.10.0/build/vc10/tmp/
+GLTools/Debug/
+
+# Ignore python compiled files
+*.pyc
+
+# Ignore vim swaps
+*.swp
+
+# CTags
+tags

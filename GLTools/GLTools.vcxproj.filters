@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="include">
+      <UniqueIdentifier>{f770c50d-04ee-4ded-8d2f-6fbf721baa97}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{64a0796d-27ef-4857-9397-8b81e345d7fa}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\GLBatch.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\GLBatchBase.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\GLFrame.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\GLFrustum.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\GLGeometryTransform.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\GLMatrixStack.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\GLShaderManager.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\GLTools.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\GLTriangleBatch.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\math3d.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\StopWatch.h">
+      <Filter>include</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\GLBatch.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GLShaderManager.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GLTools.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GLTriangleBatch.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\math3d.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
