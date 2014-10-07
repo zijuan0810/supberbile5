@@ -92,24 +92,24 @@ public:
 	void MultiTexCoord2fv(GLuint texture, M3DVector2f vTexCoord);               
 
 protected:
-	GLenum		_primitiveType;		// What am I drawing....
+	GLenum	_primitiveType;		// What am I drawing....
 
-	GLuint		_uiVertexArray;		// 顶点数组
-	GLuint      _uiNormalArray;
-	GLuint		_uiColorArray;
-	GLuint		*_uiTextureCoordArray;
-	GLuint		_vertexArrayObject;
+	GLuint	_vertexBuf;		// 顶点数组
+	GLuint	_normalBuf;
+	GLuint	_colorBuf;
+	GLuint*	_texCoordVec;
+	GLuint	_vertexArrayObject;
 
-	GLuint _nVertsBuilding;			// Building up vertexes counter (immediate mode emulator)
-	GLuint _nNumVerts;				// Number of verticies in this batch
-	GLuint _nNumTextureUnits;		// Number of texture coordinate sets
+	GLuint	_numVertsBuilding;	// Building up vertexes counter (immediate mode emulator)
+	GLuint	_numVerts;			// Number of verticies in this batch
+	GLuint	_numTextureUnits;		// Number of texture coordinate sets
 
 	bool	_bBatchDone;			// Batch has been built
 
-	M3DVector3f *_pVerts;
-	M3DVector3f *_pNormals;
-	M3DVector4f *_pColors;
-	M3DVector2f **_pTexCoords;
+	M3DVector3f*	_vertex;
+	M3DVector3f*	_normal;
+	M3DVector4f*	_color;
+	M3DVector2f**	_texCoords;
 };
 
 #endif // __GL_BATCH__
