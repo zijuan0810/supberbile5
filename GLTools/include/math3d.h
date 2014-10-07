@@ -520,6 +520,7 @@ inline void m3dTranslationMatrix44(M3DMatrix44d m, double x, double y, double z)
 	m[14] = z; 
 }
 
+// 矩阵转置
 void m3dInvertMatrix44(M3DMatrix44f mInverse, const M3DMatrix44f m);
 void m3dInvertMatrix44(M3DMatrix44d mInverse, const M3DMatrix44d m);
 

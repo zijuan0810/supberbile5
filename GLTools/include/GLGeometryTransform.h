@@ -9,51 +9,50 @@ class GLGeometryTransform
 public:
 	GLGeometryTransform(void) {}
 
-	inline void SetModelViewMatrixStack(GLMatrixStack& mModelView) { 
-		_mModelView = &mModelView; 
+	void SetModelViewMatrixStack(GLMatrixStack& mModelView) { 
+		_mvMatrixStack = &mModelView; 
 	}
 
-	inline void SetProjectionMatrixStack(GLMatrixStack& mProjection) { 
-		_mProjection = &mProjection; 
+	void SetProjectionMatrixStack(GLMatrixStack& mProjection) { 
+		_pjMatrixStack = &mProjection; 
 	}
 
-	inline void SetMatrixStacks(GLMatrixStack& mModelView, GLMatrixStack& mProjection) {
-		_mModelView = &mModelView;
-		_mProjection = &mProjection;
+	void SetMatrixStacks(GLMatrixStack& mModelView, GLMatrixStack& mProjection) {
+		_mvMatrixStack = &mModelView;
+		_pjMatrixStack = &mProjection;
 	}
 
 	const M3DMatrix44f& GetModelViewProjectionMatrix(void) {
-		m3dMatrixMultiply44(_mModelViewProjection, _mProjection->GetMatrix(), 
-							_mModelView->GetMatrix());
-		return _mModelViewProjection;
+		m3dMatrixMultiply44(_mvProjection, _pjMatrixStack->GetMatrix(), _mvMatrixStack->GetMatrix());
+		return _mvProjection;
 	}
 
-	inline const M3DMatrix44f& GetModelViewMatrix(void) { 
-		return _mModelView->GetMatrix(); 
+	const M3DMatrix44f& GetModelViewMatrix(void) { 
+		return _mvMatrixStack->GetMatrix(); 
 	}
 
-	inline const M3DMatrix44f& GetProjectionMatrix(void) { 
-		return _mProjection->GetMatrix(); 
+	const M3DMatrix44f& GetProjectionMatrix(void) { 
+		return _pjMatrixStack->GetMatrix(); 
 	}
 
 	const M3DMatrix33f& GetNormalMatrix(bool bNormalize = false) {
-		m3dExtractRotationMatrix33(_mNormalMatrix, GetModelViewMatrix());
+		m3dExtractRotationMatrix33(_normalMatrix, GetModelViewMatrix());
 
 		if(bNormalize) {
-			m3dNormalizeVector3(&_mNormalMatrix[0]);
-			m3dNormalizeVector3(&_mNormalMatrix[3]);
-			m3dNormalizeVector3(&_mNormalMatrix[6]);
+			m3dNormalizeVector3(&_normalMatrix[0]);
+			m3dNormalizeVector3(&_normalMatrix[3]);
+			m3dNormalizeVector3(&_normalMatrix[6]);
 		}
 
-		return _mNormalMatrix;
+		return _normalMatrix;
 	}
 
 protected:
-	M3DMatrix44f	_mModelViewProjection;
-	M3DMatrix33f	_mNormalMatrix;
+	M3DMatrix44f	_mvProjection;
+	M3DMatrix33f	_normalMatrix;
 
-	GLMatrixStack*  _mModelView;
-	GLMatrixStack* _mProjection;
+	GLMatrixStack*	_mvMatrixStack;
+	GLMatrixStack*	_pjMatrixStack;
 };
 
 #endif

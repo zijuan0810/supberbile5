@@ -47,22 +47,22 @@ class GLMatrixStack
 public:
 	GLMatrixStack(int iStackDepth = 64) {
 		_stackDepth = iStackDepth;
-		_pStack = new M3DMatrix44f[iStackDepth];
+		_stackes = new M3DMatrix44f[iStackDepth];
 		_stackIndex = 0;
-		m3dLoadIdentity44(_pStack[0]);
+		m3dLoadIdentity44(_stackes[0]);
 		_lastError = GLT_STACK_NOERROR;
 	}
 
 	~GLMatrixStack(void) {
-		delete [] this->_pStack;
+		delete [] this->_stackes;
 	}
 
 	inline void LoadIdentity(void) { 
-		m3dLoadIdentity44(this->_pStack[_stackIndex]); 
+		m3dLoadIdentity44(this->_stackes[_stackIndex]); 
 	}
 
 	inline void LoadMatrix(const M3DMatrix44f mMatrix) { 
-		m3dCopyMatrix44(this->_pStack[_stackIndex], mMatrix); 
+		m3dCopyMatrix44(this->_stackes[_stackIndex], mMatrix); 
 	}
 
 	inline void LoadMatrix(GLFrame& frame) {
@@ -73,8 +73,8 @@ public:
 
 	inline void MultMatrix(const M3DMatrix44f mMatrix) {
 		M3DMatrix44f mTemp;
-		m3dCopyMatrix44(mTemp, _pStack[_stackIndex]);
-		m3dMatrixMultiply44(_pStack[_stackIndex], mTemp, mMatrix);
+		m3dCopyMatrix44(mTemp, _stackes[_stackIndex]);
+		m3dMatrixMultiply44(_stackes[_stackIndex], mTemp, mMatrix);
 	}
 
 	inline void MultMatrix(GLFrame& frame) {
@@ -86,7 +86,7 @@ public:
 	inline void PushMatrix(void) {
 		if(_stackIndex < _stackDepth) {
 			_stackIndex++;
-			m3dCopyMatrix44(_pStack[_stackIndex], _pStack[_stackIndex-1]);
+			m3dCopyMatrix44(_stackes[_stackIndex], _stackes[_stackIndex-1]);
 		}
 		else
 			_lastError = GLT_STACK_OVERFLOW;
@@ -102,23 +102,23 @@ public:
 	void Scale(GLfloat x, GLfloat y, GLfloat z) {
 		M3DMatrix44f mTemp, mScale;
 		m3dScaleMatrix44(mScale, x, y, z);
-		m3dCopyMatrix44(mTemp, _pStack[_stackIndex]);
-		m3dMatrixMultiply44(_pStack[_stackIndex], mTemp, mScale);
+		m3dCopyMatrix44(mTemp, _stackes[_stackIndex]);
+		m3dMatrixMultiply44(_stackes[_stackIndex], mTemp, mScale);
 	}
 
 
 	void Translate(GLfloat x, GLfloat y, GLfloat z) {
 		M3DMatrix44f mTemp, mScale;
 		m3dTranslationMatrix44(mScale, x, y, z);
-		m3dCopyMatrix44(mTemp, _pStack[_stackIndex]);
-		m3dMatrixMultiply44(_pStack[_stackIndex], mTemp, mScale);			
+		m3dCopyMatrix44(mTemp, _stackes[_stackIndex]);
+		m3dMatrixMultiply44(_stackes[_stackIndex], mTemp, mScale);			
 	}
 
 	void Rotate(GLfloat angle, GLfloat x, GLfloat y, GLfloat z) {
 		M3DMatrix44f mTemp, mRotate;
 		m3dRotationMatrix44(mRotate, float(m3dDegToRad(angle)), x, y, z);
-		m3dCopyMatrix44(mTemp, _pStack[_stackIndex]);
-		m3dMatrixMultiply44(_pStack[_stackIndex], mTemp, mRotate);
+		m3dCopyMatrix44(mTemp, _stackes[_stackIndex]);
+		m3dMatrixMultiply44(_stackes[_stackIndex], mTemp, mRotate);
 	}
 
 
@@ -126,8 +126,8 @@ public:
 	void Scalev(const M3DVector3f vScale) {
 		M3DMatrix44f mTemp, mScale;
 		m3dScaleMatrix44(mScale, vScale);
-		m3dCopyMatrix44(mTemp, _pStack[_stackIndex]);
-		m3dMatrixMultiply44(_pStack[_stackIndex], mTemp, mScale);
+		m3dCopyMatrix44(mTemp, _stackes[_stackIndex]);
+		m3dMatrixMultiply44(_stackes[_stackIndex], mTemp, mScale);
 	}
 
 
@@ -135,16 +135,16 @@ public:
 		M3DMatrix44f mTemp, mTranslate;
 		m3dLoadIdentity44(mTranslate);
 		m3dSetMatrixColumn44(mTranslate, vTranslate, 3);
-		m3dCopyMatrix44(mTemp, _pStack[_stackIndex]);
-		m3dMatrixMultiply44(_pStack[_stackIndex], mTemp, mTranslate);
+		m3dCopyMatrix44(mTemp, _stackes[_stackIndex]);
+		m3dMatrixMultiply44(_stackes[_stackIndex], mTemp, mTranslate);
 	}
 
 
 	void Rotatev(GLfloat angle, M3DVector3f vAxis) {
 		M3DMatrix44f mTemp, mRotation;
 		m3dRotationMatrix44(mRotation, float(m3dDegToRad(angle)), vAxis[0], vAxis[1], vAxis[2]);
-		m3dCopyMatrix44(mTemp, _pStack[_stackIndex]);
-		m3dMatrixMultiply44(_pStack[_stackIndex], mTemp, mRotation);
+		m3dCopyMatrix44(mTemp, _stackes[_stackIndex]);
+		m3dMatrixMultiply44(_stackes[_stackIndex], mTemp, mRotation);
 	}
 
 
@@ -152,7 +152,7 @@ public:
 	void PushMatrix(const M3DMatrix44f mMatrix) {
 		if(_stackIndex < _stackDepth) {
 			_stackIndex++;
-			m3dCopyMatrix44(_pStack[_stackIndex], mMatrix);
+			m3dCopyMatrix44(_stackes[_stackIndex], mMatrix);
 		}
 		else
 			_lastError = GLT_STACK_OVERFLOW;
@@ -165,8 +165,8 @@ public:
 	}
 
 	// Two different ways to get the matrix
-	const M3DMatrix44f& GetMatrix(void) { return _pStack[_stackIndex]; }
-	void GetMatrix(M3DMatrix44f mMatrix) { m3dCopyMatrix44(mMatrix, _pStack[_stackIndex]); }
+	const M3DMatrix44f& GetMatrix(void) { return _stackes[_stackIndex]; }
+	void GetMatrix(M3DMatrix44f mMatrix) { m3dCopyMatrix44(mMatrix, _stackes[_stackIndex]); }
 
 
 	inline GLT_STACK_ERROR GetLastError(void) {
@@ -176,10 +176,11 @@ public:
 	}
 
 protected:
-	GLT_STACK_ERROR		_lastError;
-	int					_stackDepth;
-	int					_stackIndex;
-	M3DMatrix44f*		_pStack;
+	M3DMatrix44f*		_stackes;
+	GLT_STACK_ERROR	_lastError;
+
+	int	_stackDepth;
+	int	_stackIndex;
 };
 
 #endif

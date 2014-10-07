@@ -491,26 +491,20 @@ static double DetIJ(const M3DMatrix44d m, const int i, const int j)
 ////////////////////////////////////////////////////////////////////////////
 ///
 // Invert matrix
-void m3dInvertMatrix44(M3DMatrix44f mInverse, const M3DMatrix44f m)
+void m3dInvertMatrix44(M3DMatrix44f out, const M3DMatrix44f m)
 {
-	int i, j;
-	float det, detij;
-
 	// calculate 4x4 determinant
-	det = 0.0f;
-	for (i = 0; i < 4; i++)
-	{
+	float det = 0.0f;
+	for (int i = 0; i < 4; i++) {
 		det += (i & 0x1) ? (-m[i] * DetIJ(m, 0, i)) : (m[i] * DetIJ(m, 0,i));
 	}
 	det = 1.0f / det;
 
 	// calculate inverse
-	for (i = 0; i < 4; i++)
-	{
-		for (j = 0; j < 4; j++)
-		{
-			detij = DetIJ(m, j, i);
-			mInverse[(i*4)+j] = ((i+j) & 0x1) ? (-detij * det) : (detij *det); 
+	for (int i = 0; i < 4; i++) {
+		for (int j = 0; j < 4; j++) {
+			float detij = DetIJ(m, j, i);
+			out[(i*4)+j] = ((i+j) & 0x1) ? (-detij * det) : (detij *det); 
 		}
 	}
 }

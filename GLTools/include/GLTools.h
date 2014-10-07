@@ -1,6 +1,35 @@
 #ifndef __GLTOOLS__LIBRARY
 #define __GLTOOLS__LIBRARY
 
+// ASCII
+#define KEY_a 	97
+#define KEY_b 	98	
+#define KEY_c 	99	
+#define KEY_d 	100	
+#define KEY_e 	101	
+#define KEY_f 	102	
+#define KEY_g 	103	
+#define KEY_h 	104	
+#define KEY_i 	105	
+#define KEY_j 	106	
+#define KEY_k 	107	
+#define KEY_l 	108	
+#define KEY_m 	109	
+#define KEY_n 	110	
+#define KEY_o 	111	
+#define KEY_p 	112	
+#define KEY_q 	113	
+#define KEY_r 	114	
+#define KEY_s 	115	
+#define KEY_t 	116	
+#define KEY_u 	117	
+#define KEY_v 	118	
+#define KEY_w 	119	
+#define KEY_x 	120	
+#define KEY_y 	121	
+#define KEY_z 	122	
+
+
 
 // There is a static block allocated for loading shaders to 
 // prevent heap fragmentation
@@ -110,6 +139,23 @@ inline void LITTLE_ENDIAN_DWORD(void *pWord)
 //         THE LIBRARY....
 ///////////////////////////////////////////////////////////////////////////////
 
+enum class ConsoleColor {
+	darkBlue = 1,
+	darkGreen = 2,
+	darkCyan = 3,		// ÇàÉ«
+	drakRed = 4,
+	darkPink = 5,
+	darkYellow = 6,
+	darkGrey = 8,
+	Grey = 7,
+	Blue = 9,
+	Green = 10,
+	Cyan = 11,
+	Red = 12,
+	Pink = 13,
+	Yellow = 14,
+	White = 15,
+};
 
 // Print OpenGL version information
 extern void gltPrintOpenGLInfo();
@@ -222,5 +268,12 @@ void gltShowVersionInfo();
 bool gltLoadTextureTGA(const char* pszFileName, GLenum minFilter, GLenum magFilter, GLenum warpMode);
 
 bool gltLoadTextureTGARect(const char* pszFileName, GLenum minFilter, GLenum magFilter, GLenum warpMode);
+
+/*
+ * Log formater
+ */
+void log(const char * format, ...);
+void log_warning(const char * format, ...);
+void log_error(const char * format, ...);
 
 #endif

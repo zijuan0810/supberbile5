@@ -1,4 +1,4 @@
-#include "GLTools.h"
+Ôªø#include "GLTools.h"
 #include "math3d.h"
 #include "GLTriangleBatch.h"
 #include <stdio.h>
@@ -12,6 +12,57 @@
 #ifdef __APPLE__
 #include <unistd.h>
 #endif
+
+/// The max length of CCLog message.
+static const int MAX_LOG_LENGTH = 16 * 1024;
+
+/*
+* Log formater
+*/
+
+static void _log(const char *format, va_list args)
+{
+	static HANDLE hConsole = ::GetStdHandle(STD_OUTPUT_HANDLE);
+	char buf[MAX_LOG_LENGTH] = { 0 };
+
+	vsnprintf(buf, MAX_LOG_LENGTH - 3, format, args);
+	strcat(buf, "\n");
+	fprintf(stdout, "=> %s", buf);
+	fflush(stdout);
+
+	::SetConsoleTextAttribute(hConsole, (WORD)ConsoleColor::Grey);
+}
+
+void log(const char * format, ...)
+{
+	va_list args;
+	va_start(args, format);
+	_log(format, args);
+	va_end(args);
+}
+
+void log_warning(const char* format, ...)
+{
+	static HANDLE hConsole = ::GetStdHandle(STD_OUTPUT_HANDLE);
+	::SetConsoleTextAttribute(hConsole, (WORD)ConsoleColor::Yellow);
+
+	va_list args;
+	va_start(args, format);
+	_log(format, args);
+	va_end(args);
+}
+
+void log_error(const char* format, ...)
+{
+	static HANDLE hConsole = ::GetStdHandle(STD_OUTPUT_HANDLE);
+	::SetConsoleTextAttribute(hConsole, (WORD)ConsoleColor::Red);
+
+	va_list args;
+	va_start(args, format);
+	_log(format, args);
+	va_end(args);
+}
+
 
 /** 
 * Print OpenGL version information
@@ -580,7 +631,7 @@ void gltMakeCylinder(GLTriangleBatch& cylinderBatch, GLfloat baseRadius, GLfloat
 
 ///////////////////////////////////////////////////////////////////////////////////////
 // Make a cube, centered at the origin, and with a specified "radius"
-void gltMakeCube(GLBatch& cubeBatch, GLfloat fRadius )
+void gltMakeCube(GLBatch& cubeBatch, GLfloat fRadius)
 {
 	cubeBatch.Begin(GL_TRIANGLES, 36, 1);
 
@@ -745,20 +796,20 @@ void gltMakeCube(GLBatch& cubeBatch, GLfloat fRadius )
 
 // Define targa header. This is only used locally.
 #pragma pack(1)
-typedef struct
+typedef struct _TGAHEADER
 {
 	GLbyte	identsize;              // Size of ID field that follows header (0)
 	GLbyte	colorMapType;           // 0 = None, 1 = paletted
 	GLbyte	imageType;              // 0 = none, 1 = indexed, 2 = rgb, 3 = grey, +8=rle
-	unsigned short	colorMapStart;          // First colour map entry
-	unsigned short	colorMapLength;         // Number of colors
+	unsigned short	colorMapStart;  // First colour map entry
+	unsigned short	colorMapLength; // Number of colors
 	unsigned char 	colorMapBits;   // bits per palette entry
-	unsigned short	xstart;                 // image x origin
-	unsigned short	ystart;                 // image y origin
-	unsigned short	width;                  // width in pixels
-	unsigned short	height;                 // height in pixels
-	GLbyte	bits;                   // bits per pixel (8 16, 24, 32)
-	GLbyte	descriptor;             // image descriptor
+	unsigned short	xstart;        // image x origin
+	unsigned short	ystart;        // image y origin
+	unsigned short	width;         // width in pixels
+	unsigned short	height;        // height in pixels
+	GLbyte	bits;                  // bits per pixel (8 16, 24, 32)
+	GLbyte	descriptor;            // image descriptor
 } TGAHEADER;
 #pragma pack(8)
 
@@ -857,12 +908,9 @@ GLint gltGrabScreenTGA(const char *szFileName)
 // Call free() on buffer when finished!
 // This only works on pretty vanilla targas... 8, 24, or 32 bit color
 // only, no palettes, no RLE encoding.
-GLbyte *gltReadTGABits(const char *szFileName, GLint *iWidth, GLint *iHeight, GLint *iComponents, 
-					   GLenum *eFormat)
+GLbyte* gltReadTGABits(const char *szFileName, GLint *iWidth, GLint *iHeight, GLint *iComponents, 
+					 GLenum *eFormat)
 {
-	short sDepth;				// Pixel depth;
-	GLbyte	*pBits = nullptr;   // Pointer to bits
-
 	// Default/Failed values
 	*iWidth = 0;
 	*iHeight = 0;
@@ -877,7 +925,7 @@ GLbyte *gltReadTGABits(const char *szFileName, GLint *iWidth, GLint *iHeight, GL
 
 	// Read in header (binary)
 	TGAHEADER tgaHeader;
-	fread(&tgaHeader, 18/* sizeof(TGAHEADER)*/, 1, pFile);
+	fread(&tgaHeader, sizeof(TGAHEADER), 1, pFile);
 
 	// Do byte swap for big vs little endian
 #ifdef __APPLE__
@@ -892,7 +940,7 @@ GLbyte *gltReadTGABits(const char *szFileName, GLint *iWidth, GLint *iHeight, GL
 	// Get width, height, and depth of texture
 	*iWidth = tgaHeader.width;
 	*iHeight = tgaHeader.height;
-	sDepth = tgaHeader.bits / 8;
+	short sDepth = tgaHeader.bits / 8; // Pixel depth;
 
 	// Put some validity checks here. Very simply, I only understand
 	// or care about 8, 24, or 32 bit targa's.
@@ -901,11 +949,10 @@ GLbyte *gltReadTGABits(const char *szFileName, GLint *iWidth, GLint *iHeight, GL
 	}
 
 	// Calculate size of image buffer
-	unsigned long lImageSize;	// Size in bytes of image
-	lImageSize = tgaHeader.width * tgaHeader.height * sDepth;
+	unsigned long lImageSize= tgaHeader.width * tgaHeader.height * sDepth;// Size in bytes of image
 
 	// Allocate memory and check for success
-	pBits = (GLbyte*)malloc(lImageSize * sizeof(GLbyte));
+	GLbyte* pBits = (GLbyte*)malloc(lImageSize * sizeof(GLbyte));
 	if(pBits == nullptr) {
 		return nullptr;
 	}
@@ -921,16 +968,16 @@ GLbyte *gltReadTGABits(const char *szFileName, GLint *iWidth, GLint *iHeight, GL
 	// Set OpenGL format expected
 	switch(sDepth) {
 #ifndef OPENGL_ES
-	case 3:     // ∞¥’’∫Ï°¢¬Ã°¢¿∂≥…∑÷¥Ê¥¢Œƒ¿Ìµ•‘™
+	case 3:     // ÊåâÁÖßÁ∫¢„ÄÅÁªø„ÄÅËìùÊàêÂàÜÂ≠òÂÇ®ÊñáÁêÜÂçïÂÖÉ
 		*eFormat = GL_BGR;
 		*iComponents = GL_RGB;
 		break;
 #endif
-	case 4:		// ∞¥’’∫Ï°¢¬Ã°¢¿∂∫Õalpha≥…∑÷¥Ê¥¢Œƒ¿Ìµ•‘™
+	case 4:		// ÊåâÁÖßÁ∫¢„ÄÅÁªø„ÄÅËìùÂíåalphaÊàêÂàÜÂ≠òÂÇ®ÊñáÁêÜÂçïÂÖÉ
 		*eFormat = GL_BGRA;
 		*iComponents = GL_RGBA;
 		break;
-	case 1:		// ∞¥’’¡¡∂»÷µ¥Ê¥¢Œƒ¿Ìµ•‘™
+	case 1:		// ÊåâÁÖß‰∫ÆÂ∫¶ÂÄºÂ≠òÂÇ®ÊñáÁêÜÂçïÂÖÉ
 		*eFormat = GL_LUMINANCE;
 		*iComponents = GL_LUMINANCE;
 		break;
@@ -1144,7 +1191,7 @@ GLuint gltLoadShaderPairWithAttributes(const char *szVertexProg, const char *szF
 	if (gltLoadShaderFile(szVertexProg, hVertexShader) == false) {
 		glDeleteShader(hVertexShader);
 		glDeleteShader(hFragmentShader);
-		fprintf(stderr, "The shader at %s could ot be found.\n", szVertexProg);
+		log_error("File %s can't be found!", szVertexProg);
 		return (GLuint)nullptr;
 	}
 
@@ -1152,7 +1199,7 @@ GLuint gltLoadShaderPairWithAttributes(const char *szVertexProg, const char *szF
 	if (gltLoadShaderFile(szFragmentProg, hFragmentShader) == false) {
 		glDeleteShader(hVertexShader);
 		glDeleteShader(hFragmentShader);
-		fprintf(stderr,"The shader at %s  could not be found.\n", szFragmentProg);
+		log_error("File %s can't be found!", szFragmentProg);
 		return (GLuint)nullptr;
 	}
 
@@ -1166,8 +1213,7 @@ GLuint gltLoadShaderPairWithAttributes(const char *szVertexProg, const char *szF
 	if (testVal == GL_FALSE) {
 		char infoLog[1024];
 		glGetShaderInfoLog(hVertexShader, 1024, nullptr, infoLog);
-		fprintf(stderr, "The shader at %s failed to compile with the following error:\n%s\n", 
-				szVertexProg, infoLog);
+		log_error("[%s] compile error:\n%s\n", szVertexProg, infoLog);
 		glDeleteShader(hVertexShader);
 		glDeleteShader(hFragmentShader);
 		return (GLuint)nullptr;
@@ -1178,7 +1224,7 @@ GLuint gltLoadShaderPairWithAttributes(const char *szVertexProg, const char *szF
 	if (testVal == GL_FALSE) {
 		char infoLog[1024];
 		glGetShaderInfoLog(hFragmentShader, 1024, nullptr, infoLog);
-		fprintf(stderr, "The shader at %s failed to compile with the following error:\n%s\n", szFragmentProg, infoLog);
+		log_error("[%s] compile error:\n%s\n", szFragmentProg, infoLog);
 		glDeleteShader(hVertexShader);
 		glDeleteShader(hFragmentShader);
 		return (GLuint)nullptr;
@@ -1191,17 +1237,17 @@ GLuint gltLoadShaderPairWithAttributes(const char *szVertexProg, const char *szF
 
 	// Now, we need to bind the attribute names to their specific locations
 	// List of attributes
-	va_list attributeList;
-	va_start(attributeList, szFragmentProg);
+	va_list attribList;
+	va_start(attribList, szFragmentProg);
 
 	// Iterate over this argument list
-	int iArgCount = va_arg(attributeList, int);	// Number of attributes
+	int iArgCount = va_arg(attribList, int);	// Number of attributes
 	for(int i = 0; i < iArgCount; i++) {
-		int index = va_arg(attributeList, int);
-		char* szNextArg = va_arg(attributeList, char*);
+		int index = va_arg(attribList, int);
+		char* szNextArg = va_arg(attribList, char*);
 		glBindAttribLocation(hReturn, index, szNextArg);
 	}
-	va_end(attributeList);
+	va_end(attribList);
 
 	// Attempt to link    
 	glLinkProgram(hReturn);
@@ -1215,8 +1261,7 @@ GLuint gltLoadShaderPairWithAttributes(const char *szVertexProg, const char *szF
 	if (testVal == GL_FALSE) {
 		char infoLog[1024];
 		glGetProgramInfoLog(hReturn, 1024, nullptr, infoLog);
-		fprintf(stderr,"The programs %s and %s failed to link with the following errors:\n%s\n", 
-				szVertexProg, szFragmentProg, infoLog);
+		log_error("[%s,%s] link errors:\n%s\n", szVertexProg, szFragmentProg, infoLog);
 		glDeleteProgram(hReturn);
 		return (GLuint)nullptr;
 	}
@@ -1639,3 +1684,4 @@ bool gltLoadTextureTGARect(const char* pszFileName, GLenum minFilter, GLenum mag
 
 	return true;
 }
+
