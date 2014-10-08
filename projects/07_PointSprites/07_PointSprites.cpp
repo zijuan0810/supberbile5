@@ -2,29 +2,26 @@
 
 #define NUM_STARS 10000
 
-GLShaderManager	shaderManager;
+GLFrustum	viewFrustum;
+GLBatch		starsBatch;
 
-GLFrustum           viewFrustum;
-GLBatch             starsBatch;
+GLuint	starShader;	// The point sprite shader
+GLint	locMVP;		// The location of the ModelViewProjection matrix uniform
+GLint	locTimeStamp;	// The location of the time stamp
+GLint	locTexture;	// The location of the  texture uniform
 
-GLuint	starFieldShader;	// The point sprite shader
-GLint	locMVP;				// The location of the ModelViewProjection matrix uniform
-GLint   locTimeStamp;       // The location of the time stamp
-GLint	locTexture;			// The location of the  texture uniform
-
-GLuint	starTexture;		// The star texture texture object
+GLuint	starTexture;	// The star texture texture object
 
 // Load a TGA as a 2D Texture. Completely initialize the state
 static bool LoadTGATexture(const char *szFileName, GLenum minFilter, GLenum magFilter, GLenum wrapMode)
 {
-	GLbyte *pBits;
+	// Read the texture bits
 	int nWidth, nHeight, nComponents;
 	GLenum eFormat;
-
-	// Read the texture bits
-	pBits = gltReadTGABits(szFileName, &nWidth, &nHeight, &nComponents, &eFormat);
-	if (pBits == NULL)
+	GLbyte* pBits = gltReadTGABits(szFileName, &nWidth, &nHeight, &nComponents, &eFormat);
+	if (pBits == NULL) {
 		return false;
+	}
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapMode);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapMode);
@@ -96,7 +93,6 @@ void SetupRC()
 		if (rand() % 100 == 1)
 			iColor = 3;
 
-
 		starsBatch.Color4fv(fColors[iColor]);
 
 		M3DVector3f vPosition;
@@ -109,18 +105,22 @@ void SetupRC()
 	starsBatch.End();
 
 
-	starFieldShader = gltLoadShaderPairWithAttributes(
+	starShader = gltLoadShaderPairWithAttributes(
 		"SpaceFlight.vs.glsl", "SpaceFlight.fs.glsl", 2, 
 		GLT_ATTRIBUTE_VERTEX, "vVertex",
 		GLT_ATTRIBUTE_COLOR, "vColor");
 
-	locMVP = glGetUniformLocation(starFieldShader, "mvpMatrix");
-	locTexture = glGetUniformLocation(starFieldShader, "starImage");
-	locTimeStamp = glGetUniformLocation(starFieldShader, "timeStamp");
+	locMVP = glGetUniformLocation(starShader, "mvpMatrix");
+	locTexture = glGetUniformLocation(starShader, "starImage");
+	locTimeStamp = glGetUniformLocation(starShader, "timeStamp");
 
 	glGenTextures(1, &starTexture);
 	glBindTexture(GL_TEXTURE_2D, starTexture);
 	LoadTGATexture("Star.tga", GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR, GL_CLAMP_TO_EDGE);
+
+	// Place the origin of the texture coordinate system at the lower-left corner of the point.
+	// The default orientation for point sprites is: GL_UPPER_LEFT
+	glPointParameteri(GL_POINT_SPRITE_COORD_ORIGIN, GL_LOWER_LEFT);
 }
 
 /**
@@ -172,7 +172,7 @@ void RenderScene(void)
 	glEnable(GL_PROGRAM_POINT_SIZE);
 
 	// Bind to our shader, set uniforms
-	glUseProgram(starFieldShader);
+	glUseProgram(starShader);
 	glUniformMatrix4fv(locMVP, 1, GL_FALSE, viewFrustum.GetProjectionMatrix());
 	glUniform1i(locTexture, 0);
 
