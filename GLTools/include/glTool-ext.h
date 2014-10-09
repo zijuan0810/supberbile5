@@ -22,5 +22,6 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <memory>
 
 #endif // __GL_TOOL_EXT_H
