@@ -13,9 +13,9 @@ uniform float fTime;
 smooth out vec3 vMoonCoords;
 
 void main(void) 
-    { 
+{ 
     vMoonCoords.st = vTexCoords.st;
     vMoonCoords.p = fTime;
 
     gl_Position = mvpMatrix * vVertex;
-    }
+}
