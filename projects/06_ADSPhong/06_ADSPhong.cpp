@@ -146,7 +146,7 @@ void RenderScene(void)
 	glUniform3fv(locLight, 1, vEyeLight);
 
 	glUniformMatrix4fv(locMV, 1, GL_FALSE, transformPieple.GetModelViewMatrix());
-	glUniformMatrix4fv(locMVP, 1, GL_FALSE, transformPieple.GetModelViewProjectionMatrix());
+	glUniformMatrix4fv(locMVP, 1, GL_FALSE, transformPieple.GetMVPMatrix());
 	glUniformMatrix3fv(locNM, 1, GL_FALSE, transformPieple.GetNormalMatrix());
 
 	glUniform1i(locTexture, 0);

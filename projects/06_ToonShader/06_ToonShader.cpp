@@ -130,7 +130,7 @@ void RenderScene(void)
 
 	glUseProgram(toonShader);
 	glUniform3fv(locLight, 1, vEyeLight);
-	glUniformMatrix4fv(locMVP, 1, GL_FALSE, transformPipeline.GetModelViewProjectionMatrix());
+	glUniformMatrix4fv(locMVP, 1, GL_FALSE, transformPipeline.GetMVPMatrix());
 	glUniformMatrix4fv(locMV, 1, GL_FALSE, transformPipeline.GetModelViewMatrix());
 	glUniformMatrix3fv(locNM, 1, GL_FALSE, transformPipeline.GetNormalMatrix());
 	glUniform1i(locColorTable, 0);

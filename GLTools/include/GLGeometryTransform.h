@@ -22,7 +22,7 @@ public:
 		_pjMatrixStack = &mProjection;
 	}
 
-	const M3DMatrix44f& GetModelViewProjectionMatrix(void) {
+	const M3DMatrix44f& GetMVPMatrix(void) {
 		m3dMatrixMultiply44(_mvProjection, _pjMatrixStack->GetMatrix(), _mvMatrixStack->GetMatrix());
 		return _mvProjection;
 	}

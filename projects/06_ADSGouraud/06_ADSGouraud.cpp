@@ -132,7 +132,7 @@ void RenderScene(void)
 	glUniform4fv(locSpecular, 1, vSpecularColor);
 
 	glUniform3fv(locLight, 1, vEyeLight);
-	glUniformMatrix4fv(locMVP, 1, GL_FALSE, transformPieline.GetModelViewProjectionMatrix());
+	glUniformMatrix4fv(locMVP, 1, GL_FALSE, transformPieline.GetMVPMatrix());
 	glUniformMatrix4fv(locMV, 1, GL_FALSE, transformPieline.GetModelViewMatrix());
 	glUniformMatrix3fv(locNM, 1, GL_FALSE, transformPieline.GetNormalMatrix());
 

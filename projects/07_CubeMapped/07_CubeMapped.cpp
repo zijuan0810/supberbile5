@@ -151,7 +151,7 @@ void RenderScene(void)
 	// Draw the sphere
 	modelViewMatrix.MultMatrix(mCamera);
 	glUseProgram(reflectionShader);
-	glUniformMatrix4fv(locMVPReflect, 1, GL_FALSE, transformPipeline.GetModelViewProjectionMatrix());
+	glUniformMatrix4fv(locMVPReflect, 1, GL_FALSE, transformPipeline.GetMVPMatrix());
 	glUniformMatrix4fv(locMVReflect, 1, GL_FALSE, transformPipeline.GetModelViewMatrix());
 	glUniformMatrix3fv(locNormalReflect, 1, GL_FALSE, transformPipeline.GetNormalMatrix());
 	glUniformMatrix4fv(locInvertedCamera, 1, GL_FALSE, mInverseCamera);
@@ -164,7 +164,7 @@ void RenderScene(void)
 	modelViewMatrix.PushMatrix();
 	modelViewMatrix.MultMatrix(mCameraRotOnly);
 	glUseProgram(skyBoxShader);
-	glUniformMatrix4fv(locMVPSkyBox, 1, GL_FALSE, transformPipeline.GetModelViewProjectionMatrix());
+	glUniformMatrix4fv(locMVPSkyBox, 1, GL_FALSE, transformPipeline.GetMVPMatrix());
 	cubeBatch.Draw();
 	modelViewMatrix.PopMatrix();
 

@@ -188,7 +188,7 @@ void SetupRC()
 void DrawWireFramedBatch(GLBatch* pBatch)
 {
 	// Draw the batch solid green
-	shaderManager.UseStockShader(GLT_SHADER_FLAT, transformPipeline.GetModelViewProjectionMatrix(), vGreen);
+	shaderManager.UseStockShader(GLT_SHADER_FLAT, transformPipeline.GetMVPMatrix(), vGreen);
 	pBatch->Draw();
 
 	// Draw black outline
@@ -203,7 +203,7 @@ void DrawWireFramedBatch(GLBatch* pBatch)
 	// Draw black wireframe version of geometry
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glLineWidth(2.5f);
-	shaderManager.UseStockShader(GLT_SHADER_FLAT, transformPipeline.GetModelViewProjectionMatrix(), vBlack);
+	shaderManager.UseStockShader(GLT_SHADER_FLAT, transformPipeline.GetMVPMatrix(), vBlack);
 	pBatch->Draw();
 
 	// Put everything back the way we found it
@@ -229,7 +229,7 @@ void RenderScene(void)
 	objectFrame.GetMatrix(mObjectFrame);
 	modelViewMatrix.MultMatrix(mObjectFrame);
 
-	shaderManager.UseStockShader(GLT_SHADER_FLAT, transformPipeline.GetModelViewProjectionMatrix(), vBlack);
+	shaderManager.UseStockShader(GLT_SHADER_FLAT, transformPipeline.GetMVPMatrix(), vBlack);
 
 	switch (nStep) {
 	case 0:

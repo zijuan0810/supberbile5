@@ -132,7 +132,7 @@ void ProcessMenu(int value)
 
 void _drawWireFramedBatch(GLTriangleBatch* pBatch)
 {
-	shaderManager.UseStockShader(GLT_SHADER_FLAT, transformPipeline.GetModelViewProjectionMatrix(),
+	shaderManager.UseStockShader(GLT_SHADER_FLAT, transformPipeline.GetMVPMatrix(),
 		vGreen);
 	pBatch->Draw();
 
@@ -144,7 +144,7 @@ void _drawWireFramedBatch(GLTriangleBatch* pBatch)
 	glEnable(GL_POLYGON_OFFSET_LINE);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glLineWidth(2.5f);
-	shaderManager.UseStockShader(GLT_SHADER_FLAT, transformPipeline.GetModelViewProjectionMatrix(),
+	shaderManager.UseStockShader(GLT_SHADER_FLAT, transformPipeline.GetMVPMatrix(),
 		vBlack);
 	pBatch->Draw();
 
@@ -171,7 +171,7 @@ void RenderScene(void)
 	objectFrame.GetMatrix(mObjectFrame);
 	modelViewMatrix.MultMatrix(mObjectFrame);
 
-	shaderManager.UseStockShader(GLT_SHADER_FLAT, transformPipeline.GetModelViewProjectionMatrix(), 
+	shaderManager.UseStockShader(GLT_SHADER_FLAT, transformPipeline.GetMVPMatrix(), 
 		vBlack);
 
 	switch(nStep) {

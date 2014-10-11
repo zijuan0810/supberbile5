@@ -35,7 +35,7 @@ static void DrawSongAndDance(GLfloat yRot)
 	// draw the light source
 	modelViewMatrix.PushMatrix();
 	modelViewMatrix.Translatev(vLightPos);
-	shaderManager.UseStockShader(GLT_SHADER_FLAT, transformPipeline.GetModelViewProjectionMatrix(),
+	shaderManager.UseStockShader(GLT_SHADER_FLAT, transformPipeline.GetMVPMatrix(),
 								vWhite);
 	sphereBatch.Draw();
 
@@ -266,7 +266,7 @@ void RenderScene(void)
 	glBindTexture(GL_TEXTURE_2D, uiTextures[0]);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	shaderManager.UseStockShader(GLT_SHADER_TEXTURE_MODULATE, 
-		transformPipeline.GetModelViewProjectionMatrix(), 
+		transformPipeline.GetMVPMatrix(), 
 		vFloorColor, 
 		0);
 	floorBatch.Draw();

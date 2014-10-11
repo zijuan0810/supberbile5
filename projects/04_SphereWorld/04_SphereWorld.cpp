@@ -114,14 +114,14 @@ void RenderScene(void)
 	modelViewMatrix.PushMatrix();
 
 	// Draw the ground
-	shaderManager.UseStockShader(GLT_SHADER_FLAT, tranformPipeline.GetModelViewProjectionMatrix(),
+	shaderManager.UseStockShader(GLT_SHADER_FLAT, tranformPipeline.GetMVPMatrix(),
 		vFloorColor);
 	floorBatch.Draw();
 
 	// Draw the spinning Torus
 	modelViewMatrix.Translate(0.0f, 0.0f, -2.5f);
 	modelViewMatrix.Rotate(yRot, 0.0f, 1.0f, 0.0f);
-	shaderManager.UseStockShader(GLT_SHADER_FLAT, tranformPipeline.GetModelViewProjectionMatrix(), 
+	shaderManager.UseStockShader(GLT_SHADER_FLAT, tranformPipeline.GetMVPMatrix(), 
 		vTorusColor);
 	torusBatch.Draw();
 
@@ -132,7 +132,7 @@ void RenderScene(void)
 	modelViewMatrix.PushMatrix();
 	modelViewMatrix.Rotate(-20.0f*yRot, 0.0f, 1.0f, 0.0f);
 	modelViewMatrix.Translate(0.8f, 0.0f, 0.0f);
-	shaderManager.UseStockShader(GLT_SHADER_FLAT, tranformPipeline.GetModelViewProjectionMatrix(),
+	shaderManager.UseStockShader(GLT_SHADER_FLAT, tranformPipeline.GetMVPMatrix(),
 		vSphereColor);
 	sphereBatch.Draw();
 

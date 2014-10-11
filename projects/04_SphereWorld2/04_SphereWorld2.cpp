@@ -153,7 +153,7 @@ void RenderScene(void)
 	m3dTransformVector4(vLightEyePos, vLightPos, mCamera);
 
 	// Draw the ground
-	shaderManager.UseStockShader(GLT_SHADER_FLAT, tranformPipeline.GetModelViewProjectionMatrix(),
+	shaderManager.UseStockShader(GLT_SHADER_FLAT, tranformPipeline.GetMVPMatrix(),
 		vFloorColor);
 	floorBatch.Draw();
 
@@ -164,7 +164,7 @@ void RenderScene(void)
 
 	// 应用旋转并绘制圆环
 	modelViewMatrix.Rotate(yRot, 0.0f, 1.0f, 0.0f);
-	//shaderManager.UseStockShader(GLT_SHADER_FLAT, tranformPipeline.GetModelViewProjectionMatrix(), 
+	//shaderManager.UseStockShader(GLT_SHADER_FLAT, tranformPipeline.GetMVPMatrix(), 
 	//	vTorusColor);
 	shaderManager.UseStockShader(GLT_SHADER_POINT_LIGHT_DIFF,
 								tranformPipeline.GetModelViewMatrix(),
@@ -180,7 +180,7 @@ void RenderScene(void)
 	//modelViewMatrix.PushMatrix();
 	modelViewMatrix.Rotate(-2.0f*yRot, 0.0f, 1.0f, 0.0f);
 	modelViewMatrix.Translate(0.8f, 0.0f, 0.0f);
-	//shaderManager.UseStockShader(GLT_SHADER_FLAT, tranformPipeline.GetModelViewProjectionMatrix(),
+	//shaderManager.UseStockShader(GLT_SHADER_FLAT, tranformPipeline.GetMVPMatrix(),
 	//							vSphereColor);
 
 	shaderManager.UseStockShader(GLT_SHADER_POINT_LIGHT_DIFF,
@@ -195,7 +195,7 @@ void RenderScene(void)
 		modelViewMatrix.PushMatrix();
 		modelViewMatrix.MultMatrix(spheres[i]);
 		//shaderManager.UseStockShader(GLT_SHADER_FLAT, 
-		//							tranformPipeline.GetModelViewProjectionMatrix(),
+		//							tranformPipeline.GetMVPMatrix(),
 		//							vSphereColor);
 		shaderManager.UseStockShader(GLT_SHADER_POINT_LIGHT_DIFF,
 									tranformPipeline.GetModelViewMatrix(),

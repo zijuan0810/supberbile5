@@ -1496,72 +1496,69 @@ bool gltCheckErrors(GLuint progName)
 	bool bFoundError = false;
 	GLenum error = glGetError();
 
-	if (error != GL_NO_ERROR)
-	{
-		fprintf(stderr, "A GL Error has occured\n");
+	if (error != GL_NO_ERROR) {
+		log_error("A GL Error has occured");
 		bFoundError = true;
 	}
 #ifndef OPENGL_ES
 	GLenum fboStatus = glCheckFramebufferStatus(GL_DRAW_FRAMEBUFFER);
 
-	if(fboStatus != GL_FRAMEBUFFER_COMPLETE)
-	{
+	if(fboStatus != GL_FRAMEBUFFER_COMPLETE) {
 		bFoundError = true;
-		fprintf(stderr,"The framebuffer is not complete - ");
-		switch (fboStatus)
-		{
-		case GL_FRAMEBUFFER_UNDEFINED:
+		std::string err_msg("The framebuffer is not complete - ");
+		switch (fboStatus) {
+		case GL_FRAMEBUFFER_UNDEFINED:		
 			// Oops, no window exists?
-			fprintf(stderr, "GL_FRAMEBUFFER_UNDEFINED\n");
+			err_msg += "GL_FRAMEBUFFER_UNDEFINED";
 			break;
-		case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
+		case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:	
 			// Check the status of each attachment
-			fprintf(stderr, "GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT\n");
+			err_msg += "GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT";
 			break;
-		case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
+		case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:	
 			// Attach at least one buffer to the FBO
-			fprintf(stderr, "GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT\n");
+			err_msg += "GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT";
 			break;
 		case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER:
 			// Check that all attachments enabled via
 			// glDrawBuffers exist in FBO
-			fprintf(stderr, "GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER\n");
+			err_msg += "GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER";
 			break;
 		case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER:
 			// Check that the buffer specified via
 			// glReadBuffer exists in FBO
-			fprintf(stderr, "GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER\n");
+			err_msg += "GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER";
 			break;
-		case GL_FRAMEBUFFER_UNSUPPORTED:
+		case GL_FRAMEBUFFER_UNSUPPORTED: 
 			// Reconsider formats used for attached buffers
-			fprintf(stderr, "GL_FRAMEBUFFER_UNSUPPORTED\n");
+			err_msg += "GL_FRAMEBUFFER_UNSUPPORTED";
 			break;
 		case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE:
 			// Make sure the number of samples for each 
 			// attachment is the same 
-			fprintf(stderr, "GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE\n");
+			err_msg += "GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE";
 			break; 
 		case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS:
 			// Make sure the number of layers for each 
 			// attachment is the same 
-			fprintf(stderr, "GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS\n");
+			err_msg += "GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS";
 			break;
 		}
+		log_error(err_msg.c_str());
 	}
 
 #endif
 
-	if (progName != 0)
-	{
+	if (progName != 0) {
 		glValidateProgram(progName);
 		int iIsProgValid = 0;
 		glGetProgramiv(progName, GL_VALIDATE_STATUS, &iIsProgValid);
-		if(iIsProgValid == 0)
-		{
+		if(iIsProgValid == 0) {
 			bFoundError = true;
-			fprintf(stderr, "The current program(%d) is not valid\n", progName);
+			log_error("The current program(%d) is not valid", progName);
 		}
 	}
+
 	return bFoundError;
 }
 

@@ -107,7 +107,7 @@ void RenderScene(void)
 	GLfloat vColor[] = {1.0f, 0.1f, 1.0f, 1.0f};
 	glUseProgram(flatShader);
 	glUniform4fv(locColor, 1, vColor);
-	glUniformMatrix4fv(locMVP, 1, GL_FALSE, transformPipeline.GetModelViewProjectionMatrix());
+	glUniformMatrix4fv(locMVP, 1, GL_FALSE, transformPipeline.GetMVPMatrix());
 	torusBatch.Draw();
 
 	modelViewMatrix.PopMatrix();
