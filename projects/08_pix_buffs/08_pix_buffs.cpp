@@ -1,7 +1,5 @@
 #include "GLTool-ext.h"
 
-GLShaderManager	shaderManager;
-
 static GLfloat vGreen[] = { 0.0f, 1.0f, 0.0f, 1.0f };
 static GLfloat vWhite[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 static GLfloat vLightPos[] = { 0.0f, 3.0f, 0.0f, 1.0f };
@@ -33,7 +31,6 @@ bool		bUsePBOPath;
 GLfloat	speedFactor;
 GLuint	blurProg;
 void		*pixelData;
-GLuint	pixelDataSize;
 
 void MoveCamera(void);
 void DrawWorld(GLfloat yRot, GLfloat xPos);
@@ -100,7 +97,7 @@ void ChangeSize(int w, int h)
 	gltGenerateOrtho2DMat(screenWidth, screenHeight, orthoMatrix, screenQuad);
 
 	free(pixelData);
-	pixelDataSize = screenWidth * screenHeight * 3 * sizeof(unsigned int);
+	GLuint pixelDataSize = screenWidth * screenHeight * 3 * sizeof(unsigned int);
 	pixelData = (void*)malloc(pixelDataSize);
 	memset(pixelData, 0, pixelDataSize);
 
@@ -154,7 +151,7 @@ void SetupRC()
 	gltLoadTextureTGA("marble.bmp", GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR, GL_REPEAT);
 
 	// Create blur program
-	blurProg = gltLoadShaderPairWithAttributes("blur.vs", "blur.fs", 2,
+	blurProg = gltLoadShaderPairWithAttributes("blur.vs.glsl", "blur.fs.glsl", 2,
 		GLT_ATTRIBUTE_VERTEX, "vVertex",
 		GLT_ATTRIBUTE_TEXTURE0, "texCoord0");
 
@@ -163,7 +160,7 @@ void SetupRC()
 
 	// XXX I don't think this is necessary. Should set texture data to NULL
 	// Allocate a pixel buffer to initialize textures and PBOs
-	pixelDataSize = screenWidth * screenHeight * 3 * sizeof(unsigned int); // XXX This should be unsigned byte
+	GLuint pixelDataSize = screenWidth * screenHeight * 3 * sizeof(unsigned int); // XXX This should be unsigned byte
 	void* data = (void*)malloc(pixelDataSize);
 	memset(data, 0x00, pixelDataSize);
 
@@ -183,7 +180,7 @@ void SetupRC()
 	glGenBuffers(1, pixBuffObjs);
 	glBindBuffer(GL_PIXEL_PACK_BUFFER, pixBuffObjs[0]);
 	glBufferData(GL_PIXEL_PACK_BUFFER, pixelDataSize, pixelData, GL_DYNAMIC_COPY);
-	glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
+	glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
 
 	// Create geometry and a matrix for screen aligned drawing
 	gltGenerateOrtho2DMat(screenWidth, screenHeight, orthoMatrix, screenQuad);
@@ -273,7 +270,8 @@ void RenderScene(void)
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, textures[0]); // Marble
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	shaderManager.UseStockShader(GLT_SHADER_TEXTURE_MODULATE, transformPipeline.GetMVPMatrix());
+	shaderManager.UseStockShader(GLT_SHADER_TEXTURE_MODULATE, transformPipeline.GetMVPMatrix(),
+		vWhite, 0);
 
 	floorBatch.Draw();
 	DrawWorld(0.0f, xPos);
@@ -281,11 +279,52 @@ void RenderScene(void)
 
 	if (bUsePBOPath) {
 		// First bind the PBO as the pack buffer, then read the pixels directly to the PBO
+		glBindBuffer(GL_PIXEL_PACK_BUFFER, pixBuffObjs[0]);
+		glReadPixels(0, 0, screenWidth, screenHeight, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+		glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
+
+		// Next bind the PBO as the unpack buffer, 
+		// then pus the pixels strainght into the texture
+		glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pixBuffObjs[0]);
+
+		// Setup texture unit for new blur, this gets incremented every frame
+		glActiveTexture(GL_TEXTURE0 + GetBlurTarget0());
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, screenWidth, screenHeight, 0, GL_RGB,
+			GL_UNSIGNED_BYTE, NULL);
+		glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
 	}
+	else {
+		// Grab the screen pixels and copy into local memory
+		glReadPixels(0, 0, screenWidth, screenHeight, GL_RGB, GL_UNSIGNED_BYTE, pixelData);
+
+		// Push pixels from client memory into texture
+		// Setup texture unit for new blur, this gets imcremented every frame
+		glActiveTexture(GL_TEXTURE0 + GetBlurTarget0());
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, screenWidth, screenHeight, 0, GL_RGB, 
+			GL_UNSIGNED_BYTE, pixelData);
+	}
+
+	// Draw full screen quad with blur shader and all blur textures
+	projectionMatrix.PushMatrix();
+		projectionMatrix.LoadIdentity();
+		projectionMatrix.LoadMatrix(orthoMatrix);
+		modelViewMatrix.PushMatrix();
+		modelViewMatrix.LoadIdentity();
+			glDisable(GL_DEPTH_TEST);
+			SetupBlurProg();
+			screenQuad.Draw();
+			glEnable(GL_DEPTH_TEST);
+		modelViewMatrix.PopMatrix();
+	projectionMatrix.PopMatrix();
+
+	// Move to the next blur texture for the next frame
+	AdvanceBlurTaget();
 
 	// Perform the buffer swap to display back buffer
 	glutSwapBuffers();
 	glutPostRedisplay();
+
+	updateFrameCount();
 }
 
 /**
@@ -360,6 +399,14 @@ void DrawWorld(GLfloat yRot, GLfloat xPos)
  */
 int main(int argc, char* argv[])
 {
+    screenWidth  = 800;
+    screenHeight = 600;
+    bFullScreen = false; 
+    bAnimated   = true;
+    bUsePBOPath = false;
+    blurProg    = 0;
+    speedFactor = 1.0f;
+
 	gltSetWorkingDirectory(argv[0]);
 
 	glutInit(&argc, argv);

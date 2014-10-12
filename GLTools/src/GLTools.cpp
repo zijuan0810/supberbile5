@@ -1565,8 +1565,8 @@ bool gltCheckErrors(GLuint progName)
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 // Create a matrix that maps geometry to the screen. 1 unit in the x directionequals one pixel 
 // of width, same with the y direction.
-void gltGenerateOrtho2DMat(GLuint screenWidth, GLuint screenHeight, 
-						   M3DMatrix44f &orthoMatrix, GLBatch &screenQuad)
+void gltGenerateOrtho2DMat(GLuint screenWidth, GLuint screenHeight, M3DMatrix44f& orthoMatrix, 
+	GLBatch& screenQuad)
 {
 	float right = (float)screenWidth;
 	float left  = 0.0f;

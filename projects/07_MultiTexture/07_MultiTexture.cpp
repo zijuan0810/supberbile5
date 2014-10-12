@@ -164,10 +164,10 @@ void SpecialKeys(int key, int x, int y)
 void KeyPressFunc(unsigned char key, int x, int y)
 {
 	switch (key) {
-	case KEY_a:
+	case KEY_A:
 		glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 		break;
-	case KEY_b:
+	case KEY_B:
 		glDisable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 		break;
 	default:

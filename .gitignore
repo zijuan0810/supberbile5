@@ -39,7 +39,7 @@ SubmissionInfo
 *.opensdf
 *.vspscc
 *.vcproj.*.user
-*.vcxproj.user
+#*.vcxproj.user
 *.ib_pdb_index
 *.lastbuildstate
 
