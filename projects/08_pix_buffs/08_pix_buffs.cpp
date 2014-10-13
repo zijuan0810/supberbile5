@@ -4,26 +4,25 @@ static GLfloat vGreen[] = { 0.0f, 1.0f, 0.0f, 1.0f };
 static GLfloat vWhite[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 static GLfloat vLightPos[] = { 0.0f, 3.0f, 0.0f, 1.0f };
 
-GLsizei	 screenWidth;			// Desired window or desktop width
-GLsizei  screenHeight;			// Desired window or desktop height
+GLsizei	screenWidth;	// Desired window or desktop width
+GLsizei	screenHeight;	// Desired window or desktop height
 
-GLboolean bFullScreen;			// Request to run full screen
-GLboolean bAnimated;			// Request for continual updates
+GLboolean bFullScreen;	// Request to run full screen
+GLboolean bAnimated;		// Request for continual updates
 
-
-GLShaderManager		shaderManager;			// Shader Manager
+GLShaderManager	shaderManager;		// Shader Manager
 GLMatrixStack		modelViewMatrix;		// Modelview Matrix
 GLMatrixStack		projectionMatrix;		// Projection Matrix
 M3DMatrix44f        orthoMatrix;
 GLFrustum			viewFrustum;			// View Frustum
-GLGeometryTransform	transformPipeline;		// Geometry Transform Pipeline
+GLGeometryTransform	transformPipeline;	// Geometry Transform Pipeline
 GLFrame				cameraFrame;			// Camera frame
 
-GLTriangleBatch		torusBatch;
-GLBatch				floorBatch;
-GLBatch             screenQuad;
+GLTriangleBatch	torusBatch;
+GLBatch			floorBatch;
+GLBatch			screenQuadBatch;
 
-GLuint	textures[1];
+GLuint	marbleTextures[1];
 GLuint	blurTextures[6];
 GLuint	pixBuffObjs[1];
 GLuint	curBlurTarget;
@@ -94,7 +93,7 @@ void ChangeSize(int w, int h)
 	screenHeight = h;
 
 	// Reset screen aligned quad
-	gltGenerateOrtho2DMat(screenWidth, screenHeight, orthoMatrix, screenQuad);
+	gltGenerateOrtho2DMat(screenWidth, screenHeight, orthoMatrix, screenQuadBatch);
 
 	free(pixelData);
 	GLuint pixelDataSize = screenWidth * screenHeight * 3 * sizeof(unsigned int);
@@ -146,9 +145,9 @@ void SetupRC()
 	floorBatch.Vertex3f(-20.0f, -0.41f, -20.0f);
 	floorBatch.End();
 
-	glGenTextures(1, textures);
-	glBindTexture(GL_TEXTURE_2D, textures[0]);
-	gltLoadTextureTGA("marble.bmp", GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR, GL_REPEAT);
+	glGenTextures(1, marbleTextures);
+	glBindTexture(GL_TEXTURE_2D, marbleTextures[0]);
+	gltLoadTextureBMP("marble.bmp", GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR, GL_REPEAT);
 
 	// Create blur program
 	blurProg = gltLoadShaderPairWithAttributes("blur.vs.glsl", "blur.fs.glsl", 2,
@@ -183,7 +182,7 @@ void SetupRC()
 	glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
 
 	// Create geometry and a matrix for screen aligned drawing
-	gltGenerateOrtho2DMat(screenWidth, screenHeight, orthoMatrix, screenQuad);
+	gltGenerateOrtho2DMat(screenWidth, screenHeight, orthoMatrix, screenQuadBatch);
 
 	// Make sure all went well
 	gltCheckErrors();
@@ -268,7 +267,7 @@ void RenderScene(void)
 	modelViewMatrix.MultMatrix(mCamera);
 
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, textures[0]); // Marble
+	glBindTexture(GL_TEXTURE_2D, marbleTextures[0]); // Marble
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	shaderManager.UseStockShader(GLT_SHADER_TEXTURE_MODULATE, transformPipeline.GetMVPMatrix(),
 		vWhite, 0);
@@ -312,7 +311,7 @@ void RenderScene(void)
 		modelViewMatrix.LoadIdentity();
 			glDisable(GL_DEPTH_TEST);
 			SetupBlurProg();
-			screenQuad.Draw();
+			screenQuadBatch.Draw();
 			glEnable(GL_DEPTH_TEST);
 		modelViewMatrix.PopMatrix();
 	projectionMatrix.PopMatrix();
@@ -343,7 +342,7 @@ void OnExit()
 	}
 
 	// Now delete detached textures
-	glDeleteTextures(1, textures);
+	glDeleteTextures(1, marbleTextures);
 	glDeleteTextures(6, blurTextures);
 
 	// Delete FBO

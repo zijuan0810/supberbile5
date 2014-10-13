@@ -29,6 +29,13 @@
 #define KEY_Y 	121	
 #define KEY_Z 	122	
 
+// mipmap level
+#define GLT_MIPMAP_LEVEL_0 0
+#define GLT_MIPMAP_LEVEL_1 1
+#define GLT_MIPMAP_LEVEL_2 2
+#define GLT_MIPMAP_LEVEL_3 3
+#define GLT_MIPMAP_LEVEL_4 4
+#define GLT_MIPMAP_LEVEL_5 5
 
 
 // There is a static block allocated for loading shaders to 
@@ -266,6 +273,7 @@ void gltShowVersionInfo();
  * Load a TGA as a 2D texture. Completely initialize the state
  */
 bool gltLoadTextureTGA(const char* pszFileName, GLenum minFilter, GLenum magFilter, GLenum warpMode);
+bool gltLoadTextureBMP(const char* pszFileName, GLenum minFilter, GLenum magFilter, GLenum warpMode);
 
 bool gltLoadTextureTGARect(const char* pszFileName, GLenum minFilter, GLenum magFilter, GLenum warpMode);
 

@@ -1682,3 +1682,30 @@ bool gltLoadTextureTGARect(const char* pszFileName, GLenum minFilter, GLenum mag
 	return true;
 }
 
+bool gltLoadTextureBMP(const char* pszFileName, GLenum minFilter, GLenum magFilter, GLenum warpMode)
+{
+	int nWidth = 0, nHeight = 0;
+	GLbyte* pBits = gltReadBMPBits(pszFileName, &nWidth, &nHeight);
+	if (pBits == nullptr) {
+		return false;
+	}
+
+	// Set wrap modes
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, warpMode);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, warpMode);
+
+	// Do I need to generate mipmaps?
+	if (minFilter == GL_LINEAR_MIPMAP_LINEAR || minFilter == GL_LINEAR_MIPMAP_NEAREST ||
+		minFilter == GL_NEAREST_MIPMAP_LINEAR || minFilter == GL_NEAREST_MIPMAP_NEAREST) {
+		glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
+	}
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter);
+
+	// 从存储器缓冲区载入纹理数据
+	glTexImage2D(GL_TEXTURE_2D, GLT_MIPMAP_LEVEL_0, GL_RGB, nWidth, nHeight, 0, GL_BGR, GL_UNSIGNED_BYTE, pBits);
+
+	return true;
+}
+
