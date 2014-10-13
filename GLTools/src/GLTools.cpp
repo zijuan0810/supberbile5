@@ -1050,7 +1050,6 @@ struct BMPInfo {
 
 GLbyte* gltReadBMPBits(const char *szFileName, int *nWidth, int *nHeight)
 {
-	FILE*	pFile;
 	BMPInfo *pBitmapInfo = nullptr;
 	unsigned long lInfoSize = 0;
 	unsigned long lBitSize = 0;
@@ -1058,20 +1057,20 @@ GLbyte* gltReadBMPBits(const char *szFileName, int *nWidth, int *nHeight)
 	BMPHeader	bitmapHeader;
 
 	// Attempt to open the file
-	pFile = fopen(szFileName, "rb");
-	if(pFile == nullptr)
+	FILE* file = fopen(szFileName, "rb");
+	if (file == nullptr) {
 		return nullptr;
+	}
 
 	// File is Open. Read in bitmap header information
-	fread(&bitmapHeader, sizeof(BMPHeader), 1, pFile);
+	fread(&bitmapHeader, sizeof(BMPHeader), 1, file);
 
 	// Read in bitmap information structure
 	lInfoSize = bitmapHeader.offset - sizeof(BMPHeader);
-	pBitmapInfo = (BMPInfo *) malloc(sizeof(GLbyte)*lInfoSize);
-	if(fread(pBitmapInfo, lInfoSize, 1, pFile) != 1)
-	{
+	pBitmapInfo = (BMPInfo*)malloc(sizeof(GLbyte)*lInfoSize);
+	if(fread(pBitmapInfo, lInfoSize, 1, file) != 1) {
 		free(pBitmapInfo);
-		fclose(pFile);
+		fclose(file);
 		return false;
 	}
 
@@ -1081,30 +1080,27 @@ GLbyte* gltReadBMPBits(const char *szFileName, int *nWidth, int *nHeight)
 	lBitSize = pBitmapInfo->header.imageSize;
 
 	// If the size isn't specified, calculate it anyway	
-	if(pBitmapInfo->header.bits != 24)
-	{
+	if(pBitmapInfo->header.bits != 24) {
 		free(pBitmapInfo);
 		return false;
 	}
 
-	if(lBitSize == 0)
-		lBitSize = (*nWidth *
-		pBitmapInfo->header.bits + 7) / 8 *
-		abs(*nHeight);
+	if (lBitSize == 0) {
+		lBitSize = (*nWidth * pBitmapInfo->header.bits + 7) / 8 * abs(*nHeight);
+	}
 
 	// Allocate space for the actual bitmap
 	free(pBitmapInfo);
 	pBits = (GLbyte*)malloc(sizeof(GLbyte)*lBitSize);
 
 	// Read in the bitmap bits, check for corruption
-	if(fread(pBits, lBitSize, 1, pFile) != 1)
-	{
+	if(fread(pBits, lBitSize, 1, file) != 1) {
 		free(pBits);
 		pBits = nullptr;
 	}
 
 	// Close the bitmap file now that we have all the data we need
-	fclose(pFile);
+	fclose(file);
 
 	return pBits;
 }
@@ -1703,8 +1699,9 @@ bool gltLoadTextureBMP(const char* pszFileName, GLenum minFilter, GLenum magFilt
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter);
 
-	// 从存储器缓冲区载入纹理数据
-	glTexImage2D(GL_TEXTURE_2D, GLT_MIPMAP_LEVEL_0, GL_RGB, nWidth, nHeight, 0, GL_BGR, GL_UNSIGNED_BYTE, pBits);
+	// 将纹理从硬盘中载入内存
+	glTexImage2D(GL_TEXTURE_2D, GLT_MIPMAP_LEVEL_0, GL_RGB, nWidth, nHeight, 0, GL_BGR, 
+		GL_UNSIGNED_BYTE, pBits);
 
 	return true;
 }
