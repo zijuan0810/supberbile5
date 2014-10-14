@@ -101,8 +101,8 @@ public:
 	inline GLuint GetIndexCount(void) { return _nNumIndexes; }
 	inline GLuint GetVertexCount(void) { return _nNumVerts; }
 
-	// Draw - make sure you call glEnableClientState for these arrays
-	virtual void Draw(void) override;
+	// draw - make sure you call glEnableClientState for these arrays
+	virtual void draw(void) override;
 
 protected:
 	GLushort*	_arrIndexes;		 // Array of indexes

@@ -226,8 +226,8 @@ void GLTriangleBatch::End(void)
 }
 
 
-// Draw - make sure you call glEnableClientState for these arrays
-void GLTriangleBatch::Draw(void)
+// draw - make sure you call glEnableClientState for these arrays
+void GLTriangleBatch::draw(void)
 {
 #ifndef OPENGL_ES
 	glBindVertexArray(vertexArrayBufferObject);

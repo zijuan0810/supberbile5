@@ -84,24 +84,24 @@ void RenderScene(void)
 	glUniformMatrix4fv(locMVP, 1, GL_FALSE, viewFrustum.GetProjectionMatrix());
 	glUniform1i(locStarTexture, 0);
 
-	// Draw small stars
+	// draw small stars
 	glPointSize(4.0f);
-	smallStarBatch.Draw();
+	smallStarBatch.draw();
 
-	// Draw meduim sized stars
+	// draw meduim sized stars
 	glPointSize(8.0f);
-	mediumStarBatch.Draw();
+	mediumStarBatch.draw();
 
-	// Draw larget sized stars
+	// draw larget sized stars
 	glPointSize(12.0f);
-	largeStarBatch.Draw();
+	largeStarBatch.draw();
 
-	// Draw distant horizon
-	shaderManager.UseStockShader(GLT_SHADER_FLAT, viewFrustum.GetProjectionMatrix(), vWhite);
+	// draw distant horizon
+	shaderManager.useStockShader(GLT_SHADER_FLAT, viewFrustum.GetProjectionMatrix(), vWhite);
 	glLineWidth(3.5f);
-	mountainRangeBatch.Draw();
+	mountainRangeBatch.draw();
 
-	// Draw the "moon"
+	// draw the "moon"
 	glBindTexture(GL_TEXTURE_2D_ARRAY, moonTexture);
 	glUseProgram(moonShader);
 	glUniformMatrix4fv(locMoonMVP, 1, GL_FALSE, viewFrustum.GetProjectionMatrix());
@@ -112,7 +112,7 @@ void RenderScene(void)
 	fTime = fmod(fTime, 28.0f);
 	glUniform1f(locTimeStamp, fTime);
 
-	moonBatch.Draw();
+	moonBatch.draw();
 
 	// Perform the buffer swap to display back buffer
 	glutSwapBuffers();
@@ -145,7 +145,7 @@ void SetupRC()
 	// Blue background
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f );
 
-	shaderManager.InitializeStockShaders();
+	shaderManager.init();
 
 	// SMALL_STARS is the largest batch we are going to need
 	M3DVector3f vVerts[SMALL_STARS] = { 0.0f };
@@ -231,12 +231,12 @@ void SetupRC()
 	glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
 
 	// Shader operation
-	starFieldShader = gltLoadShaderPairWithAttributes("StarField.vs.glsl", "StarField.fs.glsl", 1, 
+	starFieldShader = gltLoadShaderWithFileEx("StarField.vs.glsl", "StarField.fs.glsl", 1, 
 		GLT_ATTRIBUTE_VERTEX, "vVertex");
 	locMVP = glGetUniformLocation(starFieldShader, "mvpMatrix");
 	locStarTexture = glGetUniformLocation(starFieldShader, "starImage");
 
-	moonShader = gltLoadShaderPairWithAttributes("MoonShader.vs.glsl", "MoonShader.fs.glsl", 2, 
+	moonShader = gltLoadShaderWithFileEx("MoonShader.vs.glsl", "MoonShader.fs.glsl", 2, 
 		GLT_ATTRIBUTE_VERTEX, "vVertex", 
 		GLT_ATTRIBUTE_TEXTURE0, "vTexCoords");
 	locMoonMVP = glGetUniformLocation(moonShader, "mvpMatrix");

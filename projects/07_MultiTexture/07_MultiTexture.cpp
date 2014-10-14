@@ -50,7 +50,7 @@ void ChangeSize(int w, int h)
 
 	viewFrustum.SetPerspective(35.0f, float(w) / float(h), 1.0f, 1000.0f);
 
-	projectionMatrix.LoadMatrix(viewFrustum.GetProjectionMatrix());
+	projectionMatrix.setMatrix(viewFrustum.GetProjectionMatrix());
 	transformPipeline.SetMatrixStacks(modelViewMatrix, projectionMatrix);
 }
 
@@ -110,7 +110,7 @@ void SetupRC()
 	gltMakeSphere(sphereBatch, 1.0f, 52, 26);
 	gltMakeCube(skyboxBatch, 20.0f);
 
-	reflectionShader = gltLoadShaderPairWithAttributes(
+	reflectionShader = gltLoadShaderWithFileEx(
 		"Reflection.vs.glsl", "Reflection.fs.glsl", 3,
 		GLT_ATTRIBUTE_VERTEX, "vVertex",
 		GLT_ATTRIBUTE_NORMAL, "vNormal",
@@ -123,7 +123,7 @@ void SetupRC()
 	locCubeMap = glGetUniformLocation(reflectionShader, "cubeMap");
 	locTarnishMap = glGetUniformLocation(reflectionShader, "tarnishMap");
 
-	skyBoxShader = gltLoadShaderPairWithAttributes(
+	skyBoxShader = gltLoadShaderWithFileEx(
 		"SkyBox.vs.glsl", "SkyBox.fs.glsl", 2,
 		GLT_ATTRIBUTE_VERTEX, "vVertex",
 		GLT_ATTRIBUTE_NORMAL, "vNormal");
@@ -198,8 +198,8 @@ void RenderScene(void)
 	viewFrame.GetCameraMatrix(mCameraRotOnly, true);
 	m3dInvertMatrix44(mInverseCamera, mCameraRotOnly);
 
-	modelViewMatrix.PushMatrix();
-		// Draw the sphere
+	modelViewMatrix.push();
+		// draw the sphere
 		modelViewMatrix.MultMatrix(mCamera);
 		glUseProgram(reflectionShader);
 		glUniformMatrix4fv(locMVPReflect, 1, GL_FALSE, transformPipeline.GetMVPMatrix());
@@ -210,16 +210,16 @@ void RenderScene(void)
 		glUniform1i(locTarnishMap, 1);
 
 		glEnable(GL_CULL_FACE);
-		sphereBatch.Draw();
+		sphereBatch.draw();
 		glDisable(GL_CULL_FACE);
-	modelViewMatrix.PopMatrix();
+	modelViewMatrix.pop();
 
-	modelViewMatrix.PushMatrix();
+	modelViewMatrix.push();
 		modelViewMatrix.MultMatrix(mCameraRotOnly);
 		glUseProgram(skyBoxShader);
 		glUniformMatrix4fv(locMVPSkyBox, 1, GL_FALSE, transformPipeline.GetMVPMatrix());
-		skyboxBatch.Draw();
-	modelViewMatrix.PopMatrix();
+		skyboxBatch.draw();
+	modelViewMatrix.pop();
 
 	// Perform the buffer swap to display back buffer
 	glutSwapBuffers();

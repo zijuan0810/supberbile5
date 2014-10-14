@@ -38,7 +38,7 @@ void SetupRC()
 	// Blue background
 	glClearColor(0.8f, 0.8f, 0.8f, 1.0f );
 
-	shaderManager.InitializeStockShaders();
+	shaderManager.init();
 
 	glEnable(GL_DEPTH_TEST);
 
@@ -97,8 +97,8 @@ void RenderScene(void)
 
 	// Pass this completed matrix to the shader, and render the torus
 	GLfloat vRed[] = { 1.0f, 0.0f, 0.0f, 1.0f };
-	shaderManager.UseStockShader(GLT_SHADER_FLAT, mModelViewProjection, vRed);
-	torusBatch.Draw();
+	shaderManager.useStockShader(GLT_SHADER_FLAT, mModelViewProjection, vRed);
+	torusBatch.draw();
 
 	// Perform the buffer swap to display back buffer
 	glutSwapBuffers();

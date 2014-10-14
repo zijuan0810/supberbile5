@@ -173,7 +173,7 @@ void ChangeSize(int w, int h)
 {
 	glViewport(0, 0, w, h);
 	viewFrustum.SetPerspective(35.0f, (float)w/(float)h, 1.0f, 500.f);
-	projectionMatrix.LoadMatrix(viewFrustum.GetProjectionMatrix());
+	projectionMatrix.setMatrix(viewFrustum.GetProjectionMatrix());
 	transformPipeline.SetMatrixStacks(modelViewMarix, projectionMatrix);
 }
 
@@ -186,7 +186,7 @@ void SetupRC()
 	// Blue background
 	glClearColor(0.0f, 0.0f, 1.0f, 1.0f );
 
-	shaderManager.InitializeStockShaders();
+	shaderManager.init();
 
 	glEnable(GL_DEPTH_TEST);
 
@@ -258,7 +258,7 @@ void RenderScene(void)
 	// Clear the window with current clearing color
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-	modelViewMarix.PushMatrix();
+	modelViewMarix.push();
 		M3DMatrix44f mCamera;
 		cameraFrame.GetCameraMatrix(mCamera);
 		modelViewMarix.MultMatrix(mCamera);
@@ -268,14 +268,14 @@ void RenderScene(void)
 		modelViewMarix.MultMatrix(mObjectFrame);
 
 		glBindTexture(GL_TEXTURE_2D, texturedId);
-		shaderManager.UseStockShader(GLT_SHADER_TEXTURE_POINT_LIGHT_DIFF,
+		shaderManager.useStockShader(GLT_SHADER_TEXTURE_POINT_LIGHT_DIFF,
 									transformPipeline.GetModelViewMatrix(),
 									transformPipeline.GetProjectionMatrix(),
 									vLightPos, vWhite, 0);
-		//pyramidBatch.Draw();
-		//torusBatch.Draw();
-		cubeBatch.Draw();
-	modelViewMarix.PopMatrix();
+		//pyramidBatch.draw();
+		//torusBatch.draw();
+		cubeBatch.draw();
+	modelViewMarix.pop();
 
 	if ( gltIsExtSupported("GL_EXT_texture_filter_anisotropic") ) {
 		std::cout << "suppter";

@@ -308,7 +308,7 @@ inline void m3dCopyMatrix44(M3DMatrix44f dst, const M3DMatrix44f src)
 inline void m3dCopyMatrix44(M3DMatrix44d dst, const M3DMatrix44d src)
 { memcpy(dst, src, sizeof(M3DMatrix44d)); }
 
-// LoadIdentity
+// identity
 // Implemented in Math3d.cpp
 void m3dLoadIdentity33(M3DMatrix33f m);
 void m3dLoadIdentity33(M3DMatrix33d m);

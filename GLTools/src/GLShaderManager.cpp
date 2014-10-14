@@ -276,7 +276,7 @@ GLShaderManager* GLShaderManager::Instance()
 {
 	if ( GLShaderManager::_this == nullptr ) {
 		GLShaderManager::_this = new GLShaderManager();
-		GLShaderManager::_this->InitializeStockShaders();
+		GLShaderManager::_this->init();
 	}
 
 	return GLShaderManager::_this;
@@ -286,59 +286,59 @@ GLShaderManager::GLShaderManager(void)
 {
 	// Set stock shader handles to 0... uninitialized
 	for(unsigned int i = 0; i < GLT_SHADER_LAST; i++) {
-		uiStockShaders[i] = 0;
+		_shaderStock[i] = 0;
 	}
 }
 
 GLShaderManager::~GLShaderManager(void)
 {
 	// Stock shaders is the general (are you initialized test)
-	if(uiStockShaders[0] != 0) {
-		unsigned int i;
-		for(i = 0; i < GLT_SHADER_LAST; i++)
-			glDeleteProgram(uiStockShaders[i]);
+	if(_shaderStock[0] != 0) {
+		for (unsigned int i = 0; i < GLT_SHADER_LAST; i++) {
+			glDeleteProgram(_shaderStock[i]);
+		}
 
 		// Free shader table too
-		for (i = 0; i < shaderTable.size(); i++) {
-			glDeleteProgram(shaderTable[i].uiShaderID);
+		for ( const auto& x : _shaderEntryVec  ) {
+			glDeleteProgram(x.shaderId);
 		}
 	}
 }
 
 // Initialize and load the stock shaders
-bool GLShaderManager::InitializeStockShaders(void)
+bool GLShaderManager::init(void)
 {
 	// Be warned, going over 128 shaders may cause a hickup for a reallocation.
-	shaderTable.reserve(128);
+	_shaderEntryVec.reserve(128);
 
-	uiStockShaders[GLT_SHADER_IDENTITY]	= gltLoadShaderPairSrcWithAttributes(szIdentityShaderVP, 
+	_shaderStock[GLT_SHADER_IDENTITY]	= gltLoadShaderPairSrcWithAttributes(szIdentityShaderVP, 
 		szIdentityShaderFP, 1, GLT_ATTRIBUTE_VERTEX, "vVertex");
 
-	uiStockShaders[GLT_SHADER_FLAT]	= gltLoadShaderPairSrcWithAttributes(szFlatShaderVP, 
+	_shaderStock[GLT_SHADER_FLAT]	= gltLoadShaderPairSrcWithAttributes(szFlatShaderVP, 
 		szFlatShaderFP, 1, GLT_ATTRIBUTE_VERTEX, "vVertex");
 
-	uiStockShaders[GLT_SHADER_SHADED] = gltLoadShaderPairSrcWithAttributes(szShadedVP, 
+	_shaderStock[GLT_SHADER_SHADED] = gltLoadShaderPairSrcWithAttributes(szShadedVP, 
 		szShadedFP, 2, GLT_ATTRIBUTE_VERTEX, "vVertex", GLT_ATTRIBUTE_COLOR, "vColor");
 
-	uiStockShaders[GLT_SHADER_DEFAULT_LIGHT] = gltLoadShaderPairSrcWithAttributes(szDefaultLightVP, 
+	_shaderStock[GLT_SHADER_DEFAULT_LIGHT] = gltLoadShaderPairSrcWithAttributes(szDefaultLightVP, 
 		szDefaultLightFP, 2, GLT_ATTRIBUTE_VERTEX, "vVertex", GLT_ATTRIBUTE_NORMAL, "vNormal");
 
-	uiStockShaders[GLT_SHADER_POINT_LIGHT_DIFF] = gltLoadShaderPairSrcWithAttributes(szPointLightDiffVP, 
+	_shaderStock[GLT_SHADER_POINT_LIGHT_DIFF] = gltLoadShaderPairSrcWithAttributes(szPointLightDiffVP, 
 		szPointLightDiffFP, 2, GLT_ATTRIBUTE_VERTEX, "vVertex", GLT_ATTRIBUTE_NORMAL, "vNormal");
 
-	uiStockShaders[GLT_SHADER_TEXTURE_REPLACE]  = gltLoadShaderPairSrcWithAttributes(szTextureReplaceVP, 
+	_shaderStock[GLT_SHADER_TEXTURE_REPLACE]  = gltLoadShaderPairSrcWithAttributes(szTextureReplaceVP, 
 		szTextureReplaceFP, 2, GLT_ATTRIBUTE_VERTEX, "vVertex", GLT_ATTRIBUTE_TEXTURE0, "vTexCoord0");
 
-	uiStockShaders[GLT_SHADER_TEXTURE_MODULATE] = gltLoadShaderPairSrcWithAttributes(szTextureModulateVP, 
+	_shaderStock[GLT_SHADER_TEXTURE_MODULATE] = gltLoadShaderPairSrcWithAttributes(szTextureModulateVP, 
 		szTextureModulateFP, 2, GLT_ATTRIBUTE_VERTEX, "vVertex", GLT_ATTRIBUTE_TEXTURE0, "vTexCoord0");
 
-	uiStockShaders[GLT_SHADER_TEXTURE_POINT_LIGHT_DIFF] = gltLoadShaderPairSrcWithAttributes(szTexturePointLightDiffVP, 
+	_shaderStock[GLT_SHADER_TEXTURE_POINT_LIGHT_DIFF] = gltLoadShaderPairSrcWithAttributes(szTexturePointLightDiffVP, 
 		szTexturePointLightDiffFP, 3, GLT_ATTRIBUTE_VERTEX, "vVertex", GLT_ATTRIBUTE_NORMAL, "vNormal", GLT_ATTRIBUTE_TEXTURE0, "vTexCoord0");
 
-	uiStockShaders[GLT_SHADER_TEXTURE_RECT_REPLACE] = gltLoadShaderPairSrcWithAttributes(szTextureRectReplaceVP, 
+	_shaderStock[GLT_SHADER_TEXTURE_RECT_REPLACE] = gltLoadShaderPairSrcWithAttributes(szTextureRectReplaceVP, 
 		szTextureRectReplaceFP, 2, GLT_ATTRIBUTE_VERTEX, "vVertex", GLT_ATTRIBUTE_TEXTURE0, "vTexCoord0");
 
-	if(uiStockShaders[0] != 0) {
+	if(_shaderStock[0] != 0) {
 		return true;
 	}
 
@@ -346,7 +346,7 @@ bool GLShaderManager::InitializeStockShaders(void)
 }
 
 // Use a specific stock shader, and set the appropriate uniforms
-GLint GLShaderManager::UseStockShader(GLT_STOCK_SHADER nShaderID, ...)
+GLint GLShaderManager::useStockShader(GLT_STOCK_SHADER nShaderID, ...)
 {
 	// Check for out of bounds
 	if(nShaderID >= GLT_SHADER_LAST) {
@@ -358,7 +358,7 @@ GLint GLShaderManager::UseStockShader(GLT_STOCK_SHADER nShaderID, ...)
 	va_start(uniformList, nShaderID);
 
 	// Bind to the correct shader
-	glUseProgram(uiStockShaders[nShaderID]);
+	glUseProgram(_shaderStock[nShaderID]);
 
 	// Set up the uniforms
 	int	iInteger;
@@ -373,103 +373,103 @@ GLint GLShaderManager::UseStockShader(GLT_STOCK_SHADER nShaderID, ...)
 	{
 	case GLT_SHADER_FLAT:			
 		// Just the modelview projection matrix and the color
-		iTransform = glGetUniformLocation(uiStockShaders[nShaderID], "mvpMatrix");
+		iTransform = glGetUniformLocation(_shaderStock[nShaderID], "mvpMatrix");
 		mvpMatrix = va_arg(uniformList, M3DMatrix44f*);
 		glUniformMatrix4fv(iTransform, 1, GL_FALSE, *mvpMatrix);
 
-		iColor = glGetUniformLocation(uiStockShaders[nShaderID], "vColor");
+		iColor = glGetUniformLocation(_shaderStock[nShaderID], "vColor");
 		vColor = va_arg(uniformList, M3DVector4f*);
 		glUniform4fv(iColor, 1, *vColor);
 		break;
 
 	case GLT_SHADER_TEXTURE_RECT_REPLACE:
 	case GLT_SHADER_TEXTURE_REPLACE:	// Just the texture place
-		iTransform = glGetUniformLocation(uiStockShaders[nShaderID], "mvpMatrix");
+		iTransform = glGetUniformLocation(_shaderStock[nShaderID], "mvpMatrix");
 		mvpMatrix = va_arg(uniformList, M3DMatrix44f*);
 		glUniformMatrix4fv(iTransform, 1, GL_FALSE, *mvpMatrix);
 
-		iTextureUnit = glGetUniformLocation(uiStockShaders[nShaderID], "textureUnit0");
+		iTextureUnit = glGetUniformLocation(_shaderStock[nShaderID], "textureUnit0");
 		iInteger = va_arg(uniformList, int);
 		glUniform1i(iTextureUnit, iInteger);
 		break;
 
 	case GLT_SHADER_TEXTURE_MODULATE: // Multiply the texture by the geometry color
-		iTransform = glGetUniformLocation(uiStockShaders[nShaderID], "mvpMatrix");
+		iTransform = glGetUniformLocation(_shaderStock[nShaderID], "mvpMatrix");
 		mvpMatrix = va_arg(uniformList, M3DMatrix44f*);
 		glUniformMatrix4fv(iTransform, 1, GL_FALSE, *mvpMatrix);
 
-		iColor = glGetUniformLocation(uiStockShaders[nShaderID], "vColor");
+		iColor = glGetUniformLocation(_shaderStock[nShaderID], "vColor");
 		vColor = va_arg(uniformList, M3DVector4f*);
 		glUniform4fv(iColor, 1, *vColor);			
 
-		iTextureUnit = glGetUniformLocation(uiStockShaders[nShaderID], "textureUnit0");
+		iTextureUnit = glGetUniformLocation(_shaderStock[nShaderID], "textureUnit0");
 		iInteger = va_arg(uniformList, int);
 		glUniform1i(iTextureUnit, iInteger);
 		break;
 
 	case GLT_SHADER_DEFAULT_LIGHT:
-		iModelMatrix = glGetUniformLocation(uiStockShaders[nShaderID], "mvMatrix");
+		iModelMatrix = glGetUniformLocation(_shaderStock[nShaderID], "mvMatrix");
 		mvMatrix = va_arg(uniformList, M3DMatrix44f*);
 		glUniformMatrix4fv(iModelMatrix, 1, GL_FALSE, *mvMatrix);
 
-		iProjMatrix = glGetUniformLocation(uiStockShaders[nShaderID], "pMatrix");
+		iProjMatrix = glGetUniformLocation(_shaderStock[nShaderID], "pMatrix");
 		pMatrix = va_arg(uniformList, M3DMatrix44f*);
 		glUniformMatrix4fv(iProjMatrix, 1, GL_FALSE, *pMatrix);
 
-		iColor = glGetUniformLocation(uiStockShaders[nShaderID], "vColor");
+		iColor = glGetUniformLocation(_shaderStock[nShaderID], "vColor");
 		vColor = va_arg(uniformList, M3DVector4f*);
 		glUniform4fv(iColor, 1, *vColor);
 		break;
 
 	case GLT_SHADER_POINT_LIGHT_DIFF:
-		iModelMatrix = glGetUniformLocation(uiStockShaders[nShaderID], "mvMatrix");
+		iModelMatrix = glGetUniformLocation(_shaderStock[nShaderID], "mvMatrix");
 		mvMatrix = va_arg(uniformList, M3DMatrix44f*);
 		glUniformMatrix4fv(iModelMatrix, 1, GL_FALSE, *mvMatrix);
 
-		iProjMatrix = glGetUniformLocation(uiStockShaders[nShaderID], "pMatrix");
+		iProjMatrix = glGetUniformLocation(_shaderStock[nShaderID], "pMatrix");
 		pMatrix = va_arg(uniformList, M3DMatrix44f*);
 		glUniformMatrix4fv(iProjMatrix, 1, GL_FALSE, *pMatrix);
 
-		iLight = glGetUniformLocation(uiStockShaders[nShaderID], "vLightPos");
+		iLight = glGetUniformLocation(_shaderStock[nShaderID], "vLightPos");
 		vLightPos = va_arg(uniformList, M3DVector3f*);
 		glUniform3fv(iLight, 1, *vLightPos);
 
-		iColor = glGetUniformLocation(uiStockShaders[nShaderID], "vColor");
+		iColor = glGetUniformLocation(_shaderStock[nShaderID], "vColor");
 		vColor = va_arg(uniformList, M3DVector4f*);
 		glUniform4fv(iColor, 1, *vColor);
 		break;			
 
 	case GLT_SHADER_TEXTURE_POINT_LIGHT_DIFF:
-		iModelMatrix = glGetUniformLocation(uiStockShaders[nShaderID], "mvMatrix");
+		iModelMatrix = glGetUniformLocation(_shaderStock[nShaderID], "mvMatrix");
 		mvMatrix = va_arg(uniformList, M3DMatrix44f*);
 		glUniformMatrix4fv(iModelMatrix, 1, GL_FALSE, *mvMatrix);
 
-		iProjMatrix = glGetUniformLocation(uiStockShaders[nShaderID], "pMatrix");
+		iProjMatrix = glGetUniformLocation(_shaderStock[nShaderID], "pMatrix");
 		pMatrix = va_arg(uniformList, M3DMatrix44f*);
 		glUniformMatrix4fv(iProjMatrix, 1, GL_FALSE, *pMatrix);
 
-		iLight = glGetUniformLocation(uiStockShaders[nShaderID], "vLightPos");
+		iLight = glGetUniformLocation(_shaderStock[nShaderID], "vLightPos");
 		vLightPos = va_arg(uniformList, M3DVector3f*);
 		glUniform3fv(iLight, 1, *vLightPos);
 
-		iColor = glGetUniformLocation(uiStockShaders[nShaderID], "vColor");
+		iColor = glGetUniformLocation(_shaderStock[nShaderID], "vColor");
 		vColor = va_arg(uniformList, M3DVector4f*);
 		glUniform4fv(iColor, 1, *vColor);
 
-		iTextureUnit = glGetUniformLocation(uiStockShaders[nShaderID], "textureUnit0");
+		iTextureUnit = glGetUniformLocation(_shaderStock[nShaderID], "textureUnit0");
 		iInteger = va_arg(uniformList, int);
 		glUniform1i(iTextureUnit, iInteger);
 		break;
 
 
 	case GLT_SHADER_SHADED:		// Just the modelview projection matrix. Color is an attribute
-		iTransform = glGetUniformLocation(uiStockShaders[nShaderID], "mvpMatrix");
+		iTransform = glGetUniformLocation(_shaderStock[nShaderID], "mvpMatrix");
 		pMatrix = va_arg(uniformList, M3DMatrix44f*);
 		glUniformMatrix4fv(iTransform, 1, GL_FALSE, *pMatrix);
 		break;
 
 	case GLT_SHADER_IDENTITY:	// Just the Color
-		iColor = glGetUniformLocation(uiStockShaders[nShaderID], "vColor");
+		iColor = glGetUniformLocation(_shaderStock[nShaderID], "vColor");
 		vColor = va_arg(uniformList, M3DVector4f*);
 		glUniform4fv(iColor, 1, *vColor);
 	default:
@@ -477,7 +477,7 @@ GLint GLShaderManager::UseStockShader(GLT_STOCK_SHADER nShaderID, ...)
 	}
 	va_end(uniformList);
 
-	return uiStockShaders[nShaderID];
+	return _shaderStock[nShaderID];
 }
 
 // Lookup a stock shader
@@ -487,18 +487,18 @@ GLuint GLShaderManager::GetStockShader(GLT_STOCK_SHADER nShaderID)
 		return 0;
 	}
 
-	return uiStockShaders[nShaderID];
+	return _shaderStock[nShaderID];
 }
 
 // Lookup a previously loaded shader. If szFragProg == NULL, it is assumed to be
 // the same name as szVertexProg
-GLuint GLShaderManager::LookupShader(const char *szVertexProg, const char *szFragProg)
+GLuint GLShaderManager::lookupShader(const char *szVertexProg, const char *szFragProg)
 {
 	// Linear Search... this isn't supposed to be relied on all the time
-	for (unsigned int i = 0; i < shaderTable.size(); i++) {
-		if ((strncmp(szVertexProg, shaderTable[i].szVertexShaderName, MAX_SHADER_NAME_LENGTH) == 0) &&
-			(strncmp(szFragProg, shaderTable[i].szFragShaderName, MAX_SHADER_NAME_LENGTH) == 0))
-			return shaderTable[i].uiShaderID;
+	for (unsigned int i = 0; i < _shaderEntryVec.size(); i++) {
+		if ((strncmp(szVertexProg, _shaderEntryVec[i].vertexShader, MAX_SHADER_NAME_LENGTH) == 0) &&
+			(strncmp(szFragProg, _shaderEntryVec[i].fragShader, MAX_SHADER_NAME_LENGTH) == 0))
+			return _shaderEntryVec[i].shaderId;
 	}
 
 	// Failed
@@ -507,29 +507,29 @@ GLuint GLShaderManager::LookupShader(const char *szVertexProg, const char *szFra
 
 // Load a shader pair from file. The shader pair root is added to the shader
 // lookup table and can be found again if necessary with LookupShader.
-GLuint GLShaderManager::LoadShaderPair(const char *szVertexProgFileName, const char *szFragProgFileName)
+GLuint GLShaderManager::loadWithFile(const char* szVertexFileName, const char* szFragFileName)
 {
 	ShaderLookupEntry shaderEntry;
 
 	// Make sure it's not already loaded
-	GLuint uiReturn = LookupShader(szVertexProgFileName, szFragProgFileName);
+	GLuint uiReturn = lookupShader(szVertexFileName, szFragFileName);
 	if(uiReturn != 0) {
 		return uiReturn;
 	}
 
 	// Load shader and test for fail
-	shaderEntry.uiShaderID = gltLoadShaderPair(szVertexProgFileName, szFragProgFileName);
-	if(shaderEntry.uiShaderID == 0) {
+	shaderEntry.shaderId = gltLoadShaderPair(szVertexFileName, szFragFileName);
+	if(shaderEntry.shaderId == 0) {
 		return 0;
 	}
 
 	// Add to the table
-	strncpy(shaderEntry.szVertexShaderName, szVertexProgFileName, MAX_SHADER_NAME_LENGTH);
-	strncpy(shaderEntry.szFragShaderName, szFragProgFileName, MAX_SHADER_NAME_LENGTH);
+	strncpy(shaderEntry.vertexShader, szVertexFileName, MAX_SHADER_NAME_LENGTH);
+	strncpy(shaderEntry.fragShader, szFragFileName, MAX_SHADER_NAME_LENGTH);
 
-	shaderTable.push_back(shaderEntry);	
+	_shaderEntryVec.push_back(shaderEntry);	
 
-	return shaderEntry.uiShaderID;
+	return shaderEntry.shaderId;
 }
 
 // Load shaders from source text. If the szName is NULL, just make it and return the handle
@@ -538,28 +538,28 @@ GLuint GLShaderManager::LoadShaderPairSrc(const char *szName, const char *szVert
 {
 	// Just make it and return
 	if(szName == nullptr) {
-		return gltLoadShaderPairSrc(szVertexSrc, szFragSrc);
+		return gltLoadShaderPairString(szVertexSrc, szFragSrc);
 	}
 
 	// It has a name, check for duplicate
-	GLuint uiShader = LookupShader(szName, szName);
+	GLuint uiShader = lookupShader(szName, szName);
 	if(uiShader != 0) {
 		return uiShader;
 	}
 
 	// Ok, make it and add to table
 	ShaderLookupEntry shaderEntry;
-	shaderEntry.uiShaderID = gltLoadShaderPairSrc(szVertexSrc, szFragSrc);
-	if(shaderEntry.uiShaderID == 0) {
+	shaderEntry.shaderId = gltLoadShaderPairString(szVertexSrc, szFragSrc);
+	if(shaderEntry.shaderId == 0) {
 		return 0;	// Game over, won't compile
 	}
 
 	// Add it...
-	strncpy(shaderEntry.szVertexShaderName, szName, MAX_SHADER_NAME_LENGTH);
-	strncpy(shaderEntry.szFragShaderName, szName, MAX_SHADER_NAME_LENGTH);
-	shaderTable.push_back(shaderEntry);	
+	strncpy(shaderEntry.vertexShader, szName, MAX_SHADER_NAME_LENGTH);
+	strncpy(shaderEntry.fragShader, szName, MAX_SHADER_NAME_LENGTH);
+	_shaderEntryVec.push_back(shaderEntry);	
 
-	return shaderEntry.uiShaderID;		
+	return shaderEntry.shaderId;		
 }
 
 // Load the shader file, with the supplied named attributes
@@ -567,7 +567,7 @@ GLuint GLShaderManager::LoadShaderPairWithAttributes(const char *szVertexProgFil
 	const char *szFragmentProgFileName, ...)
 {
 	// Check for duplicate
-	GLuint uiShader = this->LookupShader(szVertexProgFileName, szFragmentProgFileName);
+	GLuint uiShader = this->lookupShader(szVertexProgFileName, szFragmentProgFileName);
 	if(uiShader != 0) {
 		return uiShader;
 	}
@@ -582,13 +582,13 @@ GLuint GLShaderManager::LoadShaderPairWithAttributes(const char *szVertexProgFil
 	GLuint hFragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 
 	// Load them. If fail clean up and return null
-	if(gltLoadShaderFile(szVertexProgFileName, hVertexShader) == false) {
+	if(gltLoadShaderWithFile(szVertexProgFileName, hVertexShader) == false) {
 		glDeleteShader(hVertexShader);
 		glDeleteShader(hFragmentShader);
 		return 0;
 	}
 
-	if(gltLoadShaderFile(szFragmentProgFileName, hFragmentShader) == false) {
+	if(gltLoadShaderWithFile(szFragmentProgFileName, hFragmentShader) == false) {
 		glDeleteShader(hVertexShader);
 		glDeleteShader(hFragmentShader);
 		return 0;
@@ -614,9 +614,9 @@ GLuint GLShaderManager::LoadShaderPairWithAttributes(const char *szVertexProgFil
 	}
 
 	// Link them - assuming it works...
-	shaderEntry.uiShaderID = glCreateProgram();
-	glAttachShader(shaderEntry.uiShaderID, hVertexShader);
-	glAttachShader(shaderEntry.uiShaderID, hFragmentShader);
+	shaderEntry.shaderId = glCreateProgram();
+	glAttachShader(shaderEntry.shaderId, hVertexShader);
+	glAttachShader(shaderEntry.shaderId, hFragmentShader);
 
 	// List of attributes
 	va_list attributeList;
@@ -627,30 +627,30 @@ GLuint GLShaderManager::LoadShaderPairWithAttributes(const char *szVertexProgFil
 	for(int i = 0; i < iArgCount; i++) {
 		int index = va_arg(attributeList, int);
 		szNextArg = va_arg(attributeList, char*);
-		glBindAttribLocation(shaderEntry.uiShaderID, index, szNextArg);
+		glBindAttribLocation(shaderEntry.shaderId, index, szNextArg);
 	}
 
 	va_end(attributeList);
 
-	glLinkProgram(shaderEntry.uiShaderID);
+	glLinkProgram(shaderEntry.shaderId);
 
 	// These are no longer needed
 	glDeleteShader(hVertexShader);
 	glDeleteShader(hFragmentShader);  
 
 	// Make sure link worked too
-	glGetProgramiv(shaderEntry.uiShaderID, GL_LINK_STATUS, &testVal);
+	glGetProgramiv(shaderEntry.shaderId, GL_LINK_STATUS, &testVal);
 	if(testVal == GL_FALSE) {
-		glDeleteProgram(shaderEntry.uiShaderID);
+		glDeleteProgram(shaderEntry.shaderId);
 		return 0;
 	}
 
 	// Add it...
-	strncpy(shaderEntry.szVertexShaderName, szVertexProgFileName, MAX_SHADER_NAME_LENGTH);
-	strncpy(shaderEntry.szFragShaderName, szFragmentProgFileName, MAX_SHADER_NAME_LENGTH);
-	shaderTable.push_back(shaderEntry);	
+	strncpy(shaderEntry.vertexShader, szVertexProgFileName, MAX_SHADER_NAME_LENGTH);
+	strncpy(shaderEntry.fragShader, szFragmentProgFileName, MAX_SHADER_NAME_LENGTH);
+	_shaderEntryVec.push_back(shaderEntry);	
 
-	return shaderEntry.uiShaderID;		
+	return shaderEntry.shaderId;		
 }
 
 // Load the shader from source, with the supplied named attributes
@@ -658,7 +658,7 @@ GLuint GLShaderManager::LoadShaderPairSrcWithAttributes(const char *szName, cons
 	const char *szFragmentProg, ...)
 {
 	// Check for duplicate
-	GLuint uiShader = this->LookupShader(szName, szName);
+	GLuint uiShader = this->lookupShader(szName, szName);
 	if(uiShader != 0) {
 		return uiShader;
 	}
@@ -675,8 +675,8 @@ GLuint GLShaderManager::LoadShaderPairSrcWithAttributes(const char *szName, cons
 	hFragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 
 	// Load them. 
-	gltLoadShaderSrc(szVertexProg, hVertexShader);
-	gltLoadShaderSrc(szFragmentProg, hFragmentShader);
+	gltLoadShaderWithString(szVertexProg, hVertexShader);
+	gltLoadShaderWithString(szFragmentProg, hFragmentShader);
 
 	// Compile them
 	glCompileShader(hVertexShader);
@@ -699,9 +699,9 @@ GLuint GLShaderManager::LoadShaderPairSrcWithAttributes(const char *szName, cons
 	}
 
 	// Link them - assuming it works...
-	shaderEntry.uiShaderID = glCreateProgram();
-	glAttachShader(shaderEntry.uiShaderID, hVertexShader);
-	glAttachShader(shaderEntry.uiShaderID, hFragmentShader);
+	shaderEntry.shaderId = glCreateProgram();
+	glAttachShader(shaderEntry.shaderId, hVertexShader);
+	glAttachShader(shaderEntry.shaderId, hFragmentShader);
 
 	// List of attributes
 	va_list attributeList;
@@ -712,28 +712,28 @@ GLuint GLShaderManager::LoadShaderPairSrcWithAttributes(const char *szName, cons
 	for(int i = 0; i < iArgCount; i++) {
 		int index = va_arg(attributeList, int);
 		szNextArg = va_arg(attributeList, char*);
-		glBindAttribLocation(shaderEntry.uiShaderID, index, szNextArg);
+		glBindAttribLocation(shaderEntry.shaderId, index, szNextArg);
 	}
 	va_end(attributeList);
 
 
-	glLinkProgram(shaderEntry.uiShaderID);
+	glLinkProgram(shaderEntry.shaderId);
 
 	// These are no longer needed
 	glDeleteShader(hVertexShader);
 	glDeleteShader(hFragmentShader);  
 
 	// Make sure link worked too
-	glGetProgramiv(shaderEntry.uiShaderID, GL_LINK_STATUS, &testVal);
+	glGetProgramiv(shaderEntry.shaderId, GL_LINK_STATUS, &testVal);
 	if(testVal == GL_FALSE) {
-		glDeleteProgram(shaderEntry.uiShaderID);
+		glDeleteProgram(shaderEntry.shaderId);
 		return 0;
 	}
 
 	// Add it...
-	strncpy(shaderEntry.szVertexShaderName, szName, MAX_SHADER_NAME_LENGTH);
-	strncpy(shaderEntry.szFragShaderName, szName, MAX_SHADER_NAME_LENGTH);
-	shaderTable.push_back(shaderEntry);	
+	strncpy(shaderEntry.vertexShader, szName, MAX_SHADER_NAME_LENGTH);
+	strncpy(shaderEntry.fragShader, szName, MAX_SHADER_NAME_LENGTH);
+	_shaderEntryVec.push_back(shaderEntry);	
 
-	return shaderEntry.uiShaderID;		
+	return shaderEntry.shaderId;		
 }

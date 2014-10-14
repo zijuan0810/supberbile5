@@ -43,7 +43,7 @@ void ChangeSize(int w, int h)
 
 	viewFrustum.SetPerspective(35.0f, float(w)/float(h), 1.0f, 100.0f);
 
-	projectionMatrix.LoadMatrix(viewFrustum.GetProjectionMatrix());
+	projectionMatrix.setMatrix(viewFrustum.GetProjectionMatrix());
 	transformPieline.SetMatrixStacks(modelViewMatrix, projectionMatrix);
 }
 
@@ -81,7 +81,7 @@ void SetupRC()
 	locMV = glGetUniformLocation(ADSLightShader, "mvMatrix");
 	locNM = glGetUniformLocation(ADSLightShader, "normalMatrix");
 
-	shaderManager.InitializeStockShaders();
+	shaderManager.init();
 }
 
 /**
@@ -116,7 +116,7 @@ void RenderScene(void)
 	// Clear the window with current clearing color
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-	modelViewMatrix.PushMatrix(viewFrame);
+	modelViewMatrix.push(viewFrame);
 
 	modelViewMatrix.Rotate(10.0f * rotTimer.GetElapsedSeconds(), 0.0f, 1.0f, 0.0f);
 
@@ -136,9 +136,9 @@ void RenderScene(void)
 	glUniformMatrix4fv(locMV, 1, GL_FALSE, transformPieline.GetModelViewMatrix());
 	glUniformMatrix3fv(locNM, 1, GL_FALSE, transformPieline.GetNormalMatrix());
 
-	sphereBatch.Draw();
+	sphereBatch.draw();
 
-	modelViewMatrix.PopMatrix();
+	modelViewMatrix.pop();
 
 	// Perform the buffer swap to display back buffer
 	glutSwapBuffers();

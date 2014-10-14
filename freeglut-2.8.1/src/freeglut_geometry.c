@@ -274,7 +274,7 @@ void FGAPIENTRY glutWireSphere(GLdouble radius, GLint slices, GLint stacks)
     fghCircleTable(&sint1,&cost1,-slices  );
     fghCircleTable(&sint2,&cost2, stacks*2);
 
-    /* Draw a line loop for each stack */
+    /* draw a line loop for each stack */
 
     for (i=1; i<stacks; i++)
     {
@@ -295,7 +295,7 @@ void FGAPIENTRY glutWireSphere(GLdouble radius, GLint slices, GLint stacks)
         glEnd();
     }
 
-    /* Draw a line loop for each slice */
+    /* draw a line loop for each slice */
 
     for (i=0; i<slices; i++)
     {
@@ -437,7 +437,7 @@ void FGAPIENTRY glutWireCone( GLdouble base, GLdouble height, GLint slices, GLin
 
     fghCircleTable(&sint,&cost,-slices);
 
-    /* Draw the stacks... */
+    /* draw the stacks... */
 
     for (i=0; i<stacks; i++)
     {
@@ -455,7 +455,7 @@ void FGAPIENTRY glutWireCone( GLdouble base, GLdouble height, GLint slices, GLin
         r -= rStep;
     }
 
-    /* Draw the slices */
+    /* draw the slices */
 
     r = base;
 
@@ -561,7 +561,7 @@ void FGAPIENTRY glutWireCylinder(GLdouble radius, GLdouble height, GLint slices,
 
     fghCircleTable(&sint,&cost,-slices);
 
-    /* Draw the stacks... */
+    /* draw the stacks... */
 
     for (i=0; i<=stacks; i++)
     {
@@ -581,7 +581,7 @@ void FGAPIENTRY glutWireCylinder(GLdouble radius, GLdouble height, GLint slices,
         z += zStep;
     }
 
-    /* Draw the slices */
+    /* draw the slices */
 
     glBegin(GL_LINES);
 

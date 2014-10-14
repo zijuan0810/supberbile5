@@ -38,7 +38,7 @@ void ChangeSize(int w, int h)
 
 	// Create the projection matrix, and load it on the projection matrix stack
 	viewFrustum.SetPerspective(35.0f, (float)w/(float)h, 1.0f, 1000.0f);
-	projectionMatrix.LoadMatrix(viewFrustum.GetProjectionMatrix());
+	projectionMatrix.setMatrix(viewFrustum.GetProjectionMatrix());
 
 	// Set the transform pipeline to use the two matrix stack
 	tranformPipeline.SetMatrixStacks(modelViewMatrix, projectionMatrix);
@@ -53,7 +53,7 @@ void SetupRC()
 	// Blue background
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f );
 
-	shaderManager.InitializeStockShaders();
+	shaderManager.init();
 
 	glEnable(GL_DEPTH_TEST);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -141,72 +141,72 @@ void RenderScene(void)
 	float yRot = rotTimer.GetElapsedSeconds() * 60.0f;
 
 	// Save the current modelview matrix (the identity matrix)
-	modelViewMatrix.PushMatrix();
+	modelViewMatrix.push();
 
 	M3DMatrix44f mCamera;
 	cameraFrame.GetCameraMatrix(mCamera);
-	modelViewMatrix.PushMatrix(mCamera);
+	modelViewMatrix.push(mCamera);
 
 	// Transform the light position into eye coordinates
 	M3DVector4f vLightPos = {0.0f, 10.0f, 5.0f, 1.0f};
 	M3DVector4f vLightEyePos;
 	m3dTransformVector4(vLightEyePos, vLightPos, mCamera);
 
-	// Draw the ground
-	shaderManager.UseStockShader(GLT_SHADER_FLAT, tranformPipeline.GetMVPMatrix(),
+	// draw the ground
+	shaderManager.useStockShader(GLT_SHADER_FLAT, tranformPipeline.GetMVPMatrix(),
 		vFloorColor);
-	floorBatch.Draw();
+	floorBatch.draw();
 
-	// Draw the spinning Torus
+	// draw the spinning Torus
 	modelViewMatrix.Translate(0.0f, 0.0f, -2.5f);
 	// 保存平移
-	modelViewMatrix.PushMatrix();
+	modelViewMatrix.push();
 
 	// 应用旋转并绘制圆环
 	modelViewMatrix.Rotate(yRot, 0.0f, 1.0f, 0.0f);
-	//shaderManager.UseStockShader(GLT_SHADER_FLAT, tranformPipeline.GetMVPMatrix(), 
+	//shaderManager.useStockShader(GLT_SHADER_FLAT, tranformPipeline.GetMVPMatrix(), 
 	//	vTorusColor);
-	shaderManager.UseStockShader(GLT_SHADER_POINT_LIGHT_DIFF,
+	shaderManager.useStockShader(GLT_SHADER_POINT_LIGHT_DIFF,
 								tranformPipeline.GetModelViewMatrix(),
 								tranformPipeline.GetProjectionMatrix(),
 								vLightEyePos,
 								vTorusColor);
-	torusBatch.Draw();
+	torusBatch.draw();
 
 	// Restore the previous modelview matrix (the identity matrix)
-	modelViewMatrix.PopMatrix();
+	modelViewMatrix.pop();
 
 	// 应用另一个旋转，然后平移，再绘制球体
-	//modelViewMatrix.PushMatrix();
+	//modelViewMatrix.push();
 	modelViewMatrix.Rotate(-2.0f*yRot, 0.0f, 1.0f, 0.0f);
 	modelViewMatrix.Translate(0.8f, 0.0f, 0.0f);
-	//shaderManager.UseStockShader(GLT_SHADER_FLAT, tranformPipeline.GetMVPMatrix(),
+	//shaderManager.useStockShader(GLT_SHADER_FLAT, tranformPipeline.GetMVPMatrix(),
 	//							vSphereColor);
 
-	shaderManager.UseStockShader(GLT_SHADER_POINT_LIGHT_DIFF,
+	shaderManager.useStockShader(GLT_SHADER_POINT_LIGHT_DIFF,
 								tranformPipeline.GetModelViewMatrix(),
 								tranformPipeline.GetProjectionMatrix(),
 								vLightEyePos,
 								vSphereColor);
-	sphereBatch.Draw();
+	sphereBatch.draw();
 
-	modelViewMatrix.PopMatrix();
+	modelViewMatrix.pop();
 	for (int i=0; i<NUM_SPHERES; ++i) {
-		modelViewMatrix.PushMatrix();
+		modelViewMatrix.push();
 		modelViewMatrix.MultMatrix(spheres[i]);
-		//shaderManager.UseStockShader(GLT_SHADER_FLAT, 
+		//shaderManager.useStockShader(GLT_SHADER_FLAT, 
 		//							tranformPipeline.GetMVPMatrix(),
 		//							vSphereColor);
-		shaderManager.UseStockShader(GLT_SHADER_POINT_LIGHT_DIFF,
+		shaderManager.useStockShader(GLT_SHADER_POINT_LIGHT_DIFF,
 									tranformPipeline.GetModelViewMatrix(),
 									tranformPipeline.GetProjectionMatrix(),
 									vLightEyePos,
 									vSphereColor);
-		sphereBatch.Draw();
-		modelViewMatrix.PopMatrix();
+		sphereBatch.draw();
+		modelViewMatrix.pop();
 	}
 
-	modelViewMatrix.PopMatrix();
+	modelViewMatrix.pop();
 
 	// Perform the buffer swap to display back buffer
 	glutSwapBuffers();

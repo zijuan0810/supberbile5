@@ -57,18 +57,18 @@ public:
 		delete [] this->_stackes;
 	}
 
-	inline void LoadIdentity(void) { 
+	inline void identity(void) { 
 		m3dLoadIdentity44(this->_stackes[_stackIndex]); 
 	}
 
-	inline void LoadMatrix(const M3DMatrix44f mMatrix) { 
+	inline void setMatrix(const M3DMatrix44f mMatrix) { 
 		m3dCopyMatrix44(this->_stackes[_stackIndex], mMatrix); 
 	}
 
-	inline void LoadMatrix(GLFrame& frame) {
+	inline void setMatrix(GLFrame& frame) {
 		M3DMatrix44f m;
 		frame.GetMatrix(m);
-		this->LoadMatrix(m);
+		this->setMatrix(m);
 	}
 
 	inline void MultMatrix(const M3DMatrix44f mMatrix) {
@@ -83,16 +83,7 @@ public:
 		this->MultMatrix(m);
 	}
 
-	inline void PushMatrix(void) {
-		if(_stackIndex < _stackDepth) {
-			_stackIndex++;
-			m3dCopyMatrix44(_stackes[_stackIndex], _stackes[_stackIndex-1]);
-		}
-		else
-			_lastError = GLT_STACK_OVERFLOW;
-	}
-
-	inline void PopMatrix(void) {
+	inline void pop(void) {
 		if(_stackIndex > 0)
 			_stackIndex--;
 		else
@@ -147,9 +138,18 @@ public:
 		m3dMatrixMultiply44(_stackes[_stackIndex], mTemp, mRotation);
 	}
 
+	void push(void) {
+		if (_stackIndex < _stackDepth) {
+			_stackIndex++;
+			m3dCopyMatrix44(_stackes[_stackIndex], _stackes[_stackIndex - 1]);
+		}
+		else {
+			_lastError = GLT_STACK_OVERFLOW;
+		}
+	}
 
 	// I've also always wanted to be able to do this
-	void PushMatrix(const M3DMatrix44f mMatrix) {
+	void push(const M3DMatrix44f mMatrix) {
 		if(_stackIndex < _stackDepth) {
 			_stackIndex++;
 			m3dCopyMatrix44(_stackes[_stackIndex], mMatrix);
@@ -158,10 +158,10 @@ public:
 			_lastError = GLT_STACK_OVERFLOW;
 	}
 
-	void PushMatrix(GLFrame& frame) {
+	void push(GLFrame& frame) {
 		M3DMatrix44f m;
 		frame.GetMatrix(m);
-		this->PushMatrix(m);
+		this->push(m);
 	}
 
 	// Two different ways to get the matrix

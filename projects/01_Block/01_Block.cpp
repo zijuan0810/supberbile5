@@ -240,7 +240,7 @@ void SetupRC()
 	GLint nWidth, nHeight, nComponents;
 	GLenum format;
 
-	shaderManager.InitializeStockShaders();
+	shaderManager.init();
 
 	// Black background
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f );
@@ -383,20 +383,20 @@ void RenderBlock(void)
 	case 0:
 		glEnable(GL_BLEND);
 		glEnable(GL_LINE_SMOOTH);
-		shaderManager.UseStockShader(GLT_SHADER_FLAT, transformPipeline.GetMVPMatrix(), vRed);
+		shaderManager.useStockShader(GLT_SHADER_FLAT, transformPipeline.GetMVPMatrix(), vRed);
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		glDisable(GL_CULL_FACE);
 
-		// Draw the cube
-		cubeBatch.Draw();
+		// draw the cube
+		cubeBatch.draw();
 
 		break;
 
 		// Wire frame, but not the back side... we also want the block to be in the stencil buffer
 	case 1:
-		shaderManager.UseStockShader(GLT_SHADER_FLAT, transformPipeline.GetMVPMatrix(), vRed);
+		shaderManager.useStockShader(GLT_SHADER_FLAT, transformPipeline.GetMVPMatrix(), vRed);
 
-		// Draw solid block in stencil buffer
+		// draw solid block in stencil buffer
 		// Back face culling prevents the back sides from showing through
 		// The stencil pattern is used to mask when we draw the floor under it
 		// to keep it from showing through.
@@ -404,7 +404,7 @@ void RenderBlock(void)
 		glEnable(GL_STENCIL_TEST);
 		glStencilFunc(GL_NEVER, 0, 0);
 		glStencilOp(GL_INCR, GL_INCR, GL_INCR);
-		cubeBatch.Draw();
+		cubeBatch.draw();
 		glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
 		glDisable(GL_STENCIL_TEST);
 
@@ -412,25 +412,25 @@ void RenderBlock(void)
 		glEnable(GL_LINE_SMOOTH);
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-		// Draw the front side cube
-		cubeBatch.Draw();
+		// draw the front side cube
+		cubeBatch.draw();
 		break;
 
 		// Solid
 	case 2:
-		shaderManager.UseStockShader(GLT_SHADER_FLAT, transformPipeline.GetMVPMatrix(), vRed);
+		shaderManager.useStockShader(GLT_SHADER_FLAT, transformPipeline.GetMVPMatrix(), vRed);
 
-		// Draw the cube
-		cubeBatch.Draw();
+		// draw the cube
+		cubeBatch.draw();
 		break;
 
 		// Lit
 	case 3:
-		shaderManager.UseStockShader(GLT_SHADER_POINT_LIGHT_DIFF, modelViewMatrix.GetMatrix(),
+		shaderManager.useStockShader(GLT_SHADER_POINT_LIGHT_DIFF, modelViewMatrix.GetMatrix(),
 			projectionMatrix.GetMatrix(), vLightPos, vRed);
 
-		// Draw the cube
-		cubeBatch.Draw();
+		// draw the cube
+		cubeBatch.draw();
 		break;
 
 		// Textured & Lit
@@ -438,15 +438,15 @@ void RenderBlock(void)
 	case 5:
 	default:
 		glBindTexture(GL_TEXTURE_2D, textures[2]);
-		shaderManager.UseStockShader(GLT_SHADER_TEXTURE_POINT_LIGHT_DIFF, modelViewMatrix.GetMatrix(),
+		shaderManager.useStockShader(GLT_SHADER_TEXTURE_POINT_LIGHT_DIFF, modelViewMatrix.GetMatrix(),
 			projectionMatrix.GetMatrix(), vLightPos, vWhite, 0);
 
 		glBindTexture(GL_TEXTURE_2D, textures[1]);
-		topBlock.Draw();
+		topBlock.draw();
 		glBindTexture(GL_TEXTURE_2D, textures[2]);
-		frontBlock.Draw();
+		frontBlock.draw();
 		glBindTexture(GL_TEXTURE_2D, textures[3]);
-		leftBlock.Draw();
+		leftBlock.draw();
 
 		break;
 	}
@@ -472,7 +472,7 @@ void RenderFloor(void)
 	case 0:
 		glEnable(GL_BLEND);
 		glEnable(GL_LINE_SMOOTH);
-		shaderManager.UseStockShader(GLT_SHADER_FLAT, transformPipeline.GetMVPMatrix(), vBrown);
+		shaderManager.useStockShader(GLT_SHADER_FLAT, transformPipeline.GetMVPMatrix(), vBrown);
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		glDisable(GL_CULL_FACE);
 		break;
@@ -485,14 +485,14 @@ void RenderFloor(void)
 		glEnable(GL_STENCIL_TEST);
 		glStencilFunc(GL_EQUAL, 0, 0xff);
 
-		shaderManager.UseStockShader(GLT_SHADER_FLAT, transformPipeline.GetMVPMatrix(), vBrown);
+		shaderManager.useStockShader(GLT_SHADER_FLAT, transformPipeline.GetMVPMatrix(), vBrown);
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		break;
 
 		// Solid
 	case 2:
 	case 3:	
-		shaderManager.UseStockShader(GLT_SHADER_FLAT, transformPipeline.GetMVPMatrix(), vBrown);
+		shaderManager.useStockShader(GLT_SHADER_FLAT, transformPipeline.GetMVPMatrix(), vBrown);
 		break;
 
 		// Textured
@@ -500,12 +500,12 @@ void RenderFloor(void)
 	case 5:
 	default:
 		glBindTexture(GL_TEXTURE_2D, textures[0]);
-		shaderManager.UseStockShader(GLT_SHADER_TEXTURE_MODULATE, transformPipeline.GetMVPMatrix(), vFloor, 0);
+		shaderManager.useStockShader(GLT_SHADER_TEXTURE_MODULATE, transformPipeline.GetMVPMatrix(), vFloor, 0);
 		break;
 	}
 
-	// Draw the floor
-	floorBatch.Draw();
+	// draw the floor
+	floorBatch.draw();
 
 	// Put everything back
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -524,7 +524,7 @@ void RenderScene(void)
 	// Clear the window with current clearing color
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-	modelViewMatrix.PushMatrix();
+	modelViewMatrix.push();
 	M3DMatrix44f mCamera;
 	cameraFrame.GetCameraMatrix(mCamera);
 	modelViewMatrix.MultMatrix(mCamera);
@@ -533,12 +533,12 @@ void RenderScene(void)
 	// blended on top of it
 	if(nStep == 5) {
 		glDisable(GL_CULL_FACE);
-		modelViewMatrix.PushMatrix();
+		modelViewMatrix.push();
 		modelViewMatrix.Scale(1.0f, -1.0f, 1.0f);
 		modelViewMatrix.Translate(0.0f, 2.0f, 0.0f);
 		modelViewMatrix.Rotate(35.0f, 0.0f, 1.0f, 0.0f);
 		RenderBlock();
-		modelViewMatrix.PopMatrix();
+		modelViewMatrix.pop();
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		RenderFloor();
@@ -546,12 +546,12 @@ void RenderScene(void)
 	}
 
 
-	modelViewMatrix.PushMatrix();
+	modelViewMatrix.push();
 
-	// Draw normally
+	// draw normally
 	modelViewMatrix.Rotate(35.0f, 0.0f, 1.0f, 0.0f);
 	RenderBlock();
-	modelViewMatrix.PopMatrix();
+	modelViewMatrix.pop();
 
 
 	// If not the reflection pass, draw floor last
@@ -559,7 +559,7 @@ void RenderScene(void)
 		RenderFloor();
 
 
-	modelViewMatrix.PopMatrix();
+	modelViewMatrix.pop();
 
 
 	// Flush drawing commands
@@ -591,8 +591,8 @@ void ChangeSize(int w, int h)
 {
 	glViewport(0, 0, w, h);
 	viewFrustum.SetPerspective(35.0f, float(w) / float(h), 1.0f, 500.0f);
-	projectionMatrix.LoadMatrix(viewFrustum.GetProjectionMatrix());
-	modelViewMatrix.LoadIdentity();
+	projectionMatrix.setMatrix(viewFrustum.GetProjectionMatrix());
+	modelViewMatrix.identity();
 }
 
 ///////////////////////////////////////////////////////////////////////////////

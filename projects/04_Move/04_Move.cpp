@@ -32,7 +32,7 @@ void SetupRC()
 	// Blue background
 	glClearColor(0.0f, 0.0f, 1.0f, 1.0f );
 
-	shaderManager.InitializeStockShaders();
+	shaderManager.init();
 
 	// Load up a triangle
 	squareBatch.Begin(GL_TRIANGLE_FAN, 4);
@@ -101,8 +101,8 @@ void RenderScene(void)
 	m3dMatrixMultiply44(mFinalTransform, mRotationMatrix, mTranslationMatrix);
 
 	// Do render
-	shaderManager.UseStockShader(GLT_SHADER_FLAT, mFinalTransform, vRed);
-	squareBatch.Draw();
+	shaderManager.useStockShader(GLT_SHADER_FLAT, mFinalTransform, vRed);
+	squareBatch.draw();
 
 	// Perform the buffer swap to display back buffer
 	glutSwapBuffers();

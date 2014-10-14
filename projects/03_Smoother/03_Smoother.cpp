@@ -35,7 +35,7 @@ void ChangeSize(int w, int h)
 // This is the first opportunity to do any OpenGL related tasks.
 void SetupRC()
 {
-	shaderManager.InitializeStockShaders();
+	shaderManager.init();
 
 	M3DVector3f vVerts[SMALL_STARS];       // SMALL_STARS is the largest batch we are going to need
 
@@ -175,29 +175,29 @@ void RenderScene(void)
 	GLfloat vWhite[] = {1.0f, 1.0f, 1.0f, 1.0f};
 	GLfloat vRed[] = {1.0f, 0.0f, 0.0f, 1.0f};
 
-	// Draw the "moon"
+	// draw the "moon"
 	glEnable(GL_MULTISAMPLE);	// 开启多重采样
-	shaderManager.UseStockShader(GLT_SHADER_FLAT, viewFrustum.GetProjectionMatrix(), vRed);
-	moonBatch.Draw();
+	shaderManager.useStockShader(GLT_SHADER_FLAT, viewFrustum.GetProjectionMatrix(), vRed);
+	moonBatch.draw();
 	glDisable(GL_MULTISAMPLE);
 
-	shaderManager.UseStockShader(GLT_SHADER_FLAT, viewFrustum.GetProjectionMatrix(), vWhite);
+	shaderManager.useStockShader(GLT_SHADER_FLAT, viewFrustum.GetProjectionMatrix(), vWhite);
 
-	// Draw samll stars
+	// draw samll stars
 	glPointSize(1.0f);
-	smallStarBatch.Draw();
+	smallStarBatch.draw();
 
-	// Draw medium sized stars
+	// draw medium sized stars
 	glPointSize(4.0f);
-	mediumStarBatch.Draw();
+	mediumStarBatch.draw();
 
-	// Draw largest stars
+	// draw largest stars
 	glPointSize(8.0f);
-	largeStarBatch.Draw();
+	largeStarBatch.draw();
 
-	// Draw distant horizon
+	// draw distant horizon
 	glLineWidth(3.5f);
-	mountainRangeBatch.Draw();
+	mountainRangeBatch.draw();
 
 	// Perform the buffer swap to display back buffer
 	glutSwapBuffers();

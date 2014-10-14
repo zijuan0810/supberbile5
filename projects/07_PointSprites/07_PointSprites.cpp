@@ -105,7 +105,7 @@ void SetupRC()
 	starsBatch.End();
 
 
-	starShader = gltLoadShaderPairWithAttributes(
+	starShader = gltLoadShaderWithFileEx(
 		"SpaceFlight.vs.glsl", "SpaceFlight.fs.glsl", 2, 
 		GLT_ATTRIBUTE_VERTEX, "vVertex",
 		GLT_ATTRIBUTE_COLOR, "vColor");
@@ -181,8 +181,8 @@ void RenderScene(void)
 	fTime = fmod(fTime, 999.0f);
 	glUniform1f(locTexture, fTime);
 
-	// Draw the stars
-	starsBatch.Draw();
+	// draw the stars
+	starsBatch.draw();
 
 	// Perform the buffer swap to display back buffer
 	glutSwapBuffers();

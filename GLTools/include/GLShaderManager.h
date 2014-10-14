@@ -66,33 +66,34 @@ enum GLT_SHADER_ATTRIBUTE {
 };
 
 typedef struct _ShaderLookupEntry {
-	char szVertexShaderName[MAX_SHADER_NAME_LENGTH];
-	char szFragShaderName[MAX_SHADER_NAME_LENGTH];
-	GLuint	uiShaderID;
-}ShaderLookupEntry ;
+	char		vertexShader[MAX_SHADER_NAME_LENGTH];
+	char		fragShader[MAX_SHADER_NAME_LENGTH];
+	GLuint	shaderId;
+} ShaderLookupEntry;
 
 
 class GLShaderManager
 {
 public:
-	static GLShaderManager* Instance(); 
+	static GLShaderManager* Instance();
+
 public:
 	GLShaderManager(void);
 	~GLShaderManager(void);
 
 	// Call before using
-	bool InitializeStockShaders(void);
+	bool init(void);
 
 	// Find one of the standard stock shaders and return it's shader handle. 
 	GLuint GetStockShader(GLT_STOCK_SHADER nShaderID);
 
 	// Use a stock shader, and pass in the parameters needed
-	GLint UseStockShader(GLT_STOCK_SHADER nShaderID, ...);
+	GLint useStockShader(GLT_STOCK_SHADER nShaderID, ...);
 
 	// Load a shader pair from file, return NULL or shader handle. 
 	// Vertex program name (minus file extension)
 	// is saved in the lookup table
-	GLuint LoadShaderPair(const char *szVertexProgFileName, const char *szFragProgFileName);
+	GLuint loadWithFile(const char* szVertexFileName, const char *szFragFileName);
 
 	// Load shaders from source text.
 	GLuint LoadShaderPairSrc(const char *szName, const char *szVertexSrc, const char *szFragSrc);
@@ -102,11 +103,12 @@ public:
 	GLuint LoadShaderPairSrcWithAttributes(const char *szName, const char *szVertexProg, const char *szFragmentProg, ...);
 
 	// Lookup a previously loaded shader
-	GLuint LookupShader(const char *szVertexProg, const char *szFragProg = 0);
+	GLuint lookupShader(const char *szVertexProg, const char *szFragProg = 0);
 
 protected:
-	GLuint	uiStockShaders[GLT_SHADER_LAST];
-	vector<ShaderLookupEntry>	shaderTable;
+	GLuint	_shaderStock[GLT_SHADER_LAST];
+	vector<ShaderLookupEntry>	_shaderEntryVec;
+
 protected:
 	static GLShaderManager* _this;
 };

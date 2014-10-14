@@ -241,13 +241,13 @@ void gltMakeCube(GLBatch& cubeBatch, GLfloat fRadius);
 /** 
 * Load the shader from the source text
 */
-void gltLoadShaderSrc(const char *szShaderSrc, GLuint shader);
+void gltLoadShaderWithString(const char *szShaderSrc, GLuint shader);
 
 /** 
 * Load the shader from the specified file. Returns false if the
 * shader could not be loaded
 */
-bool gltLoadShaderFile(const char *szFile, GLuint shader);
+bool gltLoadShaderWithFile(const char *szFile, GLuint shader);
 
 GLuint gltLoadShaderPair(const char *szVertexProg, const char *szFragmentProg);
 /** 
@@ -255,9 +255,9 @@ GLuint gltLoadShaderPair(const char *szVertexProg, const char *szFragmentProg);
 * source text for each shader. After the shader names, specify the number
 * of attributes, followed by the index and attribute name of each attribute
 */
-GLuint gltLoadShaderPairWithAttributes(const char *szVertexProg, const char *szFragmentProg, ...);
+GLuint gltLoadShaderWithFileEx(const char *szVertexProg, const char *szFragmentProg, ...);
 
-GLuint gltLoadShaderPairSrc(const char *szVertexSrc, const char *szFragmentSrc);
+GLuint gltLoadShaderPairString(const char *szVertexSrc, const char *szFragmentSrc);
 GLuint gltLoadShaderPairSrcWithAttributes(const char *szVertexProg, const char *szFragmentProg, ...);
 
 bool gltCheckErrors(GLuint progName = 0);

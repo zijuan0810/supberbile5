@@ -18,7 +18,7 @@
 
 
 ////////////////////////////////////////////////////////////
-// LoadIdentity
+// identity
 // For 3x3 and 4x4 float and double matricies.
 // 3x3 float
 void m3dLoadIdentity33(M3DMatrix33f m)

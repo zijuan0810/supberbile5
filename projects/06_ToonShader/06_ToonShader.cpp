@@ -42,7 +42,7 @@ void ChangeSize(int w, int h)
 
 	viewFrustum.SetPerspective(35.0f, (float)w / (float)h, 1.0f, 100.0f);
 
-	projectionMatrix.LoadMatrix(viewFrustum.GetProjectionMatrix());
+	projectionMatrix.setMatrix(viewFrustum.GetProjectionMatrix());
 	transformPipeline.SetMatrixStacks(modelViewMatrix, projectionMatrix);
 }
 
@@ -57,13 +57,13 @@ void SetupRC()
 
 	glEnable(GL_DEPTH_TEST);
 
-	shaderManager.InitializeStockShaders();
+	shaderManager.init();
 
 	viewFrame.MoveForward(4.0f);
 
 	gltMakeTorus(torusBatch, 0.80f, 0.25f, 52, 26);
 
-	toonShader = gltLoadShaderPairWithAttributes("ToonShader.vp", "ToonShader.fp",
+	toonShader = gltLoadShaderWithFileEx("ToonShader.vp", "ToonShader.fp",
 												2,
 												GLT_ATTRIBUTE_VERTEX, "vVertex",
 												GLT_ATTRIBUTE_NORMAL, "vNormal");
@@ -119,7 +119,7 @@ void RenderScene(void)
 	// Clear the window with current clearing color
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-	modelViewMatrix.PushMatrix(viewFrame);
+	modelViewMatrix.push(viewFrame);
 
 	modelViewMatrix.Rotate(10.0f * rotTimer.GetElapsedSeconds(), 0.0f, 1.0f, 0.0f);
 
@@ -135,9 +135,9 @@ void RenderScene(void)
 	glUniformMatrix3fv(locNM, 1, GL_FALSE, transformPipeline.GetNormalMatrix());
 	glUniform1i(locColorTable, 0);
 
-	torusBatch.Draw();
+	torusBatch.draw();
 
-	modelViewMatrix.PopMatrix();
+	modelViewMatrix.pop();
 
 	// Perform the buffer swap to display back buffer
 	glutSwapBuffers();

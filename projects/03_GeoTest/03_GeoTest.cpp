@@ -33,7 +33,7 @@ void ChangeSize(int w, int h)
 
 	viewFrustum.SetPerspective(35.0f, float(w)/float(h), 1.0f, 100.0f);
 
-	projectionMatrix.LoadMatrix(viewFrustum.GetProjectionMatrix());
+	projectionMatrix.setMatrix(viewFrustum.GetProjectionMatrix());
 	transformPiepline.SetMatrixStacks(modelViewMatrix, projectionMatrix);
 }
 
@@ -44,7 +44,7 @@ void SetupRC()
 	// Blue background
 	glClearColor(0.3f, 0.3f, 0.3f, 1.0f );
 
-	shaderManager.InitializeStockShaders();
+	shaderManager.init();
 	viewFrame.MoveForward(7.0f);
 
 	// Make the torus
@@ -75,15 +75,15 @@ void RenderScene(void)
 		glDisable(GL_DEPTH_TEST);
 	}
 
-	modelViewMatrix.PushMatrix(viewFrame);
+	modelViewMatrix.push(viewFrame);
 
 	GLfloat vRed[] = { 1.0f, 0.0f, 0.0f, 1.0f };
-	shaderManager.UseStockShader(GLT_SHADER_DEFAULT_LIGHT, transformPiepline.GetModelViewMatrix(),
+	shaderManager.useStockShader(GLT_SHADER_DEFAULT_LIGHT, transformPiepline.GetModelViewMatrix(),
 		transformPiepline.GetProjectionMatrix(), vRed);
 
-	torusBatch.Draw();
+	torusBatch.draw();
 
-	modelViewMatrix.PopMatrix();
+	modelViewMatrix.pop();
 
 	// Perform the buffer swap to display back buffer
 	glutSwapBuffers();

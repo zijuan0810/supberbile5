@@ -33,7 +33,7 @@ void ChangeSize(int w, int h)
 
 	// Create the projection matrix, and load it on the projection matrix stack
 	viewFrustum.SetPerspective(35.0f, (float)w/(float)h, 1.0f, 1000.0f);
-	projectionMatrix.LoadMatrix(viewFrustum.GetProjectionMatrix());
+	projectionMatrix.setMatrix(viewFrustum.GetProjectionMatrix());
 
 	// Set the transform pipeline to use the two matrix stack
 	tranformPipeline.SetMatrixStacks(modelViewMatrix, projectionMatrix);
@@ -48,7 +48,7 @@ void SetupRC()
 	// Blue background
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f );
 
-	shaderManager.InitializeStockShaders();
+	shaderManager.init();
 
 	glEnable(GL_DEPTH_TEST);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -111,33 +111,33 @@ void RenderScene(void)
 	float yRot = rotTimer.GetElapsedSeconds() * 60.0f;
 
 	// Save the current modelview matrix (the identity matrix)
-	modelViewMatrix.PushMatrix();
+	modelViewMatrix.push();
 
-	// Draw the ground
-	shaderManager.UseStockShader(GLT_SHADER_FLAT, tranformPipeline.GetMVPMatrix(),
+	// draw the ground
+	shaderManager.useStockShader(GLT_SHADER_FLAT, tranformPipeline.GetMVPMatrix(),
 		vFloorColor);
-	floorBatch.Draw();
+	floorBatch.draw();
 
-	// Draw the spinning Torus
+	// draw the spinning Torus
 	modelViewMatrix.Translate(0.0f, 0.0f, -2.5f);
 	modelViewMatrix.Rotate(yRot, 0.0f, 1.0f, 0.0f);
-	shaderManager.UseStockShader(GLT_SHADER_FLAT, tranformPipeline.GetMVPMatrix(), 
+	shaderManager.useStockShader(GLT_SHADER_FLAT, tranformPipeline.GetMVPMatrix(), 
 		vTorusColor);
-	torusBatch.Draw();
+	torusBatch.draw();
 
 	// Restore the previous modelview matrix (the identity matrix)
-	//modelViewMatrix.PopMatrix();
+	//modelViewMatrix.pop();
 
 	// 应用另一个旋转，然后平移，再绘制球体
-	modelViewMatrix.PushMatrix();
+	modelViewMatrix.push();
 	modelViewMatrix.Rotate(-20.0f*yRot, 0.0f, 1.0f, 0.0f);
 	modelViewMatrix.Translate(0.8f, 0.0f, 0.0f);
-	shaderManager.UseStockShader(GLT_SHADER_FLAT, tranformPipeline.GetMVPMatrix(),
+	shaderManager.useStockShader(GLT_SHADER_FLAT, tranformPipeline.GetMVPMatrix(),
 		vSphereColor);
-	sphereBatch.Draw();
+	sphereBatch.draw();
 
-	modelViewMatrix.PopMatrix();
-	modelViewMatrix.PopMatrix();
+	modelViewMatrix.pop();
+	modelViewMatrix.pop();
 
 	// Perform the buffer swap to display back buffer
 	glutSwapBuffers();

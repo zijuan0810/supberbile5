@@ -42,9 +42,9 @@ void ChangeSize(int w, int h)
 	glViewport(0, 0, w, h);
 
 	viewFrustum.SetPerspective(35.0f, float(w) / float(h), 1.0f, 500.0f);
-	projectionMatrix.LoadMatrix(viewFrustum.GetProjectionMatrix());
+	projectionMatrix.setMatrix(viewFrustum.GetProjectionMatrix());
 
-	modelViewMatrix.LoadIdentity();
+	modelViewMatrix.identity();
 }
 
 
@@ -55,7 +55,7 @@ void SetupRC()
 	// Black background
 	glClearColor(0.7f, 0.7f, 0.7f, 1.0f);
 
-	shaderManager.InitializeStockShaders();
+	shaderManager.init();
 
 	glEnable(GL_DEPTH_TEST);
 
@@ -132,11 +132,11 @@ void ProcessMenu(int value)
 
 void _drawWireFramedBatch(GLTriangleBatch* pBatch)
 {
-	shaderManager.UseStockShader(GLT_SHADER_FLAT, transformPipeline.GetMVPMatrix(),
+	shaderManager.useStockShader(GLT_SHADER_FLAT, transformPipeline.GetMVPMatrix(),
 		vGreen);
-	pBatch->Draw();
+	pBatch->draw();
 
-	// Draw black outline
+	// draw black outline
 	glPolygonOffset(-1.0f, -1.0f);
 	glEnable(GL_LINE_SMOOTH);
 	glEnable(GL_BLEND);
@@ -144,9 +144,9 @@ void _drawWireFramedBatch(GLTriangleBatch* pBatch)
 	glEnable(GL_POLYGON_OFFSET_LINE);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glLineWidth(2.5f);
-	shaderManager.UseStockShader(GLT_SHADER_FLAT, transformPipeline.GetMVPMatrix(),
+	shaderManager.useStockShader(GLT_SHADER_FLAT, transformPipeline.GetMVPMatrix(),
 		vBlack);
-	pBatch->Draw();
+	pBatch->draw();
 
 	// Restore polygon mode and depth testing
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -162,7 +162,7 @@ void RenderScene(void)
 	// Clear the window with current clearing color
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-	modelViewMatrix.PushMatrix();
+	modelViewMatrix.push();
 	M3DMatrix44f mCamera;
 	cameraFrame.GetCameraMatrix(mCamera);
 	modelViewMatrix.MultMatrix(mCamera);
@@ -171,7 +171,7 @@ void RenderScene(void)
 	objectFrame.GetMatrix(mObjectFrame);
 	modelViewMatrix.MultMatrix(mObjectFrame);
 
-	shaderManager.UseStockShader(GLT_SHADER_FLAT, transformPipeline.GetMVPMatrix(), 
+	shaderManager.useStockShader(GLT_SHADER_FLAT, transformPipeline.GetMVPMatrix(), 
 		vBlack);
 
 	switch(nStep) {
@@ -192,7 +192,7 @@ void RenderScene(void)
 		break;
 	}
 
-	modelViewMatrix.PopMatrix();
+	modelViewMatrix.pop();
 
 	// Flush drawing commands
 	glutSwapBuffers();

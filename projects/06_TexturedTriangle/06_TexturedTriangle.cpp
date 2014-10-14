@@ -38,7 +38,7 @@ void SetupRC()
 	// Blue background
 	glClearColor(0.0f, 0.0f, 1.0f, 1.0f );
 
-	shaderManager.InitializeStockShaders();
+	shaderManager.init();
 
 	// load up a triangle
 	GLfloat vVerts[] = {
@@ -58,7 +58,7 @@ void SetupRC()
 	triangleBatch.CopyTexCoordData2f(vTexCoords, 0);
 	triangleBatch.End();
 
-	myTexturedIdentityShader = gltLoadShaderPairWithAttributes("TextureIndentity.vp", 
+	myTexturedIdentityShader = gltLoadShaderWithFileEx("TextureIndentity.vp", 
 																"TextureIndentity.fp",
 																2,
 																GLT_ATTRIBUTE_VERTEX, "vVertex",
@@ -106,7 +106,7 @@ void RenderScene(void)
 	GLint iTextureUniform = glGetUniformLocation(myTexturedIdentityShader, "colorMap");
 	glUniform1i(iTextureUniform, 0);
 
-	triangleBatch.Draw();
+	triangleBatch.draw();
 
 	// Perform the buffer swap to display back buffer
 	glutSwapBuffers();

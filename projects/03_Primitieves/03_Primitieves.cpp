@@ -41,8 +41,8 @@ void ChangeSize(int w, int h)
 	glViewport(0, 0, w, h);
 
 	viewFrustum.SetPerspective(35.0f, float(w)/(float)h, 1.0f, 500.0f);
-	projectionMatrix.LoadMatrix(viewFrustum.GetProjectionMatrix());
-	modelViewMatrix.LoadIdentity();
+	projectionMatrix.setMatrix(viewFrustum.GetProjectionMatrix());
+	modelViewMatrix.identity();
 }
 
 // This function does any needed initialization on the rendering context. 
@@ -52,7 +52,7 @@ void SetupRC()
 	// Black background
 	glClearColor(0.7f, 0.7f, 0.7f, 1.0f );
 
-	shaderManager.InitializeStockShaders();
+	shaderManager.init();
 
 	glEnable(GL_DEPTH_TEST);
 
@@ -187,24 +187,24 @@ void SetupRC()
 
 void DrawWireFramedBatch(GLBatch* pBatch)
 {
-	// Draw the batch solid green
-	shaderManager.UseStockShader(GLT_SHADER_FLAT, transformPipeline.GetMVPMatrix(), vGreen);
-	pBatch->Draw();
+	// draw the batch solid green
+	shaderManager.useStockShader(GLT_SHADER_FLAT, transformPipeline.GetMVPMatrix(), vGreen);
+	pBatch->draw();
 
-	// Draw black outline
+	// draw black outline
 	glPolygonOffset(-1.0f, -1.0f);		// 设置偏移参数
 	glEnable(GL_POLYGON_OFFSET_LINE);	// 设置多边形偏移模式
 
-	// Draw lines antialiased
+	// draw lines antialiased
 	glEnable(GL_LINE_SMOOTH);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	// Draw black wireframe version of geometry
+	// draw black wireframe version of geometry
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glLineWidth(2.5f);
-	shaderManager.UseStockShader(GLT_SHADER_FLAT, transformPipeline.GetMVPMatrix(), vBlack);
-	pBatch->Draw();
+	shaderManager.useStockShader(GLT_SHADER_FLAT, transformPipeline.GetMVPMatrix(), vBlack);
+	pBatch->draw();
 
 	// Put everything back the way we found it
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -220,7 +220,7 @@ void RenderScene(void)
 	// Clear the window with current clearing color
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-	modelViewMatrix.PushMatrix();
+	modelViewMatrix.push();
 	M3DMatrix44f mCamera;
 	cameraFrame.GetCameraMatrix(mCamera);
 	modelViewMatrix.MultMatrix(mCamera);
@@ -229,27 +229,27 @@ void RenderScene(void)
 	objectFrame.GetMatrix(mObjectFrame);
 	modelViewMatrix.MultMatrix(mObjectFrame);
 
-	shaderManager.UseStockShader(GLT_SHADER_FLAT, transformPipeline.GetMVPMatrix(), vBlack);
+	shaderManager.useStockShader(GLT_SHADER_FLAT, transformPipeline.GetMVPMatrix(), vBlack);
 
 	switch (nStep) {
 	case 0:
 		glPointSize(4.0f);
-		pointBatch.Draw();
+		pointBatch.draw();
 		glPointSize(1.0f);
 		break;
 	case 1:
 		glLineWidth(2.0f);
-		lineBatch.Draw();
+		lineBatch.draw();
 		glLineWidth(1.0f);
 		break;
 	case 2:
 		glLineWidth(2.0f);
-		lineLoopBatch.Draw();
+		lineLoopBatch.draw();
 		glLineWidth(1.0f);
 		break;
 	case 3:
 		glLineWidth(2.0f);
-		lineLoopBatch.Draw();
+		lineLoopBatch.draw();
 		glLineWidth(1.0f);
 		break;
 	case 4:
@@ -265,7 +265,7 @@ void RenderScene(void)
 		break;
 	}
 
-	modelViewMatrix.PopMatrix();
+	modelViewMatrix.pop();
 
 	// Perform the buffer swap to display back buffer
 	glutSwapBuffers();

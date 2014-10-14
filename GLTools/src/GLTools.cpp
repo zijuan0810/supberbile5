@@ -177,7 +177,7 @@ void gltSetWorkingDirectory(const char *szArgv)
 }
 
 /** 
-* Draw a torus (doughnut)  at z = fZVal... torus is in xy plane
+* draw a torus (doughnut)  at z = fZVal... torus is in xy plane
 */
 void gltMakeTorus(GLTriangleBatch& torusBatch, GLfloat majorRadius, GLfloat minorRadius, 
 				  GLint iSlices, GLint iStacks)
@@ -483,7 +483,7 @@ void gltMakeDisk(GLTriangleBatch& diskBatch, GLfloat innerRadius, GLfloat outerR
 	diskBatch.End();
 }
 
-// Draw a cylinder. Much like gluCylinder
+// draw a cylinder. Much like gluCylinder
 void gltMakeCylinder(GLTriangleBatch& cylinderBatch, GLfloat baseRadius, GLfloat topRadius, 
 					 GLfloat fLength, GLint iSlices, GLint iStacks)
 {	
@@ -1119,16 +1119,14 @@ GLbyte* gltReadBMPBits(const char *szFileName, int *nWidth, int *nHeight)
 static GLubyte s_shaderText[MAX_SHADER_LENGTH];
 
 
-void gltLoadShaderSrc(const char *szShaderSrc, GLuint shader)
+void gltLoadShaderWithString(const char *szShaderSrc, GLuint shader)
 {
-	GLchar *fsStringPtr[1];
-
-	fsStringPtr[0] = (GLchar*)szShaderSrc;
+	GLchar* fsStringPtr[1] = { (GLchar*)szShaderSrc };
 	glShaderSource(shader, 1, (const GLchar**)fsStringPtr, nullptr);
 }
 
 
-bool gltLoadShaderFile(const char *szFile, GLuint shader)
+bool gltLoadShaderWithFile(const char *szFile, GLuint shader)
 {
 	// Open the shader file
 	FILE* fp = fopen(szFile, "r");
@@ -1167,13 +1165,13 @@ bool gltLoadShaderFile(const char *szFile, GLuint shader)
 	fclose(fp);
 
 	// Load the string
-	gltLoadShaderSrc((const char*)s_shaderText, shader);
+	gltLoadShaderWithString((const char*)s_shaderText, shader);
 
 	return true;
 }   
 
 
-GLuint gltLoadShaderPairWithAttributes(const char *szVertexProg, const char *szFragmentProg, ...)
+GLuint gltLoadShaderWithFileEx(const char *szVertexProg, const char *szFragmentProg, ...)
 {
 	// Create shader objects
 	GLuint hVertexShader = glCreateShader(GL_VERTEX_SHADER);
@@ -1184,7 +1182,7 @@ GLuint gltLoadShaderPairWithAttributes(const char *szVertexProg, const char *szF
 	//
 
 	// Vertex Program
-	if (gltLoadShaderFile(szVertexProg, hVertexShader) == false) {
+	if (gltLoadShaderWithFile(szVertexProg, hVertexShader) == false) {
 		glDeleteShader(hVertexShader);
 		glDeleteShader(hFragmentShader);
 		log_error("File %s can't be found!", szVertexProg);
@@ -1192,7 +1190,7 @@ GLuint gltLoadShaderPairWithAttributes(const char *szVertexProg, const char *szF
 	}
 
 	// Fragment Program
-	if (gltLoadShaderFile(szFragmentProg, hFragmentShader) == false) {
+	if (gltLoadShaderWithFile(szFragmentProg, hFragmentShader) == false) {
 		glDeleteShader(hVertexShader);
 		glDeleteShader(hFragmentShader);
 		log_error("File %s can't be found!", szFragmentProg);
@@ -1283,14 +1281,14 @@ GLuint gltLoadShaderPair(const char *szVertexProg, const char *szFragmentProg)
 	hFragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 
 	// Load them. If fail clean up and return null
-	if(gltLoadShaderFile(szVertexProg, hVertexShader) == false)
+	if(gltLoadShaderWithFile(szVertexProg, hVertexShader) == false)
 	{
 		glDeleteShader(hVertexShader);
 		glDeleteShader(hFragmentShader);
 		return (GLuint)nullptr;
 	}
 
-	if(gltLoadShaderFile(szFragmentProg, hFragmentShader) == false)
+	if(gltLoadShaderWithFile(szFragmentProg, hFragmentShader) == false)
 	{
 		glDeleteShader(hVertexShader);
 		glDeleteShader(hFragmentShader);
@@ -1344,62 +1342,54 @@ GLuint gltLoadShaderPair(const char *szVertexProg, const char *szFragmentProg)
 // Load a pair of shaders, compile, and link together. Specify the complete
 // file path for each shader. Note, there is no support for
 // just loading say a vertex program... you have to do both.
-GLuint gltLoadShaderPairSrc(const char *szVertexSrc, const char *szFragmentSrc)
+GLuint gltLoadShaderPairString(const char *szVertexSrc, const char *szFragmentSrc)
 {
-	// Temporary Shader objects
-	GLuint hVertexShader;
-	GLuint hFragmentShader; 
-	GLuint hReturn = 0;   
-	GLint testVal;
-
 	// Create shader objects
-	hVertexShader = glCreateShader(GL_VERTEX_SHADER);
-	hFragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+	GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
+	GLuint fragShader = glCreateShader(GL_FRAGMENT_SHADER);
 
 	// Load them. 
-	gltLoadShaderSrc(szVertexSrc, hVertexShader);
-	gltLoadShaderSrc(szFragmentSrc, hFragmentShader);
+	gltLoadShaderWithString(szVertexSrc, vertexShader);
+	gltLoadShaderWithString(szFragmentSrc, fragShader);
 
 	// Compile them
-	glCompileShader(hVertexShader);
-	glCompileShader(hFragmentShader);
+	glCompileShader(vertexShader);
+	glCompileShader(fragShader);
 
 	// Check for errors
-	glGetShaderiv(hVertexShader, GL_COMPILE_STATUS, &testVal);
-	if(testVal == GL_FALSE)
-	{
-		glDeleteShader(hVertexShader);
-		glDeleteShader(hFragmentShader);
+	GLint compileStatus = GL_TRUE;
+	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &compileStatus);
+	if (compileStatus == GL_FALSE) {
+		glDeleteShader(vertexShader);
+		glDeleteShader(fragShader);
 		return (GLuint)nullptr;
 	}
 
-	glGetShaderiv(hFragmentShader, GL_COMPILE_STATUS, &testVal);
-	if(testVal == GL_FALSE)
-	{
-		glDeleteShader(hVertexShader);
-		glDeleteShader(hFragmentShader);
+	glGetShaderiv(fragShader, GL_COMPILE_STATUS, &compileStatus);
+	if (compileStatus == GL_FALSE) {
+		glDeleteShader(vertexShader);
+		glDeleteShader(fragShader);
 		return (GLuint)nullptr;
 	}
 
 	// Link them - assuming it works...
-	hReturn = glCreateProgram();
-	glAttachShader(hReturn, hVertexShader);
-	glAttachShader(hReturn, hFragmentShader);
-	glLinkProgram(hReturn);
+	GLuint program = glCreateProgram();
+	glAttachShader(program, vertexShader);
+	glAttachShader(program, fragShader);
+	glLinkProgram(program);
 
 	// These are no longer needed
-	glDeleteShader(hVertexShader);
-	glDeleteShader(hFragmentShader);  
+	glDeleteShader(vertexShader);
+	glDeleteShader(fragShader);
 
 	// Make sure link worked too
-	glGetProgramiv(hReturn, GL_LINK_STATUS, &testVal);
-	if(testVal == GL_FALSE)
-	{
-		glDeleteProgram(hReturn);
+	glGetProgramiv(program, GL_LINK_STATUS, &compileStatus);
+	if (compileStatus == GL_FALSE) {
+		glDeleteProgram(program);
 		return (GLuint)nullptr;
 	}
 
-	return hReturn;  
+	return program;
 }   
 
 /** 
@@ -1409,76 +1399,21 @@ GLuint gltLoadShaderPairSrc(const char *szVertexSrc, const char *szFragmentSrc)
 */
 GLuint gltLoadShaderPairSrcWithAttributes(const char *szVertexSrc, const char *szFragmentSrc, ...)
 {
-	// Temporary Shader objects
-	GLuint hVertexShader;
-	GLuint hFragmentShader; 
-	GLuint hReturn = 0;   
-	GLint testVal;
-
-	// Create shader objects
-	hVertexShader = glCreateShader(GL_VERTEX_SHADER);
-	hFragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-
-	// Load them. 
-	gltLoadShaderSrc(szVertexSrc, hVertexShader);
-	gltLoadShaderSrc(szFragmentSrc, hFragmentShader);
-
-	// Compile them
-	glCompileShader(hVertexShader);
-	glCompileShader(hFragmentShader);
-
-	// Check for errors
-	glGetShaderiv(hVertexShader, GL_COMPILE_STATUS, &testVal);
-	if(testVal == GL_FALSE)
-	{
-		glDeleteShader(hVertexShader);
-		glDeleteShader(hFragmentShader);
-		return (GLuint)nullptr;
+	GLuint program = gltLoadShaderPairString(szVertexSrc, szFragmentSrc);
+	if (program > 0) {
+		// 绑定顶点属性值
+		va_list attributeList;
+		va_start(attributeList, szFragmentSrc);
+		int iArgCount = va_arg(attributeList, int);	// Number of attributes
+		for (int i = 0; i < iArgCount; i++) {
+			int index = va_arg(attributeList, int);
+			char* szNextArg = va_arg(attributeList, char*);
+			glBindAttribLocation(program, index, szNextArg);
+		}
+		va_end(attributeList);
 	}
 
-	glGetShaderiv(hFragmentShader, GL_COMPILE_STATUS, &testVal);
-	if(testVal == GL_FALSE)
-	{
-		glDeleteShader(hVertexShader);
-		glDeleteShader(hFragmentShader);
-		return (GLuint)nullptr;
-	}
-
-	// Link them - assuming it works...
-	hReturn = glCreateProgram();
-	glAttachShader(hReturn, hVertexShader);
-	glAttachShader(hReturn, hFragmentShader);
-
-	// List of attributes
-	va_list attributeList;
-	va_start(attributeList, szFragmentSrc);
-
-	char *szNextArg;
-	int iArgCount = va_arg(attributeList, int);	// Number of attributes
-	for(int i = 0; i < iArgCount; i++)
-	{
-		int index = va_arg(attributeList, int);
-		szNextArg = va_arg(attributeList, char*);
-		glBindAttribLocation(hReturn, index, szNextArg);
-	}
-	va_end(attributeList);
-
-
-	glLinkProgram(hReturn);
-
-	// These are no longer needed
-	glDeleteShader(hVertexShader);
-	glDeleteShader(hFragmentShader);  
-
-	// Make sure link worked too
-	glGetProgramiv(hReturn, GL_LINK_STATUS, &testVal);
-	if(testVal == GL_FALSE)
-	{
-		glDeleteProgram(hReturn);
-		return (GLuint)nullptr;
-	}
-
-	return hReturn;  
+	return program;  
 }   
 
 

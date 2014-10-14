@@ -96,7 +96,7 @@ static SFG_StrokeFont* fghStrokeByID( void* font )
 /* -- INTERFACE FUNCTIONS -------------------------------------------------- */
 
 /*
- * Draw a bitmap character
+ * draw a bitmap character
  */
 void FGAPIENTRY glutBitmapCharacter( void* fontID, int character )
 {
@@ -232,7 +232,7 @@ int FGAPIENTRY glutBitmapHeight( void* fontID )
 }
 
 /*
- * Draw a stroke character
+ * draw a stroke character
  */
 void FGAPIENTRY glutStrokeCharacter( void* fontID, int character )
 {

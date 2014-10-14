@@ -41,7 +41,7 @@ void ChangeSize(int w, int h)
 
 	viewFrustum.SetPerspective(35.0f, (float)w/(float)w, 1.0f, 100.0f);
 
-	projectionMatrix.LoadMatrix(viewFrustum.GetProjectionMatrix());
+	projectionMatrix.setMatrix(viewFrustum.GetProjectionMatrix());
 	transformPipeline.SetMatrixStacks(modelViewMatrix, projectionMatrix);
 }
 
@@ -54,7 +54,7 @@ void SetupRC()
 	// Blue background
 	glClearColor(0.3f, 0.3f, 0.3f, 1.0f );
 
-	shaderManager.InitializeStockShaders();
+	shaderManager.init();
 
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
@@ -109,9 +109,9 @@ void RenderScene(void)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 	GLfloat vRed[] = { 1.0f, 0.0f, 0.0f, 1.0f };
-	shaderManager.UseStockShader(GLT_SHADER_IDENTITY, vRed);
+	shaderManager.useStockShader(GLT_SHADER_IDENTITY, vRed);
 
-	modelViewMatrix.PushMatrix(viewFrame);
+	modelViewMatrix.push(viewFrame);
 
 	modelViewMatrix.Rotate(rotTimer.GetElapsedSeconds() * 10.0f, 0.0f, 1.0f, 0.0f);
 
@@ -125,9 +125,9 @@ void RenderScene(void)
 	glUniformMatrix4fv(locMV, 1, GL_FALSE, transformPipeline.GetModelViewMatrix());
 	glUniformMatrix3fv(locNM, 1, GL_FALSE, transformPipeline.GetNormalMatrix());
 
-	sphereBatch.Draw();
+	sphereBatch.draw();
 
-	modelViewMatrix.PopMatrix();
+	modelViewMatrix.pop();
 
 	// Perform the buffer swap to display back buffer
 	glutSwapBuffers();

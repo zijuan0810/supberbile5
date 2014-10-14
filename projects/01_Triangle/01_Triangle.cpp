@@ -36,9 +36,9 @@ void RenderScene(void)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 	GLfloat vRed[] = { 1.0f, 0.0f, 0.0f, 1.0f };
-	GLShaderManager::Instance()->UseStockShader(GLT_SHADER_IDENTITY, vRed);
+	GLShaderManager::Instance()->useStockShader(GLT_SHADER_IDENTITY, vRed);
 
-	triangleBath.Draw();
+	triangleBath.draw();
 
 	// Perform the buffer swap to display back buffer
 	glutSwapBuffers();

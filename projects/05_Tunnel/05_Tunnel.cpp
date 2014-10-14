@@ -56,7 +56,7 @@ void ChangeSize(int w, int h)
 	GLfloat fAspect = (GLfloat)w/(GLfloat)h;
 	// Produce the perspective projection
 	viewFrustum.SetPerspective(80.0f, fAspect, 1.0f, 120.0f);
-	projectionMatrix.LoadMatrix(viewFrustum.GetProjectionMatrix());
+	projectionMatrix.setMatrix(viewFrustum.GetProjectionMatrix());
 	transformPipeline.SetMatrixStacks(modelViewMatrix, projectionMatrix);
 }
 
@@ -69,7 +69,7 @@ void SetupRC()
 	// Blue background
 	glClearColor(0.0f, 0.0f, 1.0f, 1.0f );
 
-	shaderManager.InitializeStockShaders();
+	shaderManager.init();
 
 	// Load texure
 	glGenTextures(TEXTURE_COUNT, arrTextures);
@@ -185,26 +185,26 @@ void RenderScene(void)
 	// Clear the window with current clearing color
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-	modelViewMatrix.PushMatrix();
+	modelViewMatrix.push();
 
 	modelViewMatrix.Translate(0.0f, 0.0f, viewZ);
-	shaderManager.UseStockShader(GLT_SHADER_TEXTURE_REPLACE, 
+	shaderManager.useStockShader(GLT_SHADER_TEXTURE_REPLACE, 
 								transformPipeline.GetMVPMatrix(),
 								0);
 	glBindTexture(GL_TEXTURE_2D, arrTextures[TEXTURE_FLOOR]);
-	floorBatch.Draw();
+	floorBatch.draw();
 
 	glBindTexture(GL_TEXTURE_2D, arrTextures[TEXTURE_CEILING]);
-	ceilingBatch.Draw();
+	ceilingBatch.draw();
 
 	glBindTexture(GL_TEXTURE_2D, arrTextures[TEXTURE_BRICK]);
-	leftWallBatch.Draw();
-	rightWallBatch.Draw();
+	leftWallBatch.draw();
+	rightWallBatch.draw();
 
-	modelViewMatrix.PopMatrix();
+	modelViewMatrix.pop();
 
 	GLfloat vRed[] = { 1.0f, 0.0f, 0.0f, 1.0f };
-	shaderManager.UseStockShader(GLT_SHADER_IDENTITY, vRed);
+	shaderManager.useStockShader(GLT_SHADER_IDENTITY, vRed);
 
 	// Perform the buffer swap to display back buffer
 	glutSwapBuffers();

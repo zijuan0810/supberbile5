@@ -32,7 +32,7 @@ void SetupRC()
 	// Blue background
 	glClearColor(1.0f, 1.0f, 1.0f, 1.0f );
 
-	shaderManager.InitializeStockShaders();
+	shaderManager.init();
 
 	// Load up a triangle fan
 	squareBatch.Begin(GL_TRIANGLE_FAN, 4);
@@ -136,23 +136,23 @@ void RenderScene(void)
 	GLfloat vBlue[] = { 0.0f, 0.0f, 1.0f, 1.0f };
 	GLfloat vBlack[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 
-	shaderManager.UseStockShader(GLT_SHADER_IDENTITY, vGreen);
-	greenBatch.Draw();
+	shaderManager.useStockShader(GLT_SHADER_IDENTITY, vGreen);
+	greenBatch.draw();
 
-	shaderManager.UseStockShader(GLT_SHADER_IDENTITY, vRed);
-	redBatch.Draw();
+	shaderManager.useStockShader(GLT_SHADER_IDENTITY, vRed);
+	redBatch.draw();
 
-	shaderManager.UseStockShader(GLT_SHADER_IDENTITY, vBlue);
-	blueBatch.Draw();
+	shaderManager.useStockShader(GLT_SHADER_IDENTITY, vBlue);
+	blueBatch.draw();
 
-	shaderManager.UseStockShader(GLT_SHADER_IDENTITY, vBlack);
-	blackBatch.Draw();
+	shaderManager.useStockShader(GLT_SHADER_IDENTITY, vBlack);
+	blackBatch.draw();
 
 	// Begin blending
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	shaderManager.UseStockShader(GLT_SHADER_IDENTITY, vRed);
-	squareBatch.Draw();
+	shaderManager.useStockShader(GLT_SHADER_IDENTITY, vRed);
+	squareBatch.draw();
 	glDisable(GL_BLEND);
 
 	// Perform the buffer swap to display back buffer

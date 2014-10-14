@@ -36,7 +36,7 @@ void SetupRC()
 	// Blue background
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f );
 
-	shaderManager.InitializeStockShaders();
+	shaderManager.init();
 
 	// Load up a triangle
 	GLfloat vVerts[] = { 
@@ -55,7 +55,7 @@ void SetupRC()
 	triangleBatch.CopyColorData4f(vColors);
 	triangleBatch.End();
 
-	myIndentityShader = gltLoadShaderPairWithAttributes("ShadedIdentity.vsh", 
+	myIndentityShader = gltLoadShaderWithFileEx("ShadedIdentity.vsh", 
 														"ShadedIdentity.fsh", 
 														2, 
 														GLT_ATTRIBUTE_VERTEX, "vVertex", 
@@ -109,7 +109,7 @@ void RenderScene(void)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 	glUseProgram(myIndentityShader);
-	triangleBatch.Draw();
+	triangleBatch.draw();
 
 	// Perform the buffer swap to display back buffer
 	glutSwapBuffers();

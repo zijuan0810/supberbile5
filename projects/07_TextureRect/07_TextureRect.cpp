@@ -33,57 +33,57 @@ static void DrawSongAndDance(GLfloat yRot)
 	m3dTransformVector4(vLightTransformed, vLightPos, mCamera);
 
 	// draw the light source
-	modelViewMatrix.PushMatrix();
+	modelViewMatrix.push();
 	modelViewMatrix.Translatev(vLightPos);
-	shaderManager.UseStockShader(GLT_SHADER_FLAT, transformPipeline.GetMVPMatrix(),
+	shaderManager.useStockShader(GLT_SHADER_FLAT, transformPipeline.GetMVPMatrix(),
 								vWhite);
-	sphereBatch.Draw();
+	sphereBatch.draw();
 
-	modelViewMatrix.PopMatrix();
+	modelViewMatrix.pop();
 
 	glBindTexture(GL_TEXTURE_2D, uiTextures[2]);
 	for (int i = 0; i < NUM_SPHERES; ++i) {
-		modelViewMatrix.PushMatrix();
+		modelViewMatrix.push();
 
 		modelViewMatrix.MultMatrix(spheres[i]);
-		shaderManager.UseStockShader(GLT_SHADER_TEXTURE_POINT_LIGHT_DIFF,
+		shaderManager.useStockShader(GLT_SHADER_TEXTURE_POINT_LIGHT_DIFF,
 									modelViewMatrix.GetMatrix(),
 									transformPipeline.GetProjectionMatrix(),
 									vLightTransformed,
 									vWhite,
 									0);
-		sphereBatch.Draw();
+		sphereBatch.draw();
 
-		modelViewMatrix.PopMatrix();
+		modelViewMatrix.pop();
 	}
 
 	// song and dance
 	modelViewMatrix.Translate(0.0f, 0.2f, -2.5f);
-	modelViewMatrix.PushMatrix();	// save the translated origin
+	modelViewMatrix.push();	// save the translated origin
 	modelViewMatrix.Rotate(yRot, 0.0f, 1.0f, 0.0f);
 
 	// draw stuff relative to the camera
 	glBindTexture(GL_TEXTURE_2D, uiTextures[1]);
-	shaderManager.UseStockShader(GLT_SHADER_TEXTURE_POINT_LIGHT_DIFF,
+	shaderManager.useStockShader(GLT_SHADER_TEXTURE_POINT_LIGHT_DIFF,
 								modelViewMatrix.GetMatrix(),
 								transformPipeline.GetProjectionMatrix(),
 								vLightTransformed,
 								vWhite,
 								0);
-	torusBatch.Draw();
-	modelViewMatrix.PopMatrix();	// erased the rotate
+	torusBatch.draw();
+	modelViewMatrix.pop();	// erased the rotate
 
 	modelViewMatrix.Rotate(yRot * -2.0f, 0.0f, 1.0f, 0.0f);
 	modelViewMatrix.Translate(0.8f, 0.0f, 0.0f);
 
 	glBindTexture(GL_TEXTURE_2D, uiTextures[2]);
-	shaderManager.UseStockShader(GLT_SHADER_TEXTURE_POINT_LIGHT_DIFF,
+	shaderManager.useStockShader(GLT_SHADER_TEXTURE_POINT_LIGHT_DIFF,
 								modelViewMatrix.GetMatrix(),
 								transformPipeline.GetProjectionMatrix(),
 								vLightTransformed,
 								vWhite,
 								0);
-	sphereBatch.Draw();
+	sphereBatch.draw();
 }
 
 /**
@@ -97,8 +97,8 @@ void ChangeSize(int w, int h)
 	transformPipeline.SetMatrixStacks(modelViewMatrix, projectionMatrix);
 
 	viewFrustum.SetPerspective(35.0f, float(w) / float(h), 1.0f, 100.0f);
-	projectionMatrix.LoadMatrix(viewFrustum.GetProjectionMatrix());
-	modelViewMatrix.LoadIdentity();
+	projectionMatrix.setMatrix(viewFrustum.GetProjectionMatrix());
+	modelViewMatrix.identity();
 }
 
 /**
@@ -116,7 +116,7 @@ void SetupRC()
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 
-	shaderManager.InitializeStockShaders();
+	shaderManager.init();
 
 	gltMakeTorus(torusBatch, 0.4f, 0.15f, 40, 20);
 	gltMakeSphere(sphereBatch, 0.1f, 26, 13);
@@ -181,7 +181,7 @@ void SetupRC()
 	glBindTexture(GL_TEXTURE_RECTANGLE, uiTextures[3]);
 	gltLoadTextureTGARect("OpenGL-Logo.tga", GL_NEAREST, GL_NEAREST, GL_CLAMP_TO_EDGE);
 
-	rectReplaceShader = gltLoadShaderPairWithAttributes("RectReplace.vert", "RectReplace.frag", 2, 
+	rectReplaceShader = gltLoadShaderWithFileEx("RectReplace.vert", "RectReplace.frag", 2, 
 		GLT_ATTRIBUTE_VERTEX, "vVertex", 
 		GLT_ATTRIBUTE_TEXTURE0, "vTexCoord");
 
@@ -244,14 +244,14 @@ void RenderScene(void)
 	// Clear the window with current clearing color
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-	modelViewMatrix.PushMatrix();
+	modelViewMatrix.push();
 
 	M3DMatrix44f mCamera;
 	cameraFrame.GetCameraMatrix(mCamera);
 	modelViewMatrix.MultMatrix(mCamera);
 
 	// draw the world upside down
-	modelViewMatrix.PushMatrix();
+	modelViewMatrix.push();
 	modelViewMatrix.Scale(1.0f, -1.0f, 1.0f); // flips the Y axis
 	modelViewMatrix.Translate(0.0f, 0.8f, 0.0f); // scootch the world down a bit...
 
@@ -259,22 +259,22 @@ void RenderScene(void)
 	DrawSongAndDance(yRot);
 	glFrontFace(GL_CCW); // restore it
 
-	modelViewMatrix.PopMatrix();
+	modelViewMatrix.pop();
 
 	// draw the solid ground
 	glEnable(GL_BLEND);
 	glBindTexture(GL_TEXTURE_2D, uiTextures[0]);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	shaderManager.UseStockShader(GLT_SHADER_TEXTURE_MODULATE, 
+	shaderManager.useStockShader(GLT_SHADER_TEXTURE_MODULATE, 
 		transformPipeline.GetMVPMatrix(), 
 		vFloorColor, 
 		0);
-	floorBatch.Draw();
+	floorBatch.draw();
 	glDisable(GL_BLEND);
 
 	DrawSongAndDance(yRot);
 
-	modelViewMatrix.PopMatrix();
+	modelViewMatrix.pop();
 
 	// Render the overlay
 
@@ -291,7 +291,7 @@ void RenderScene(void)
 	glUniform1i(locRectTexture, 0);
 	glUniformMatrix4fv(locRectMVP, 1, GL_FALSE, mScreenSpace);
 	glBindTexture(GL_TEXTURE_RECTANGLE, uiTextures[3]);
-	logoBatch.Draw();
+	logoBatch.draw();
 
 	// restore no blending and depth test
 	glDisable(GL_BLEND);

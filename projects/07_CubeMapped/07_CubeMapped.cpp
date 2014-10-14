@@ -42,7 +42,7 @@ void ChangeSize(int w, int h)
 	
 	viewFrustum.SetPerspective(35.0f, float(w) / h, 1.0f, 1000.0f);
 
-	projectionMatrix.LoadMatrix(viewFrustum.GetProjectionMatrix());
+	projectionMatrix.setMatrix(viewFrustum.GetProjectionMatrix());
 	transformPipeline.SetMatrixStacks(modelViewMatrix, projectionMatrix);
 }
 
@@ -82,7 +82,7 @@ void SetupRC()
 	gltMakeSphere(sphereBatch, 1.0f, 52, 26);
 	gltMakeCube(cubeBatch, 20.0f);
 
-	reflectionShader = gltLoadShaderPairWithAttributes("Reflection.vsh", "Reflection.fsh", 2, 
+	reflectionShader = gltLoadShaderWithFileEx("Reflection.vsh", "Reflection.fsh", 2, 
                                                   GLT_ATTRIBUTE_VERTEX, "vVertex", 
 												  GLT_ATTRIBUTE_NORMAL, "vNormal");
 	locMVPReflect = glGetUniformLocation(reflectionShader, "mvpMatrix");
@@ -90,7 +90,7 @@ void SetupRC()
 	locNormalReflect = glGetUniformLocation(reflectionShader, "normalMatrix");
 	locInvertedCamera = glGetUniformLocation(reflectionShader, "mInverseCamera");
 
-	skyBoxShader = gltLoadShaderPairWithAttributes("SkyBox.vsh", "SkyBox.fsh", 2,
+	skyBoxShader = gltLoadShaderWithFileEx("SkyBox.vsh", "SkyBox.fsh", 2,
                                                GLT_ATTRIBUTE_VERTEX, "vVertex",
 											   GLT_ATTRIBUTE_NORMAL, "vNormal");
 	locMVPSkyBox = glGetUniformLocation(skyBoxShader, "mvpMatrix");
@@ -147,8 +147,8 @@ void RenderScene(void)
 	viewFrame.GetMatrix(mCameraRotOnly, true);
 	m3dInvertMatrix44(mInverseCamera, mCameraRotOnly);
 
-	modelViewMatrix.PushMatrix();
-	// Draw the sphere
+	modelViewMatrix.push();
+	// draw the sphere
 	modelViewMatrix.MultMatrix(mCamera);
 	glUseProgram(reflectionShader);
 	glUniformMatrix4fv(locMVPReflect, 1, GL_FALSE, transformPipeline.GetMVPMatrix());
@@ -157,16 +157,16 @@ void RenderScene(void)
 	glUniformMatrix4fv(locInvertedCamera, 1, GL_FALSE, mInverseCamera);
 
 	glEnable(GL_CULL_FACE);
-	sphereBatch.Draw();
+	sphereBatch.draw();
 	glDisable(GL_CULL_FACE);
-	modelViewMatrix.PopMatrix();
+	modelViewMatrix.pop();
 
-	modelViewMatrix.PushMatrix();
+	modelViewMatrix.push();
 	modelViewMatrix.MultMatrix(mCameraRotOnly);
 	glUseProgram(skyBoxShader);
 	glUniformMatrix4fv(locMVPSkyBox, 1, GL_FALSE, transformPipeline.GetMVPMatrix());
-	cubeBatch.Draw();
-	modelViewMatrix.PopMatrix();
+	cubeBatch.draw();
+	modelViewMatrix.pop();
 
 	// Perform the buffer swap to display back buffer
 	glutSwapBuffers();
