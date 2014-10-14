@@ -1366,7 +1366,7 @@ static void fghJoystickOpen( SFG_Joystick* joy )
             joy->saturate [ i ] = 1.0f;
         }
 
-        return;    /* End of analog code */
+        return;    /* end of analog code */
     }
 
 #    ifdef HAVE_USB_JS

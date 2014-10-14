@@ -43,7 +43,7 @@ void SetupRC()
 	glEnable(GL_DEPTH_TEST);
 
 	// This makes a torus
-	gltMakeTorus(torusBatch, 0.4f, 0.15f, 30, 30);
+	gltCreateTorus(torusBatch, 0.4f, 0.15f, 30, 30);
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 }

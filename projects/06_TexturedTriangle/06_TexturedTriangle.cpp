@@ -53,10 +53,10 @@ void SetupRC()
 		0.5f, 1.0f
 	};
 
-	triangleBatch.Begin(GL_TRIANGLES, 3, 1);
+	triangleBatch.begin(GL_TRIANGLES, 3, 1);
 	triangleBatch.CopyVertexData3f(vVerts);
 	triangleBatch.CopyTexCoordData2f(vTexCoords, 0);
-	triangleBatch.End();
+	triangleBatch.end();
 
 	myTexturedIdentityShader = gltLoadShaderWithFileEx("TextureIndentity.vp", 
 																"TextureIndentity.fp",

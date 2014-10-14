@@ -40,34 +40,34 @@ void SetupRC()
 	M3DVector3f vVerts[SMALL_STARS];       // SMALL_STARS is the largest batch we are going to need
 
 	// Populate star list
-	smallStarBatch.Begin(GL_POINTS, SMALL_STARS);
+	smallStarBatch.begin(GL_POINTS, SMALL_STARS);
 	for ( int i = 0; i < SMALL_STARS; i++ ) {
 		vVerts[i][0] = (GLfloat)(rand() % SCREEN_X);
 		vVerts[i][1] = (GLfloat)(rand() % (SCREEN_Y - 100)) + 100.0f;
 		vVerts[i][2] = 0.0f;
 	}
 	smallStarBatch.CopyVertexData3f(vVerts);
-	smallStarBatch.End();
+	smallStarBatch.end();
 
 	// Populate star list
-	mediumStarBatch.Begin(GL_POINTS, MEDIUM_STARS);
+	mediumStarBatch.begin(GL_POINTS, MEDIUM_STARS);
 	for ( int i = 0; i < MEDIUM_STARS; i++ ) {
 		vVerts[i][0] = (GLfloat)(rand() % SCREEN_X);
 		vVerts[i][1] = (GLfloat)(rand() % (SCREEN_Y - 100)) + 100.0f;
 		vVerts[i][2] = 0.0f; 
 	}
 	mediumStarBatch.CopyVertexData3f(vVerts);
-	mediumStarBatch.End();
+	mediumStarBatch.end();
 
 	// Populate star list
-	largeStarBatch.Begin(GL_POINTS, LARGE_STARS);
+	largeStarBatch.begin(GL_POINTS, LARGE_STARS);
 	for ( int i = 0; i < LARGE_STARS; i++ ) {
 		vVerts[i][0] = (GLfloat)(rand() % SCREEN_X);
 		vVerts[i][1] = (GLfloat)(rand() % (SCREEN_Y - 100)) + 100.0f;
 		vVerts[i][2] = 0.0f;
 	}
 	largeStarBatch.CopyVertexData3f(vVerts);
-	largeStarBatch.End();
+	largeStarBatch.end();
 
 	M3DVector3f vMountains[12] = { 
 		0.0f, 25.0f, 0.0f, 
@@ -83,9 +83,9 @@ void SetupRC()
 		750.0f, 25.0f, 0.0f,
 		800.0f, 90.0f, 0.0f 
 	};    
-	mountainRangeBatch.Begin(GL_LINE_STRIP, 12);
+	mountainRangeBatch.begin(GL_LINE_STRIP, 12);
 	mountainRangeBatch.CopyVertexData3f(vMountains);
-	mountainRangeBatch.End();
+	mountainRangeBatch.end();
 
 	// The Moon
 	GLfloat x = 700.0f;     // Location and radius of moon
@@ -108,9 +108,9 @@ void SetupRC()
 	vVerts[nVerts][0] = x + r;;
 	vVerts[nVerts][1] = y;
 	vVerts[nVerts][2] = 0.0f;
-	moonBatch.Begin(GL_TRIANGLE_FAN, 34);
+	moonBatch.begin(GL_TRIANGLE_FAN, 34);
 	moonBatch.CopyVertexData3f(vVerts);
-	moonBatch.End();     
+	moonBatch.end();     
 
 	// Black background
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f );

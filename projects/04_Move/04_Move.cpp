@@ -35,9 +35,9 @@ void SetupRC()
 	shaderManager.init();
 
 	// Load up a triangle
-	squareBatch.Begin(GL_TRIANGLE_FAN, 4);
+	squareBatch.begin(GL_TRIANGLE_FAN, 4);
 	squareBatch.CopyVertexData3f(vVerts);
-	squareBatch.End();
+	squareBatch.end();
 }
 
 // Respond to arrow keys by moving the camera frame of reference

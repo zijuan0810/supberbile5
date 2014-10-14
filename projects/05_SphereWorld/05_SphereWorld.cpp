@@ -153,13 +153,13 @@ void SetupRC()
 	glEnable(GL_CULL_FACE);
 
 	// This makes a torus
-	gltMakeTorus(torusBatch, 0.4f, 0.15f, 40, 20);
+	gltCreateTorus(torusBatch, 0.4f, 0.15f, 40, 20);
 	// This makes a sphere
-	gltMakeSphere(sphereBatch, 0.1f, 26, 13);
+	gltCreateSphere(sphereBatch, 0.1f, 26, 13);
 
 	// Make the solid ground
 	GLfloat texSize = 10.0f;
-	floorBatch.Begin(GL_TRIANGLE_FAN, 4, 1);
+	floorBatch.begin(GL_TRIANGLE_FAN, 4, 1);
 	floorBatch.MultiTexCoord2f(0, 0.0f, 0.0f);
 	floorBatch.Vertex3f(-20.0f, -0.41f, 20.0f);
 
@@ -171,7 +171,7 @@ void SetupRC()
 
 	floorBatch.MultiTexCoord2f(0, 0.0f, texSize);
 	floorBatch.Vertex3f(-20.0f, -0.41f, -20.0f);
-	floorBatch.End();
+	floorBatch.end();
 
 	// Make 3 texture objects
 	glGenTextures(3, uiTextures);

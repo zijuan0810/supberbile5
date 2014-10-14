@@ -77,7 +77,7 @@ void SetupRC()
 	}; 
 
 	// Randomly place the stars in their initial positions, and pick a random color
-	starsBatch.Begin(GL_POINTS, NUM_STARS);
+	starsBatch.begin(GL_POINTS, NUM_STARS);
 	for (int i = 0; i < NUM_STARS; i++) {
 		int iColor = 0;		// All stars start as white
 
@@ -102,7 +102,7 @@ void SetupRC()
 
 		starsBatch.Vertex3fv(vPosition);
 	}
-	starsBatch.End();
+	starsBatch.end();
 
 
 	starShader = gltLoadShaderWithFileEx(

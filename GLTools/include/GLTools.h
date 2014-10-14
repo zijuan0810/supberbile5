@@ -202,7 +202,7 @@ GLint gltGrabScreenTGA(const char *szFileName);
  * @param iSlices 指围绕着球体排列的三角形数量
  * @param iStacks 指从球体底部堆叠到顶部的三角形带数量
  */
-void gltMakeTorus(GLTriangleBatch& torusBatch, GLfloat majorRadius, GLfloat minorRadius, 
+void gltCreateTorus(GLTriangleBatch& torusBatch, GLfloat majorRadius, GLfloat minorRadius, 
 				  GLint iSlices, GLint iStacks);
 
 /**
@@ -212,7 +212,7 @@ void gltMakeTorus(GLTriangleBatch& torusBatch, GLfloat majorRadius, GLfloat mino
  * @param iSlices 指围绕着球体排列的三角形数量
  * @param iStacks 指从球体底部堆叠到顶部的三角形带数量
  */
-void gltMakeSphere(GLTriangleBatch& sphereBatch, GLfloat fRadius, GLint iSlices, GLint iStacks);
+void gltCreateSphere(GLTriangleBatch& sphereBatch, GLfloat fRadius, GLint iSlices, GLint iStacks);
 
 /**
  * Create a disk(圆盘)

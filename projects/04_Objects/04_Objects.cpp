@@ -64,9 +64,9 @@ void SetupRC()
 	cameraFrame.MoveForward(-15.0f);
 
 	// Sphere
-	gltMakeSphere(sphereBatch, 3.0f, 10, 20);
+	gltCreateSphere(sphereBatch, 3.0f, 10, 20);
 	// Torus
-	gltMakeTorus(torusBatch, 3.0f, 0.75f, 15, 15);
+	gltCreateTorus(torusBatch, 3.0f, 0.75f, 15, 15);
 	// Cylinder
 	gltMakeCylinder(cylinderBatch, 2.0f, 2.0f, 3.0f, 13, 2);
 	// Cone

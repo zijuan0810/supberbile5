@@ -107,7 +107,7 @@ void SetupRC()
 	glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
 
 	viewFrame.MoveForward(-4.0f);
-	gltMakeSphere(sphereBatch, 1.0f, 52, 26);
+	gltCreateSphere(sphereBatch, 1.0f, 52, 26);
 	gltMakeCube(skyboxBatch, 20.0f);
 
 	reflectionShader = gltLoadShaderWithFileEx(

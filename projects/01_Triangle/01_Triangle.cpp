@@ -24,9 +24,9 @@ void SetupRC()
 		0.5f, 0.0f, 0.0f,
 		0.0f, 0.5f, 0.0f
 	};
-	triangleBath.Begin(GL_TRIANGLES, 3);
+	triangleBath.begin(GL_TRIANGLES, 3);
 	triangleBath.CopyVertexData3f(vVerts);
-	triangleBath.End();
+	triangleBath.end();
 }
 
 // Called to draw scene

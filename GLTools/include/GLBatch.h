@@ -43,10 +43,10 @@ public:
 	virtual ~GLBatch(void);
 
 	// Start populating(Моід) the array
-	void Begin(GLenum primitive, GLuint nVerts, GLuint nTextureUnits = 0);
+	void begin(GLenum primitive, GLuint nVerts, GLuint nTextureUnits = 0);
 
 	// Tell the batch you are done
-	void End(void);
+	void end(void);
 
 	// Block Copy in vertex data
 	void CopyVertexData3f(M3DVector3f *vVerts);

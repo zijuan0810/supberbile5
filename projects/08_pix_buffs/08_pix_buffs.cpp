@@ -121,10 +121,10 @@ void SetupRC()
 
 	glEnable(GL_DEPTH_TEST);
 
-	gltMakeTorus(torusBatch, 0.4f, 0.15f, 35, 35);
+	gltCreateTorus(torusBatch, 0.4f, 0.15f, 35, 35);
 
 	GLfloat alpha = 0.25f;
-	floorBatch.Begin(GL_TRIANGLE_FAN, 4, 1);
+	floorBatch.begin(GL_TRIANGLE_FAN, 4, 1);
 	floorBatch.Color4f(0.0f, 1.0f, 0.0f, alpha);
 	floorBatch.MultiTexCoord2f(0, 0.0f, 0.0f);
 	floorBatch.Normal3f(0.0, 1.0f, 0.0f);
@@ -144,7 +144,7 @@ void SetupRC()
 	floorBatch.MultiTexCoord2f(0, 0.0f, 10.0f);
 	floorBatch.Normal3f(0.0, 1.0f, 0.0f);
 	floorBatch.Vertex3f(-20.0f, -0.41f, -20.0f);
-	floorBatch.End();
+	floorBatch.end();
 
 	glGenTextures(1, marbleTextures);
 	glBindTexture(GL_TEXTURE_2D, marbleTextures[0]);

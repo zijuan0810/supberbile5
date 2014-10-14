@@ -156,34 +156,34 @@ void SetupRC()
 	}
 
 	// Populate small star list
-	smallStarBatch.Begin(GL_POINTS, SMALL_STARS);
+	smallStarBatch.begin(GL_POINTS, SMALL_STARS);
 	for (int i = 0; i < SMALL_STARS; ++i) {
 		vVerts[i][0] = (GLfloat)(rand() % SCREEN_X);
 		vVerts[i][1] = (GLfloat)(rand() % (SCREEN_Y - 100)) + 100.0f;
 		vVerts[i][2] = 0.0f;
 	}
 	smallStarBatch.CopyVertexData3f(vVerts);
-	smallStarBatch.End();
+	smallStarBatch.end();
 
 	// Populate medium star list
-	mediumStarBatch.Begin(GL_POINTS, MEDIUM_STARS);
+	mediumStarBatch.begin(GL_POINTS, MEDIUM_STARS);
 	for (int i = 0; i < MEDIUM_STARS; ++i) {
 		vVerts[i][0] = (GLfloat)(rand() % SCREEN_X);
 		vVerts[i][1] = (GLfloat)(rand() % (SCREEN_Y - 100)) + 100.0f;
 		vVerts[i][2] = 0.0f;
 	}
 	mediumStarBatch.CopyVertexData3f(vVerts);
-	mediumStarBatch.End();
+	mediumStarBatch.end();
 
 	// Populate large star list
-	largeStarBatch.Begin(GL_POINTS, LARGE_STARS);
+	largeStarBatch.begin(GL_POINTS, LARGE_STARS);
 	for (int i = 0; i < LARGE_STARS; ++i) {
 		vVerts[i][0] = (GLfloat)(rand() % SCREEN_X);
 		vVerts[i][1] = (GLfloat)(rand() % (SCREEN_Y - 100)) + 100.0f;
 		vVerts[i][2] = 0.0f;
 	}
 	largeStarBatch.CopyVertexData3f(vVerts);
-	largeStarBatch.End();
+	largeStarBatch.end();
 
 	// Populate mountains
 	M3DVector3f vMountains[12] = { 
@@ -200,16 +200,16 @@ void SetupRC()
 		750.0f, 25.0f, 0.0f,
 		800.0f, 90.0f, 0.0f 
 	};
-	mountainRangeBatch.Begin(GL_LINE_STRIP, 12);
+	mountainRangeBatch.begin(GL_LINE_STRIP, 12);
 	mountainRangeBatch.CopyVertexData3f(vMountains);
-	mountainRangeBatch.End();
+	mountainRangeBatch.end();
 
 	// Populate the moon
 	GLfloat x = 700.0f;     // Location and radius of moon
 	GLfloat y = 500.0f;
 	GLfloat r = 50.0f;
 	GLfloat angle = 0.0f;   // Another looping variable
-	moonBatch.Begin(GL_TRIANGLE_FAN, 4, 1);
+	moonBatch.begin(GL_TRIANGLE_FAN, 4, 1);
 	moonBatch.MultiTexCoord2f(0, 0.0f, 0.0f);
 	moonBatch.Vertex3f(x - r, y - r, 0.0f);
 
@@ -221,7 +221,7 @@ void SetupRC()
 
 	moonBatch.MultiTexCoord2f(0, 0.0f, 1.0f);
 	moonBatch.Vertex3f(x - r, y + r, 0.0f);
-	moonBatch.End();
+	moonBatch.end();
 
 
 	// Turn on line antialiasing, and give hint to to the best job possible

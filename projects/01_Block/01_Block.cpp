@@ -48,7 +48,7 @@ GLuint textures[4];
 // are also provided.
 void MakeCube(GLBatch& cubeBatch)
 {
-	cubeBatch.Begin(GL_TRIANGLES, 36, 1);
+	cubeBatch.begin(GL_TRIANGLES, 36, 1);
 
 	/////////////////////////////////////////////
 	// Top of cube
@@ -205,7 +205,7 @@ void MakeCube(GLBatch& cubeBatch)
 	cubeBatch.MultiTexCoord2f(0, 1.0f, 0.0f);
 	cubeBatch.Vertex3f(1.0f, -1.0f, -1.0f);
 
-	cubeBatch.End();
+	cubeBatch.end();
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -215,7 +215,7 @@ void MakeFloor(GLBatch& floorBatch)
 	GLfloat x = 5.0f;
 	GLfloat y = -1.0f;
 
-	floorBatch.Begin(GL_TRIANGLE_FAN, 4, 1);
+	floorBatch.begin(GL_TRIANGLE_FAN, 4, 1);
 	floorBatch.MultiTexCoord2f(0, 0.0f, 0.0f);
 	floorBatch.Vertex3f(-x, y, x);
 
@@ -227,7 +227,7 @@ void MakeFloor(GLBatch& floorBatch)
 
 	floorBatch.MultiTexCoord2f(0, 0.0f, 1.0f);
 	floorBatch.Vertex3f(-x, y, -x);
-	floorBatch.End();
+	floorBatch.end();
 }
 
 
@@ -259,7 +259,7 @@ void SetupRC()
 	MakeFloor(floorBatch);
 
 	// Make top
-	topBlock.Begin(GL_TRIANGLE_FAN, 4, 1);
+	topBlock.begin(GL_TRIANGLE_FAN, 4, 1);
 	topBlock.Normal3f(0.0f, 1.0f, 0.0f);
 	topBlock.MultiTexCoord2f(0, 0.0f, 0.0f);
 	topBlock.Vertex3f(-1.0f, 1.0f, 1.0f);
@@ -275,10 +275,10 @@ void SetupRC()
 	topBlock.Normal3f(0.0f, 1.0f, 0.0f);
 	topBlock.MultiTexCoord2f(0, 0.0f, 1.0f);
 	topBlock.Vertex3f(-1.0f, 1.0f, -1.0f);
-	topBlock.End();
+	topBlock.end();
 
 	// Make Front
-	frontBlock.Begin(GL_TRIANGLE_FAN, 4, 1);
+	frontBlock.begin(GL_TRIANGLE_FAN, 4, 1);
 	frontBlock.Normal3f(0.0f, 0.0f, 1.0f);
 	frontBlock.MultiTexCoord2f(0, 0.0f, 0.0f);
 	frontBlock.Vertex3f(-1.0f, -1.0f, 1.0f);
@@ -294,10 +294,10 @@ void SetupRC()
 	frontBlock.Normal3f(0.0f, 0.0f, 1.0f);
 	frontBlock.MultiTexCoord2f(0, 0.0f, 1.0f);
 	frontBlock.Vertex3f(-1.0f, 1.0f, 1.0f);
-	frontBlock.End();
+	frontBlock.end();
 
 	// Make left
-	leftBlock.Begin(GL_TRIANGLE_FAN, 4, 1);
+	leftBlock.begin(GL_TRIANGLE_FAN, 4, 1);
 	leftBlock.Normal3f(-1.0f, 0.0f, 0.0f);
 	leftBlock.MultiTexCoord2f(0, 0.0f, 0.0f);
 	leftBlock.Vertex3f(-1.0f, -1.0f, -1.0f);
@@ -313,7 +313,7 @@ void SetupRC()
 	leftBlock.Normal3f(-1.0f, 0.0f, 0.0f);
 	leftBlock.MultiTexCoord2f(0, 0.0f, 1.0f);
 	leftBlock.Vertex3f(-1.0f, 1.0f, -1.0f);
-	leftBlock.End();
+	leftBlock.end();
 
 	// Create shadow projection matrix
 	GLfloat floorPlane[] = { 0.0f, 1.0f, 0.0f, 1.0f};

@@ -50,10 +50,10 @@ void SetupRC()
 		0.0f, 1.0f, 0.0f, 1.0f,
 		0.0f, 0.0f, 1.0f, 1.0f 
 	};
-	triangleBatch.Begin(GL_TRIANGLES, 3);
+	triangleBatch.begin(GL_TRIANGLES, 3);
 	triangleBatch.CopyVertexData3f(vVerts);
 	triangleBatch.CopyColorData4f(vColors);
-	triangleBatch.End();
+	triangleBatch.end();
 
 	myIndentityShader = gltLoadShaderWithFileEx("ShadedIdentity.vsh", 
 														"ShadedIdentity.fsh", 

@@ -66,7 +66,7 @@ void SetupRC()
 	viewFrame.MoveForward(4.0f);
 
 	// create the torus
-	gltMakeTorus(torusBatch, 0.8f, 0.25f, 52, 26);
+	gltCreateTorus(torusBatch, 0.8f, 0.25f, 52, 26);
 
 	ADSDissloveShader = gltLoadShaderWithFileEx("Dissolve.vp", 
 														"Dissolve.fp",

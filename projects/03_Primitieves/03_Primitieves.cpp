@@ -77,24 +77,24 @@ void SetupRC()
 	};
 
 	// Load point batch
-	pointBatch.Begin(GL_POINTS, 24);
+	pointBatch.begin(GL_POINTS, 24);
 	pointBatch.CopyVertexData3f(vCoast);
-	pointBatch.End();
+	pointBatch.end();
 
 	// Load as a bunch of line segments
-	lineBatch.Begin(GL_LINES, 24);
+	lineBatch.begin(GL_LINES, 24);
 	lineBatch.CopyVertexData3f(vCoast);
-	lineBatch.End();
+	lineBatch.end();
 
 	// Load as a single line segment
-	lineStripBatch.Begin(GL_LINE_STRIP, 24);
+	lineStripBatch.begin(GL_LINE_STRIP, 24);
 	lineStripBatch.CopyVertexData3f(vCoast);
-	lineStripBatch.End();
+	lineStripBatch.end();
 
 	// Single line, connect first and last points
-	lineLoopBatch.Begin(GL_LINE_LOOP, 24);
+	lineLoopBatch.begin(GL_LINE_LOOP, 24);
 	lineLoopBatch.CopyVertexData3f(vCoast);
-	lineLoopBatch.End();
+	lineLoopBatch.end();
 
 	// For Triangles, we'll make a Pyramid
 	GLfloat vPyramid[12][3] = { 
@@ -116,11 +116,11 @@ void SetupRC()
 	};
 
 	// Load triangle batch
-	triangleBatch.Begin(GL_TRIANGLES, 12);
+	triangleBatch.begin(GL_TRIANGLES, 12);
 	triangleBatch.CopyVertexData3f(vPyramid);
-	triangleBatch.End();
+	triangleBatch.end();
 
-	// --- Begin fan
+	// --- begin fan
 	// For a Triangle fan, just a 6 sided hex. Raise the center up a bit
 	GLfloat vPoints[100][3];    // Scratch array, more than we need
 	int nVerts = 0;
@@ -143,11 +143,11 @@ void SetupRC()
 	vPoints[nVerts][2] = 0.0f;
 
 	// Load it up
-	triangleFanBatch.Begin(GL_TRIANGLE_FAN, nVerts);
+	triangleFanBatch.begin(GL_TRIANGLE_FAN, nVerts);
 	triangleFanBatch.CopyVertexData3f(vPoints);
-	triangleFanBatch.End();
+	triangleFanBatch.end();
 
-	// --- End the fan
+	// --- end the fan
 
 
 	// For triangle strips, a little ring or cylinder segment
@@ -180,9 +180,9 @@ void SetupRC()
 	iCounter++;            
 
 	// Load the triangle strip
-	triangleStripBatch.Begin(GL_TRIANGLE_STRIP, iCounter);
+	triangleStripBatch.begin(GL_TRIANGLE_STRIP, iCounter);
 	triangleStripBatch.CopyVertexData3f(vPoints);
-	triangleStripBatch.End();  
+	triangleStripBatch.end();  
 }
 
 void DrawWireFramedBatch(GLBatch* pBatch)

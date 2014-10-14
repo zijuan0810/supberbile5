@@ -59,13 +59,13 @@ void SetupRC()
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 	// This make torus
-	gltMakeTorus(torusBatch, 0.4f, 0.15f, 30, 30);
+	gltCreateTorus(torusBatch, 0.4f, 0.15f, 30, 30);
 	// This make sphere
-	gltMakeSphere(sphereBatch, 0.2f, 30, 30);
+	gltCreateSphere(sphereBatch, 0.2f, 30, 30);
 
 
 	// This make a floor
-	floorBatch.Begin(GL_LINES, 324);
+	floorBatch.begin(GL_LINES, 324);
 	for (GLfloat x=-20.0f; x<=20.0f; x+=0.5f) {
 		floorBatch.Vertex3f(x, -0.55f, 20.0f);
 		floorBatch.Vertex3f(x, -0.55f, -20.0f);
@@ -73,7 +73,7 @@ void SetupRC()
 		floorBatch.Vertex3f(20.0f, -0.55f, x);
 		floorBatch.Vertex3f(-20.0f, -0.55f, x);
 	}
-	floorBatch.End();
+	floorBatch.end();
 
 	// 这里我们并不需要创建50个实际的球体，只要将同一个球体绘制50次就可以
 	// 随机放置sphere

@@ -118,12 +118,12 @@ void SetupRC()
 
 	shaderManager.init();
 
-	gltMakeTorus(torusBatch, 0.4f, 0.15f, 40, 20);
-	gltMakeSphere(sphereBatch, 0.1f, 26, 13);
+	gltCreateTorus(torusBatch, 0.4f, 0.15f, 40, 20);
+	gltCreateSphere(sphereBatch, 0.1f, 26, 13);
 
 	// make the solid ground
 	GLfloat texSize = 10.0f;
-	floorBatch.Begin(GL_TRIANGLE_FAN, 4, 1);
+	floorBatch.begin(GL_TRIANGLE_FAN, 4, 1);
 	floorBatch.MultiTexCoord2f(0, 0.0f, 0.0f);
 	floorBatch.Vertex3f(-20.0f, -0.41f, 20.0f);
 
@@ -135,14 +135,14 @@ void SetupRC()
 
 	floorBatch.MultiTexCoord2f(0, 0.0f, texSize);
 	floorBatch.Vertex3f(-20.0f, -0.41f, -20.0f);
-	floorBatch.End();
+	floorBatch.end();
 
 	// draw the opengl logo
 	int x = 500;
 	int y = 155;
 	int width = 300;
 	int height = 155;
-	logoBatch.Begin(GL_TRIANGLE_FAN, 4, 1);
+	logoBatch.begin(GL_TRIANGLE_FAN, 4, 1);
 
 	// Upper left hand corner
 	logoBatch.MultiTexCoord2f(0, 0.0f, height);
@@ -160,7 +160,7 @@ void SetupRC()
 	logoBatch.MultiTexCoord2f(0, width, height);
 	logoBatch.Vertex3f(x + width, y, 0.0f);
 
-	logoBatch.End();
+	logoBatch.end();
 
 	// Make 4 texture objects
 	glGenTextures(4, uiTextures);

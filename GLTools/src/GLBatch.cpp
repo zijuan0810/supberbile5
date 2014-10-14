@@ -62,7 +62,7 @@ GLBatch::~GLBatch(void)
 
 
 // Start the primitive batch.
-void GLBatch::Begin(GLenum primitive, GLuint nVerts, GLuint nTextureUnits)
+void GLBatch::begin(GLenum primitive, GLuint nVerts, GLuint nTextureUnits)
 {
 	_primitiveType = primitive;
 	_numVerts = nVerts;
@@ -160,7 +160,7 @@ void GLBatch::CopyTexCoordData2f(M3DVector2f *vTexCoords, GLuint uiTextureLayer)
 }
 
 // Bind everything up in a little package
-void GLBatch::End(void)
+void GLBatch::end(void)
 {
 #ifndef OPENGL_ES
 	// Check to see if items have been added one at a time

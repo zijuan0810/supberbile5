@@ -95,7 +95,7 @@ public:
 	// Use these three functions to add triangles
 	void BeginMesh(GLuint nMaxVerts);
 	void AddTriangle(M3DVector3f verts[3], M3DVector3f vNorms[3], M3DVector2f vTexCoords[3]);
-	void End(void);
+	void end(void);
 
 	// Useful for statistics
 	inline GLuint GetIndexCount(void) { return _nNumIndexes; }

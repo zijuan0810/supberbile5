@@ -14,7 +14,7 @@
     <ClCompile Include="08_fbo_drawbuffers.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{5B9CB6B5-2B99-4A18-9476-2852CBEBE4DB}</ProjectGuid>
+    <ProjectGuid>{84C2FCC4-1FBC-4914-BD5A-94F03FA543E6}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>08_fbo_drawbuffers</RootNamespace>
   </PropertyGroup>

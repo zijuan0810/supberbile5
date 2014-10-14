@@ -68,7 +68,7 @@ void SetupRC()
 	viewFrame.MoveForward(4.0f);
 
 	// make the sphere
-	gltMakeSphere(sphereBatch, 1.0f, 13, 26);
+	gltCreateSphere(sphereBatch, 1.0f, 13, 26);
 
 	// GLSL 数据获取
 	ADSLightShader = shaderManager.LoadShaderPairWithAttributes("ADSPhong.vp",

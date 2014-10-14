@@ -93,24 +93,24 @@ void SetupRC()
 	}
 
 	// Build Geometry
-	floorBatch.Begin(GL_TRIANGLE_STRIP, 28, 1);	for(GLfloat i = 60.0f; i >= 0.0f; i -= 10.0f) {		floorBatch.MultiTexCoord2f(0, 0.0f, 0.0f);		floorBatch.Vertex3f(-10.0f, -10.0f, i);
+	floorBatch.begin(GL_TRIANGLE_STRIP, 28, 1);	for(GLfloat i = 60.0f; i >= 0.0f; i -= 10.0f) {		floorBatch.MultiTexCoord2f(0, 0.0f, 0.0f);		floorBatch.Vertex3f(-10.0f, -10.0f, i);
 		floorBatch.MultiTexCoord2f(0, 1.0f, 0.0f);		floorBatch.Vertex3f(10.0f, -10.0f, i);
 
 		floorBatch.MultiTexCoord2f(0, 0.0f, 1.0f);		floorBatch.Vertex3f(-10.0f, -10.0f, i - 10.0f);
 
-		floorBatch.MultiTexCoord2f(0, 1.0f, 1.0f);		floorBatch.Vertex3f(10.0f, -10.0f, i - 10.0f);	}	floorBatch.End();
-	ceilingBatch.Begin(GL_TRIANGLE_STRIP, 28, 1);	for ( GLfloat i = 60.0f; i >= 0.0f; i -=10.0f) {		ceilingBatch.MultiTexCoord2f(0, 0.0f, 1.0f);		ceilingBatch.Vertex3f(-10.0f, 10.0f, i - 10.0f);
+		floorBatch.MultiTexCoord2f(0, 1.0f, 1.0f);		floorBatch.Vertex3f(10.0f, -10.0f, i - 10.0f);	}	floorBatch.end();
+	ceilingBatch.begin(GL_TRIANGLE_STRIP, 28, 1);	for ( GLfloat i = 60.0f; i >= 0.0f; i -=10.0f) {		ceilingBatch.MultiTexCoord2f(0, 0.0f, 1.0f);		ceilingBatch.Vertex3f(-10.0f, 10.0f, i - 10.0f);
 		ceilingBatch.MultiTexCoord2f(0, 1.0f, 1.0f);		ceilingBatch.Vertex3f(10.0f, 10.0f, i - 10.0f);
 		ceilingBatch.MultiTexCoord2f(0, 0.0f, 0.0f);		ceilingBatch.Vertex3f(-10.0f, 10.0f, i);
-		ceilingBatch.MultiTexCoord2f(0, 1.0f, 0.0f);		ceilingBatch.Vertex3f(10.0f, 10.0f, i);	}	ceilingBatch.End();
-	leftWallBatch.Begin(GL_TRIANGLE_STRIP, 28, 1);	for (GLfloat i = 60.0f; i >= 0.0f; i -=10.0f) {		leftWallBatch.MultiTexCoord2f(0, 0.0f, 0.0f);		leftWallBatch.Vertex3f(-10.0f, -10.0f, i);
+		ceilingBatch.MultiTexCoord2f(0, 1.0f, 0.0f);		ceilingBatch.Vertex3f(10.0f, 10.0f, i);	}	ceilingBatch.end();
+	leftWallBatch.begin(GL_TRIANGLE_STRIP, 28, 1);	for (GLfloat i = 60.0f; i >= 0.0f; i -=10.0f) {		leftWallBatch.MultiTexCoord2f(0, 0.0f, 0.0f);		leftWallBatch.Vertex3f(-10.0f, -10.0f, i);
 		leftWallBatch.MultiTexCoord2f(0, 0.0f, 1.0f);		leftWallBatch.Vertex3f(-10.0f, 10.0f, i);
 		leftWallBatch.MultiTexCoord2f(0, 1.0f, 0.0f);		leftWallBatch.Vertex3f(-10.0f, -10.0f, i - 10.0f);
-		leftWallBatch.MultiTexCoord2f(0, 1.0f, 1.0f);		leftWallBatch.Vertex3f(-10.0f, 10.0f, i - 10.0f);	}	leftWallBatch.End();
-	rightWallBatch.Begin(GL_TRIANGLE_STRIP, 28, 1);	for (GLfloat i = 60.0f; i >= 0.0f; i -=10.0f) {		rightWallBatch.MultiTexCoord2f(0, 0.0f, 0.0f);		rightWallBatch.Vertex3f(10.0f, -10.0f, i);
+		leftWallBatch.MultiTexCoord2f(0, 1.0f, 1.0f);		leftWallBatch.Vertex3f(-10.0f, 10.0f, i - 10.0f);	}	leftWallBatch.end();
+	rightWallBatch.begin(GL_TRIANGLE_STRIP, 28, 1);	for (GLfloat i = 60.0f; i >= 0.0f; i -=10.0f) {		rightWallBatch.MultiTexCoord2f(0, 0.0f, 0.0f);		rightWallBatch.Vertex3f(10.0f, -10.0f, i);
 		rightWallBatch.MultiTexCoord2f(0, 0.0f, 1.0f);		rightWallBatch.Vertex3f(10.0f, 10.0f, i);
 		rightWallBatch.MultiTexCoord2f(0, 1.0f, 0.0f);		rightWallBatch.Vertex3f(10.0f, -10.0f, i - 10.0f);
-		rightWallBatch.MultiTexCoord2f(0, 1.0f, 1.0f);		rightWallBatch.Vertex3f(10.0f, 10.0f, i - 10.0f);	}	rightWallBatch.End();}
+		rightWallBatch.MultiTexCoord2f(0, 1.0f, 1.0f);		rightWallBatch.Vertex3f(10.0f, 10.0f, i - 10.0f);	}	rightWallBatch.end();}
 
 /**
  * Respond to arrow keys by moving the camera frame of reference

@@ -62,8 +62,8 @@ void SetupRC()
 	viewFrame.MoveForward(4.0f);
 
 	// Make the sphere
-	//gltMakeSphere(sphereBatch, 1.0f, 26, 13);
-	gltMakeTorus(sphereBatch, 0.4f, 0.15f, 40, 20);
+	//gltCreateSphere(sphereBatch, 1.0f, 26, 13);
+	gltCreateTorus(sphereBatch, 0.4f, 0.15f, 40, 20);
 
 	diffuseLightShader = shaderManager.LoadShaderPairWithAttributes("DiffuseLight.vsh", 
 		"DiffuseLight.fsh", 2, 

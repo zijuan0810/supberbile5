@@ -48,7 +48,7 @@ void SetupRC()
 	viewFrame.MoveForward(7.0f);
 
 	// Make the torus
-	gltMakeTorus(torusBatch, 1.0f, 0.3f, 52, 25);
+	gltCreateTorus(torusBatch, 1.0f, 0.3f, 52, 25);
 
 	glPointSize(4.0f);
 }

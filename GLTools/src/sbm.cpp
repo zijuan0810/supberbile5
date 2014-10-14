@@ -19,7 +19,7 @@ SBObject::~SBObject(void)
     Free();
 }
 
-bool SBObject::LoadFromSBM(const char * filename, int vertexIndex, int normalIndex, int texCoord0Index)
+bool SBObject::loadWithFile(const char * filename, int vertexIndex, int normalIndex, int texCoord0Index)
 {
     FILE * f = NULL;
 

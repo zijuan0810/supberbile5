@@ -61,7 +61,7 @@ void SetupRC()
 
 	viewFrame.MoveForward(4.0f);
 
-	gltMakeTorus(torusBatch, 0.80f, 0.25f, 52, 26);
+	gltCreateTorus(torusBatch, 0.80f, 0.25f, 52, 26);
 
 	toonShader = gltLoadShaderWithFileEx("ToonShader.vp", "ToonShader.fp",
 												2,

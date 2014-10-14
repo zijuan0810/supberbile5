@@ -58,7 +58,7 @@ void SetupRC()
 	viewFrame.MoveForward(4.0f);
 
 	// make the torus
-	gltMakeTorus(torusBatch, 0.8f, 0.2f, 52, 26);
+	gltCreateTorus(torusBatch, 0.8f, 0.2f, 52, 26);
 
 	flatShader = gltLoadShaderWithFileEx("FlatShader.vp", "FlatShader.fp", 1, 
 												GLT_ATTRIBUTE_VERTEX, "vVertex");

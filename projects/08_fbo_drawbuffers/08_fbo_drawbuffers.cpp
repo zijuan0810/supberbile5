@@ -90,6 +90,111 @@ void SetupRC()
 	glClearColor(0.0f, 0.0f, 1.0f, 1.0f );
 
 	shaderManager.init();
+
+	glEnable(GL_DEPTH_TEST);
+
+	ninja.loadWithFile("ninja.sbm", GLT_ATTRIBUTE_VERTEX, GLT_ATTRIBUTE_NORMAL,
+		GLT_ATTRIBUTE_TEXTURE0);
+
+	gltCreateTorus(torusBatch, 0.4f, 0.15f, 35, 35);
+	gltCreateSphere(sphereBatch, 0.1f, 26, 13);
+
+	GLfloat alpha = 0.25f;
+	floorBatch.begin(GL_TRIANGLE_FAN, 4, 1);
+		floorBatch.Color4f(0.0f, 1.0f, 0.0f, alpha);
+		floorBatch.MultiTexCoord2f(0, 0.0f, 0.0f);
+		floorBatch.Normal3f(0.0, 1.0f, 0.0f);
+		floorBatch.Vertex3f(-20.0f, -0.41f, 20.0f);
+
+		floorBatch.Color4f(0.0f, 1.0f, 0.0f, alpha);
+		floorBatch.MultiTexCoord2f(0, 10.0f, 0.0f);
+		floorBatch.Normal3f(0.0, 1.0f, 0.0f);
+		floorBatch.Vertex3f(20.0f, -0.41f, 20.0f);
+
+		floorBatch.Color4f(0.0f, 1.0f, 0.0f, alpha);
+		floorBatch.MultiTexCoord2f(0, 10.0f, 10.0f);
+		floorBatch.Normal3f(0.0, 1.0f, 0.0f);
+		floorBatch.Vertex3f(20.0f, -0.41f, -20.0f);
+
+		floorBatch.Color4f(0.0f, 1.0f, 0.0f, alpha);
+		floorBatch.MultiTexCoord2f(0, 0.0f, 10.0f);
+		floorBatch.Normal3f(0.0, 1.0f, 0.0f);
+		floorBatch.Vertex3f(-20.0f, -0.41f, -20.0f);
+	floorBatch.end();
+
+	glGenTextures(1, textures);
+	glBindTexture(GL_TEXTURE_2D, textures[0]);
+	gltLoadTextureBMP("marble.bmp", GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR, GL_REPEAT);
+
+	glGenFramebuffers(1, &fboName);
+
+	// Create depth renderbuffer
+	glGenRenderbuffers(1, &depthBufferName);
+	glBindRenderbuffer(GL_RENDERBUFFER, depthBufferName);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT32, screenWidth, screenHeight);
+
+	// Create 3 color renderbuffers
+	glGenRenderbuffers(3, renderBufferNames);
+	for (int i = 0; i < 3; ++i) {
+		glBindRenderbuffer(GL_RENDERBUFFER, renderBufferNames[i]);
+		glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA8, screenWidth, screenHeight);
+	}
+
+	// Attach all 4 renderbuffers to FBO
+	glBindRenderbuffer(GL_DRAW_FRAMEBUFFER, fboName);
+	glFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBufferName);
+	glFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, renderBufferNames[0]);
+	glFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_RENDERBUFFER, renderBufferNames[1]);
+	glFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_RENDERBUFFER, renderBufferNames[2]);
+
+	// See bind frag location in Chapter 9
+	processProg = gltLoadShaderWithFileEx("multibuffer.vs.glsl", "multibuffer_frag_location.fs.glsl", 3,
+		GLT_ATTRIBUTE_VERTEX, "vVertex",
+		GLT_ATTRIBUTE_NORMAL, "vNormal",
+		GLT_ATTRIBUTE_TEXTURE0, "texCoord0");
+	glBindFragDataLocation(processProg, 0, "oStraightColor");
+	glBindFragDataLocation(processProg, 1, "oGreyscale");
+	glBindFragDataLocation(processProg, 2, "oLumAdjColor");
+
+	// Create 3 new buffer objects
+	glGenBuffers(3, texBO);
+	glGenTextures(1, &texBOTexture);
+
+	// Load first texBO with a tangent-like curve, 1024 values
+	int count = 0;
+	//float* fileData = LoadFloatData("LumTan.data", &count);
+	shared_ptr<float> fileData(LoadFloatData("LumTan.data", &count));
+	if (count > 0) {
+		glBindBuffer(GL_TEXTURE_BUFFER_ARB, texBO[0]);
+		glBufferData(GL_TEXTURE_BUFFER_ARB, count * sizeof(float), (float*)fileData.get(), GL_STATIC_DRAW);
+	}
+
+	// Load second texBO with a sine-like curve, 1024 values
+	fileData = make_shared<float>(LoadFloatData("LumSin.data", &count));
+	if (count > 0) {
+		glBindBuffer(GL_TEXTURE_BUFFER_ARB, texBO[1]);
+		glBufferData(GL_TEXTURE_BUFFER_ARB, count * sizeof(float), (float*)fileData.get(), GL_STATIC_DRAW);
+	}
+
+	// Load third texBO with a linear curve, 1024 values
+	fileData = make_shared<float>(LoadFloatData("LumSin.data", &count));
+	if (count > 0) {
+		glBindBuffer(GL_TEXTURE_BUFFER_ARB, texBO[2]);
+		glBufferData(GL_TEXTURE_BUFFER_ARB, count * sizeof(float), (float)fileData.get(), GL_STATIC_DRAW);
+	}
+
+	// Load the Ta ramp first
+	glBindBuffer(GL_TEXTURE_BUFFER, 0);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_BUFFER_ARB, texBOTexture);
+	glTexBufferARB(GL_TEXTURE_BUFFER_ARB, GL_R32F, texBO[0]);
+	glActiveTexture(GL_TEXTURE0);
+
+	// Reset framebuffer binding
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+
+	// Make sure all went well
+	gltCheckErrors();
 }
 
 /**

@@ -179,7 +179,7 @@ void gltSetWorkingDirectory(const char *szArgv)
 /** 
 * draw a torus (doughnut)  at z = fZVal... torus is in xy plane
 */
-void gltMakeTorus(GLTriangleBatch& torusBatch, GLfloat majorRadius, GLfloat minorRadius, 
+void gltCreateTorus(GLTriangleBatch& torusBatch, GLfloat majorRadius, GLfloat minorRadius, 
 				  GLint iSlices, GLint iStacks)
 {
 	double majorStep = 2.0f*M3D_PI / iSlices;
@@ -268,12 +268,12 @@ void gltMakeTorus(GLTriangleBatch& torusBatch, GLfloat majorRadius, GLfloat mino
 			torusBatch.AddTriangle(vVertex, vNormal, vTexture);			
 		}
 	}
-	torusBatch.End();
+	torusBatch.end();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 // Make a sphere
-void gltMakeSphere(GLTriangleBatch& sphereBatch, GLfloat fRadius, GLint iSlices, GLint iStacks)
+void gltCreateSphere(GLTriangleBatch& sphereBatch, GLfloat fRadius, GLint iSlices, GLint iStacks)
 {
 	GLfloat drho = (GLfloat)(3.141592653589) / (GLfloat) iStacks;
 	GLfloat dtheta = 2.0f * (GLfloat)(3.141592653589) / (GLfloat) iSlices;
@@ -377,7 +377,7 @@ void gltMakeSphere(GLTriangleBatch& sphereBatch, GLfloat fRadius, GLint iSlices,
 		}
 		t -= dt;
 	}
-	sphereBatch.End();
+	sphereBatch.end();
 }
 
 
@@ -480,7 +480,7 @@ void gltMakeDisk(GLTriangleBatch& diskBatch, GLfloat innerRadius, GLfloat outerR
 		}
 	}
 
-	diskBatch.End();
+	diskBatch.end();
 }
 
 // draw a cylinder. Much like gluCylinder
@@ -625,7 +625,7 @@ void gltMakeCylinder(GLTriangleBatch& cylinderBatch, GLfloat baseRadius, GLfloat
 			cylinderBatch.AddTriangle(vVertex, vNormal, vTexture);			
 		}
 	}
-	cylinderBatch.End();
+	cylinderBatch.end();
 }
 
 
@@ -633,7 +633,7 @@ void gltMakeCylinder(GLTriangleBatch& cylinderBatch, GLfloat baseRadius, GLfloat
 // Make a cube, centered at the origin, and with a specified "radius"
 void gltMakeCube(GLBatch& cubeBatch, GLfloat fRadius)
 {
-	cubeBatch.Begin(GL_TRIANGLES, 36, 1);
+	cubeBatch.begin(GL_TRIANGLES, 36, 1);
 
 	/////////////////////////////////////////////
 	// Top of cube
@@ -789,7 +789,7 @@ void gltMakeCube(GLBatch& cubeBatch, GLfloat fRadius)
 	cubeBatch.Normal3f(0.0f, 0.0f, -fRadius);
 	cubeBatch.MultiTexCoord2f(0, fRadius, 0.0f);
 	cubeBatch.Vertex3f(fRadius, -fRadius, -fRadius);   
-	cubeBatch.End();
+	cubeBatch.end();
 }	
 
 
@@ -1527,7 +1527,7 @@ void gltGenerateOrtho2DMat(GLuint screenWidth, GLuint screenHeight, M3DMatrix44f
 
 	// set screen quad vertex array
 	screenQuad.Reset();
-	screenQuad.Begin(GL_TRIANGLE_STRIP, 4, 1);
+	screenQuad.begin(GL_TRIANGLE_STRIP, 4, 1);
 	screenQuad.Color4f(0.0f, 1.0f, 0.0f, 1.0f);
 	screenQuad.MultiTexCoord2f(0, 0.0f, 0.0f); 
 	screenQuad.Vertex3f(0.0f, 0.0f, 0.0f);
@@ -1543,7 +1543,7 @@ void gltGenerateOrtho2DMat(GLuint screenWidth, GLuint screenHeight, M3DMatrix44f
 	screenQuad.Color4f(0.0f, 1.0f, 0.0f, 1.0f);
 	screenQuad.MultiTexCoord2f(0, 1.0f, 1.0f);
 	screenQuad.Vertex3f((float)screenWidth, (float)screenHeight, 0.0f);
-	screenQuad.End();
+	screenQuad.end();
 }
 
 

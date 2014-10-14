@@ -44,7 +44,7 @@ public:
     SBObject(void);
     virtual ~SBObject(void);
 
-    bool LoadFromSBM(const char * filename, int vertexIndex, int normalIndex, int texCoord0Index);
+    bool loadWithFile(const char * filename, int vertexIndex, int normalIndex, int texCoord0Index);
     void Render(unsigned int frame_index = 0, unsigned int instances = 0);
     bool Free(void);
 

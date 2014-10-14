@@ -34,7 +34,7 @@ GLBatch				cubeBatch;
 
 void _createPyramid(GLBatch& outBatch)
 {
-	outBatch.Begin(GL_TRIANGLES, 18, 1);
+	outBatch.begin(GL_TRIANGLES, 18, 1);
 
 	// Bottom of pyramid
 	outBatch.Normal3f(0.0f, -1.0f, 0.0f);
@@ -124,7 +124,7 @@ void _createPyramid(GLBatch& outBatch)
 	outBatch.MultiTexCoord2f(0, 1.0f, 0.0f);
 	outBatch.Vertex3fv(vBackLeft);		// Back left corner
 
-	outBatch.End();
+	outBatch.end();
 }
 
 /**
@@ -203,9 +203,9 @@ void SetupRC()
 
 
 	// This make torus
-	gltMakeTorus(torusBatch, 0.4f, 0.15f, 30, 30);
+	gltCreateTorus(torusBatch, 0.4f, 0.15f, 30, 30);
 	// This make sphere
-	gltMakeSphere(sphereBatch, 0.2f, 30, 30);
+	gltCreateSphere(sphereBatch, 0.2f, 30, 30);
 	// This make cube
 	gltMakeCube(cubeBatch, 1.0f);
 

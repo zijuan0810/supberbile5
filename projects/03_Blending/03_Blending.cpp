@@ -35,9 +35,9 @@ void SetupRC()
 	shaderManager.init();
 
 	// Load up a triangle fan
-	squareBatch.Begin(GL_TRIANGLE_FAN, 4);
+	squareBatch.begin(GL_TRIANGLE_FAN, 4);
 	squareBatch.CopyVertexData3f(vVerts);
-	squareBatch.End();
+	squareBatch.end();
 
 	// Solid
 	GLfloat vBlock1[] = {
@@ -46,9 +46,9 @@ void SetupRC()
 		0.75f, 0.75f, 0.0f,
 		0.25f, 0.75f, 0.0f
 	};
-	greenBatch.Begin(GL_TRIANGLE_FAN, 4);
+	greenBatch.begin(GL_TRIANGLE_FAN, 4);
 	greenBatch.CopyVertexData3f(vBlock1);
-	greenBatch.End();
+	greenBatch.end();
 
 	GLfloat vBlock2[] = { 
 		-0.75f, 0.25f, 0.0f,
@@ -56,9 +56,9 @@ void SetupRC()
 		-0.25f, 0.75f, 0.0f,
 		-0.75f, 0.75f, 0.0f
 	};
-	redBatch.Begin(GL_TRIANGLE_FAN, 4);
+	redBatch.begin(GL_TRIANGLE_FAN, 4);
 	redBatch.CopyVertexData3f(vBlock2);
-	redBatch.End();
+	redBatch.end();
 
 	GLfloat vBlock3[] = { 
 		-0.75f, -0.75f, 0.0f,
@@ -66,18 +66,18 @@ void SetupRC()
 		-0.25f, -0.25f, 0.0f,
 		-0.75f, -0.25f, 0.0f
 	};
-	blueBatch.Begin(GL_TRIANGLE_FAN, 4);
+	blueBatch.begin(GL_TRIANGLE_FAN, 4);
 	blueBatch.CopyVertexData3f(vBlock3);
-	blueBatch.End();
+	blueBatch.end();
 
 	GLfloat vBlock4[] = { 
 		0.25f, -0.75f, 0.0f,
 		0.75f, -0.75f, 0.0f,
 		0.75f, -0.25f, 0.0f,
 		0.25f, -0.25f, 0.0f};
-	blackBatch.Begin(GL_TRIANGLE_FAN, 4);
+	blackBatch.begin(GL_TRIANGLE_FAN, 4);
 	blackBatch.CopyVertexData3f(vBlock4);
-	blackBatch.End();
+	blackBatch.end();
 }
 
 // Respond to arrow keys by moving the camera frame of reference
@@ -148,7 +148,7 @@ void RenderScene(void)
 	shaderManager.useStockShader(GLT_SHADER_IDENTITY, vBlack);
 	blackBatch.draw();
 
-	// Begin blending
+	// begin blending
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	shaderManager.useStockShader(GLT_SHADER_IDENTITY, vRed);

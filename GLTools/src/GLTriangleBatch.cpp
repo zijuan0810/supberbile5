@@ -168,7 +168,7 @@ void GLTriangleBatch::AddTriangle(M3DVector3f verts[3], M3DVector3f vNorms[3], M
 // Compact the data. This is a nice utility, but you should really
 // save the results of the indexing for future use if the model data
 // is static (doesn't change).
-void GLTriangleBatch::End(void)
+void GLTriangleBatch::end(void)
 {
 #ifndef OPENGL_ES
 	// Create the master vertex array object
