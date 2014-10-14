@@ -1,7 +1,75 @@
 #include "GLTool-ext.h"
 
-GLShaderManager	shaderManager;
+static GLfloat vGreen[] = { 0.0f, 1.0f, 0.0f, 1.0f };
+static GLfloat vWhite[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+static GLfloat vLightPos[] = { 0.0f, 3.0f, 0.0f, 1.0f };
+static const GLenum windowBuff[] = { GL_BACK_LEFT };
+static const GLenum fboBuffs[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
 
+GLsizei	 screenWidth;			// Desired window or desktop width
+GLsizei  screenHeight;			// Desired window or desktop height
+
+GLboolean bFullScreen;			// Request to run full screen
+GLboolean bAnimated;			// Request for continual updates
+
+
+GLShaderManager		shaderManager;			// Shader Manager
+GLMatrixStack		modelViewMatrix;		// Modelview Matrix
+GLMatrixStack		projectionMatrix;		// Projection Matrix
+GLFrustum			viewFrustum;			// View Frustum
+GLGeometryTransform	transformPipeline;		// Geometry Transform Pipeline
+GLFrame				cameraFrame;			// Camera frame
+
+GLTriangleBatch		torusBatch;
+GLTriangleBatch		sphereBatch;
+GLBatch				floorBatch;
+GLBatch             screenQuad;
+
+GLuint				textures[3];
+GLuint				processProg;
+GLuint				texBO[3];
+GLuint				texBOTexture;
+bool                bUseFBO;
+GLuint              fboName;
+GLuint              depthBufferName;
+GLuint				renderBufferNames[3];
+
+SBObject            ninja;
+GLuint              ninjaTex[1];
+
+void MoveCamera(void);
+void DrawWorld(GLfloat yRot);
+bool LoadBMPTexture(const char *szFileName, GLenum minFilter, GLenum magFilter, GLenum wrapMode);
+
+static float* LoadFloatData(const char *szFile, int *count)
+{
+	FILE* file = fopen(szFile, "r");
+	if (file == nullptr) {
+		return 0;
+	}
+
+	GLint lineCount = 0;
+	char szFloat[1024] = { 0 };
+	while (fgets(szFloat, sizeof(char) * 1024, file)) {
+		lineCount++;
+	}
+
+	// Go back to begining of file
+	rewind(file);
+
+	// Allocate space for all data
+	float* data = (float*)malloc(lineCount * sizeof(float));
+	if (data != nullptr) {
+		int idx = 0;
+		while (fgets(szFloat, 1024 * sizeof(char), file)) {
+			data[idx++] = (float)atof(szFloat);
+		}
+		count[0] = idx;
+	}
+	fclose(file);
+
+	return data;
+}
 
 /**
  * Window has changed size, or has just been created. In either case, we need to use the window 

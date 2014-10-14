@@ -12,6 +12,7 @@
 #include "GLShaderManager.h"
 #include "GLTriangleBatch.h"
 #include "StopWatch.h"
+#include "sbm.h"
 
 // freeglut
 #include <GL/glut.h>
