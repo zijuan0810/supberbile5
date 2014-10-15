@@ -55,9 +55,9 @@ void ChangeSize(int w, int h)
 
 	GLfloat fAspect = (GLfloat)w/(GLfloat)h;
 	// Produce the perspective projection
-	viewFrustum.SetPerspective(80.0f, fAspect, 1.0f, 120.0f);
+	viewFrustum.setPerspective(80.0f, fAspect, 1.0f, 120.0f);
 	projectionMatrix.setMatrix(viewFrustum.GetProjectionMatrix());
-	transformPipeline.SetMatrixStacks(modelViewMatrix, projectionMatrix);
+	transformPipeline.setMatrixStacks(modelViewMatrix, projectionMatrix);
 }
 
 /**
@@ -187,7 +187,7 @@ void RenderScene(void)
 
 	modelViewMatrix.push();
 
-	modelViewMatrix.Translate(0.0f, 0.0f, viewZ);
+	modelViewMatrix.moveTo(0.0f, 0.0f, viewZ);
 	shaderManager.useStockShader(GLT_SHADER_TEXTURE_REPLACE, 
 								transformPipeline.GetMVPMatrix(),
 								0);

@@ -17,7 +17,7 @@ public:
 		_pjMatrixStack = &mProjection; 
 	}
 
-	void SetMatrixStacks(GLMatrixStack& mModelView, GLMatrixStack& mProjection) {
+	void setMatrixStacks(GLMatrixStack& mModelView, GLMatrixStack& mProjection) {
 		_mvMatrixStack = &mModelView;
 		_pjMatrixStack = &mProjection;
 	}

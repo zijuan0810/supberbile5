@@ -22,7 +22,7 @@
 * Simple Stopwatch class. Use this for high resolution timing 
 * purposes (or, even low resolution timings)
 * Pretty self-explanitory.... 
-* Reset(), or GetElapsedSeconds().
+* Reset(), or delta().
 */
 class CStopWatch
 {
@@ -50,7 +50,7 @@ public:
 	/**
 	 * Get elapsed time in seconds
 	 */
-	float GetElapsedSeconds(void) {
+	float delta(void) {
 		// Get the current count
 #ifdef WIN32
 		LARGE_INTEGER lCurrent;

@@ -39,10 +39,10 @@ void ChangeSize(int w, int h)
 {
 	glViewport(0, 0, w, h);
 
-	viewFrustum.SetPerspective(35.0f, (float)w/(float)w, 1.0f, 100.0f);
+	viewFrustum.setPerspective(35.0f, (float)w/(float)w, 1.0f, 100.0f);
 
 	projectionMatrix.setMatrix(viewFrustum.GetProjectionMatrix());
-	transformPipeline.SetMatrixStacks(modelViewMatrix, projectionMatrix);
+	transformPipeline.setMatrixStacks(modelViewMatrix, projectionMatrix);
 }
 
 /**
@@ -113,7 +113,7 @@ void RenderScene(void)
 
 	modelViewMatrix.push(viewFrame);
 
-	modelViewMatrix.Rotate(rotTimer.GetElapsedSeconds() * 10.0f, 0.0f, 1.0f, 0.0f);
+	modelViewMatrix.rotateTo(rotTimer.delta() * 10.0f, 0.0f, 1.0f, 0.0f);
 
 	GLfloat vEyeLight[] = {-100.0f, 100.0f, 100.0f};
 	GLfloat vDiffuseColor[] = {0.0f, 0.0f, 1.0f, 1.0f};

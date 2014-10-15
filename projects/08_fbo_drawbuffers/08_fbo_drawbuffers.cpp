@@ -29,19 +29,18 @@ GLuint				textures[3];
 GLuint				processProg;
 GLuint				texBO[3];
 GLuint				texBOTexture;
-bool                bUseFBO;
-GLuint              fboName;
+bool                isUseFBO;
+GLuint              fboBuffer;
 GLuint              depthBufferName;
 GLuint				renderBufferNames[3];
 
 SBObject            ninja;
 GLuint              ninjaTex[1];
 
-void MoveCamera(void);
-void DrawWorld(GLfloat yRot);
-bool LoadBMPTexture(const char *szFileName, GLenum minFilter, GLenum magFilter, GLenum wrapMode);
+static void draw_world(GLfloat yRot);
+static void use_process_program(M3DVector4f vLightPos, M3DVector4f vColor, int textureUnit);
 
-static float* LoadFloatData(const char *szFile, int *count)
+static float* load_float_data(const char *szFile, int *count)
 {
 	FILE* file = fopen(szFile, "r");
 	if (file == nullptr) {
@@ -71,6 +70,80 @@ static float* LoadFloatData(const char *szFile, int *count)
 	return data;
 }
 
+// Enable and setup the GLSL program used for 
+// flushes, etc.
+static void use_process_program(M3DVector4f vLightPos, M3DVector4f vColor, int textureUnit)
+{
+	glUseProgram(processProg);
+
+	// set Matricies for Vertex Program
+	glUniformMatrix4fv(glGetUniformLocation(processProg, "mvMatrix"), 1, GL_FALSE,
+		transformPipeline.GetModelViewMatrix());
+	glUniformMatrix4fv(glGetUniformLocation(processProg, "pMatrix"), 1, GL_FALSE,
+		transformPipeline.GetProjectionMatrix());
+
+	// set the light position
+	glUniform3fv(glGetUniformLocation(processProg, "vLightPos"), 1, vLightPos);
+	// set the vertex color for rendered pixels
+	glUniform4fv(glGetUniformLocation(processProg, "vColor"), 1, vColor);
+	// set the texture unit for the texBO fetch
+	glUniform1i(glGetUniformLocation(processProg, "lumCurveSampler"), 1);
+
+	// if this geometry is textured, set the texture unit
+	if (textureUnit != -1) {
+		glUniform1i(glGetUniformLocation(processProg, "bUseTexture"), 1);
+		glUniform1i(glGetUniformLocation(processProg, "textureUnit0"), textureUnit);
+	}
+	else {
+		glUniform1i(glGetUniformLocation(processProg, "bUseTexture"), 0);
+	}
+
+	gltCheckErrors();
+}
+
+// Draw the scene
+static void draw_world(GLfloat yRot)
+{
+	M3DMatrix44f mCamera;
+	modelViewMatrix.GetMatrix(mCamera);
+
+	// need light position relative to the Camera
+	M3DVector4f vLightTransformed;
+	m3dTransformVector4(vLightTransformed, vLightPos, mCamera);
+
+	// Draw the light source as a small white unshaded sphere
+	modelViewMatrix.push();
+	modelViewMatrix.moveTo(vLightPos);
+	if (isUseFBO) {
+		use_process_program(vLightPos, vWhite, -1);
+	}
+	else {
+		shaderManager.useStockShader(GLT_SHADER_FLAT, transformPipeline.GetMVPMatrix(), vWhite);
+	}
+	sphereBatch.draw();
+	modelViewMatrix.pop();
+
+	// Draw stuff relative to the camera
+	modelViewMatrix.push();
+	modelViewMatrix.moveTo(0.0f, 0.2f, -2.5f);
+		modelViewMatrix.push();
+		modelViewMatrix.rotateTo(yRot, 0.0f, 1.0f, 0.0f);
+		modelViewMatrix.moveTo(0.0f, (GLfloat)-0.6f, 0.0);
+		modelViewMatrix.scaleTo((GLfloat)0.02, (GLfloat)0.006, (GLfloat)0.02);
+
+		glBindTexture(GL_TEXTURE_2D, ninjaTex[0]);
+		if (isUseFBO) {
+			use_process_program(vLightTransformed, vWhite, 0);
+		}
+		else {
+			shaderManager.useStockShader(GLT_SHADER_TEXTURE_REPLACE, transformPipeline.GetMVPMatrix(), 0);
+		}
+		ninja.Render(0, 0);
+
+		modelViewMatrix.pop();
+	modelViewMatrix.pop();
+}
+
 /**
  * Window has changed size, or has just been created. In either case, we need to use the window 
  * dimensions to set the viewport and the projection matrix.
@@ -78,6 +151,24 @@ static float* LoadFloatData(const char *szFile, int *count)
 void ChangeSize(int w, int h)
 {
 	glViewport(0, 0, w, h);
+
+	transformPipeline.setMatrixStacks(modelViewMatrix, projectionMatrix);
+
+	viewFrustum.setPerspective(35.0f, float(w) / float(h), 1.0f, 100.0f);
+	projectionMatrix.setMatrix(viewFrustum.GetProjectionMatrix());
+	modelViewMatrix.identity();
+
+	// update screen sizes
+	screenWidth = w;
+	screenHeight = h;
+
+	glBindRenderbuffer(GL_RENDERBUFFER, depthBufferName);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT32, w, h);
+
+	for (int i = 0; i < 3; ++i) {
+		glBindRenderbuffer(GL_RENDERBUFFER, renderBufferNames[i]);
+		glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA8, w, h);
+	}
 }
 
 /**
@@ -126,12 +217,23 @@ void SetupRC()
 	glBindTexture(GL_TEXTURE_2D, textures[0]);
 	gltLoadTextureBMP("marble.bmp", GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR, GL_REPEAT);
 
-	glGenFramebuffers(1, &fboName);
+	glGenTextures(1, ninjaTex);
+	glBindTexture(GL_TEXTURE_2D, ninjaTex[0]);
+	gltLoadTextureBMP("NinjaComp.bmp", GL_LINEAR, GL_LINEAR, GL_CLAMP);
 
+	// 查询RBO支持的最大内存空间，即glRenderbufferStorage分配的空间宽度、高度必须小于该值
+	GLint maxRenderbufferSize;
+	glGetIntegerv(GL_MAX_RENDERBUFFER_SIZE, &maxRenderbufferSize);
+	log("GL_MAX_RENDERBUFFER_SIZE: %d", maxRenderbufferSize);
+
+	// 创建帧缓存区
+	glGenFramebuffers(1, &fboBuffer);
+
+	// 创建RBO
 	// Create depth renderbuffer
 	glGenRenderbuffers(1, &depthBufferName);
-	glBindRenderbuffer(GL_RENDERBUFFER, depthBufferName);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT32, screenWidth, screenHeight);
+	glBindRenderbuffer(GL_RENDERBUFFER, depthBufferName); // RBO只能绑定到GL_RENDERBUFFER目标上
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT32, screenWidth, screenHeight); // 分配内存空间
 
 	// Create 3 color renderbuffers
 	glGenRenderbuffers(3, renderBufferNames);
@@ -140,8 +242,15 @@ void SetupRC()
 		glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA8, screenWidth, screenHeight);
 	}
 
+	// 查询GL允许一次最多绑定多少个颜色缓冲区
+	GLint maxColorAttachments = 0;
+	glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &maxColorAttachments);
+	log("GL_MAX_COLOR_ATTACHMENTS: %d", maxColorAttachments);
+
 	// Attach all 4 renderbuffers to FBO
-	glBindRenderbuffer(GL_DRAW_FRAMEBUFFER, fboName);
+	// 将FBO与RBO链接起来
+	// 一个帧缓冲区（FBO）可以有多个绑定点：一个深度绑定点，一个模版绑定点和多个颜色绑定点
+	glBindRenderbuffer(GL_DRAW_FRAMEBUFFER, fboBuffer);
 	glFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBufferName);
 	glFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, renderBufferNames[0]);
 	glFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_RENDERBUFFER, renderBufferNames[1]);
@@ -155,6 +264,9 @@ void SetupRC()
 	glBindFragDataLocation(processProg, 0, "oStraightColor");
 	glBindFragDataLocation(processProg, 1, "oGreyscale");
 	glBindFragDataLocation(processProg, 2, "oLumAdjColor");
+	glLinkProgram(processProg);
+
+	CHECK_GL_ERROR();
 
 	// Create 3 new buffer objects
 	glGenBuffers(3, texBO);
@@ -163,24 +275,24 @@ void SetupRC()
 	// Load first texBO with a tangent-like curve, 1024 values
 	int count = 0;
 	//float* fileData = LoadFloatData("LumTan.data", &count);
-	shared_ptr<float> fileData(LoadFloatData("LumTan.data", &count));
+	shared_ptr<float> fileData(load_float_data("LumTan.data", &count));
 	if (count > 0) {
 		glBindBuffer(GL_TEXTURE_BUFFER_ARB, texBO[0]);
-		glBufferData(GL_TEXTURE_BUFFER_ARB, count * sizeof(float), (float*)fileData.get(), GL_STATIC_DRAW);
+		glBufferData(GL_TEXTURE_BUFFER_ARB, count * sizeof(float), (float*)(fileData.get()), GL_STATIC_DRAW);
 	}
 
 	// Load second texBO with a sine-like curve, 1024 values
-	fileData = make_shared<float>(LoadFloatData("LumSin.data", &count));
+	fileData = shared_ptr<float>(load_float_data("LumSin.data", &count));
 	if (count > 0) {
 		glBindBuffer(GL_TEXTURE_BUFFER_ARB, texBO[1]);
-		glBufferData(GL_TEXTURE_BUFFER_ARB, count * sizeof(float), (float*)fileData.get(), GL_STATIC_DRAW);
+		glBufferData(GL_TEXTURE_BUFFER_ARB, count * sizeof(float), (float*)(fileData.get()), GL_STATIC_DRAW);
 	}
 
 	// Load third texBO with a linear curve, 1024 values
-	fileData = make_shared<float>(LoadFloatData("LumSin.data", &count));
+	fileData = shared_ptr<float>(load_float_data("LumLinear.data", &count));
 	if (count > 0) {
 		glBindBuffer(GL_TEXTURE_BUFFER_ARB, texBO[2]);
-		glBufferData(GL_TEXTURE_BUFFER_ARB, count * sizeof(float), (float)fileData.get(), GL_STATIC_DRAW);
+		glBufferData(GL_TEXTURE_BUFFER_ARB, count * sizeof(float), (float*)(fileData.get()), GL_STATIC_DRAW);
 	}
 
 	// Load the Ta ramp first
@@ -202,6 +314,56 @@ void SetupRC()
  */
 void SpecialKeys(int key, int x, int y)
 {
+	static CStopWatch cameraTimer;
+	float fTime = cameraTimer.delta();
+	cameraTimer.Reset();
+
+	float linear = fTime * 3.0f;
+	float angular = fTime * float(m3dDegToRad(60.0f));
+
+	if (key == GLUT_KEY_UP)
+		cameraFrame.MoveForward(linear);
+
+	if (key == GLUT_KEY_DOWN)
+		cameraFrame.MoveForward(-linear);
+
+	if (key == GLUT_KEY_LEFT)
+		cameraFrame.RotateWorld(angular, 0.0f, 1.0f, 0.0f);
+
+	if (key == GLUT_KEY_RIGHT)
+		cameraFrame.RotateWorld(-angular, 0.0f, 1.0f, 0.0f);
+
+	static bool bF2IsDown = false;
+	if (key == GLUT_KEY_F2) {
+		if (bF2IsDown == false) {
+			bF2IsDown = true;
+			isUseFBO = !isUseFBO;
+		}
+	}
+	else {
+		bF2IsDown = false;
+	}
+
+	if (key == GLUT_KEY_F3) {
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_BUFFER_ARB, texBOTexture);
+		glTexBufferARB(GL_TEXTURE_BUFFER_ARB, GL_R32F, texBO[0]); // FIX this in glee
+		glActiveTexture(GL_TEXTURE0);
+	}
+	else if (key == GLUT_KEY_F4) {
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_BUFFER_ARB, texBOTexture);
+		glTexBufferARB(GL_TEXTURE_BUFFER_ARB, GL_R32F, texBO[1]);
+		glActiveTexture(GL_TEXTURE0);
+	}
+	else if (key == GLUT_KEY_F5) {
+		glActiveTexture(GL_TEXTURE2);
+		glBindTexture(GL_TEXTURE_BUFFER_ARB, texBOTexture);
+		glTexBufferARB(GL_TEXTURE_BUFFER_ARB, GL_R32F, texBO[2]);
+		glActiveTexture(GL_TEXTURE0);
+	}
+
+	glutPostRedisplay();
 }
 
 /**
@@ -224,11 +386,67 @@ void ProcessMenu(int value)
  */
 void RenderScene(void)
 {
-	// Clear the window with current clearing color
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+	static CStopWatch animationTimer;
+	float yRot = animationTimer.delta() * 60.0f;
 
-	GLfloat vRed[] = { 1.0f, 0.0f, 0.0f, 1.0f };
-	shaderManager.useStockShader(GLT_SHADER_IDENTITY, vRed);
+	modelViewMatrix.push();
+	
+	M3DMatrix44f mCamera;
+	cameraFrame.GetCameraMatrix(mCamera);
+	modelViewMatrix *= mCamera;
+
+	GLfloat vFloorColor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	if (isUseFBO) {
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fboBuffer);
+		glDrawBuffers(3, fboBuffs); // 自定义着色器输入路由
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		// need light position relative to the Camera
+		M3DVector4f vLightTransformed;
+		m3dTransformVector4(vLightTransformed, vLightPos, mCamera);
+		use_process_program(vLightTransformed, vFloorColor, 0);
+	}
+	else {
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+		glDrawBuffers(1, windowBuff);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		shaderManager.useStockShader(GLT_SHADER_TEXTURE_MODULATE, transformPipeline.GetMVPMatrix(), vFloorColor, 0);
+	}
+
+	glBindTexture(GL_TEXTURE_2D, textures[0]); // Marble
+	floorBatch.draw();
+	draw_world(yRot);
+
+	modelViewMatrix.pop();
+
+	if (isUseFBO) {
+		// Direct drawing to the window
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+		glDrawBuffers(1, windowBuff);
+		glViewport(0, 0, screenWidth, screenHeight);
+
+		// Source buffer reads from the framebuffer object
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, fboBuffer);
+
+		// Copy greyscale output to the left half of the screen
+		glReadBuffer(GL_COLOR_ATTACHMENT1); // 指定glBlitFramebuffer读取的缓冲区
+		glBlitFramebuffer(0, 0, screenWidth / 2, screenHeight, 0, 0, screenWidth / 2, screenHeight,
+			GL_COLOR_BUFFER_BIT, GL_NEAREST);
+
+		// Copy the luminance adjusted color to the right half of the screen
+		glReadBuffer(GL_COLOR_ATTACHMENT2);
+		glBlitFramebuffer(screenWidth / 2, 0, screenWidth, screenHeight,
+			screenWidth / 2, 0, screenWidth, screenHeight,
+			GL_COLOR_BUFFER_BIT, GL_NEAREST);
+
+		// Scale the unaltered image to the upper right of the screen
+		glReadBuffer(GL_COLOR_ATTACHMENT0);
+		glBlitFramebuffer(0, 0, screenWidth, screenHeight,
+			(int)(screenWidth *(0.8)), (int)(screenHeight*(0.8)), screenWidth, screenHeight,
+			GL_COLOR_BUFFER_BIT, GL_LINEAR);
+
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
 
 	// Perform the buffer swap to display back buffer
 	glutSwapBuffers();
@@ -240,6 +458,36 @@ void RenderScene(void)
  */
 void OnExit()
 {
+	// Make sure default FBO is bound
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+
+	// Cleanup textures
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_BUFFER_ARB, 0);
+	glActiveTexture(GL_TEXTURE0);
+
+	glDeleteTextures(1, &texBOTexture);
+	glDeleteTextures(1, textures);
+	glDeleteTextures(1, ninjaTex);
+
+	// Cleanup RBOs
+	glDeleteRenderbuffers(3, renderBufferNames);
+	glDeleteRenderbuffers(1, &depthBufferName);
+
+	// cleanup FBOs
+	glDeleteFramebuffers(1, &fboBuffer);
+
+	// cleanup Buffer objects
+	glDeleteBuffers(3, texBO);
+
+	// cleanup programs
+	glUseProgram(0);
+	glDeleteProgram(processProg);
+
+	ninja.Free();
 }
 
 /**

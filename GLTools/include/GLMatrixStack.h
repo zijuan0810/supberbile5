@@ -45,17 +45,8 @@ enum GLT_STACK_ERROR {
 class GLMatrixStack
 {
 public:
-	GLMatrixStack(int iStackDepth = 64) {
-		_stackDepth = iStackDepth;
-		_stackes = new M3DMatrix44f[iStackDepth];
-		_stackIndex = 0;
-		m3dLoadIdentity44(_stackes[0]);
-		_lastError = GLT_STACK_NOERROR;
-	}
-
-	~GLMatrixStack(void) {
-		delete [] this->_stackes;
-	}
+	GLMatrixStack(int iStackDepth = 64);
+	~GLMatrixStack(void);
 
 	inline void identity(void) { 
 		m3dLoadIdentity44(this->_stackes[_stackIndex]); 
@@ -83,46 +74,24 @@ public:
 		this->MultMatrix(m);
 	}
 
-	inline void pop(void) {
-		if(_stackIndex > 0)
-			_stackIndex--;
-		else
-			_lastError = GLT_STACK_UNDERFLOW;
-	}
-
-	void Scale(GLfloat x, GLfloat y, GLfloat z) {
-		M3DMatrix44f mTemp, mScale;
-		m3dScaleMatrix44(mScale, x, y, z);
-		m3dCopyMatrix44(mTemp, _stackes[_stackIndex]);
-		m3dMatrixMultiply44(_stackes[_stackIndex], mTemp, mScale);
-	}
+	/*
+	 * 重载部分运算符
+	 */
+	GLMatrixStack& operator*= (const M3DMatrix44f matrix);
+	GLMatrixStack& operator*= (GLFrame& frame);
 
 
-	void Translate(GLfloat x, GLfloat y, GLfloat z) {
+	/*
+	 * 移动到某点位置
+	 */
+	void moveTo(GLfloat x, GLfloat y, GLfloat z) {
 		M3DMatrix44f mTemp, mScale;
 		m3dTranslationMatrix44(mScale, x, y, z);
 		m3dCopyMatrix44(mTemp, _stackes[_stackIndex]);
 		m3dMatrixMultiply44(_stackes[_stackIndex], mTemp, mScale);			
 	}
 
-	void Rotate(GLfloat angle, GLfloat x, GLfloat y, GLfloat z) {
-		M3DMatrix44f mTemp, mRotate;
-		m3dRotationMatrix44(mRotate, float(m3dDegToRad(angle)), x, y, z);
-		m3dCopyMatrix44(mTemp, _stackes[_stackIndex]);
-		m3dMatrixMultiply44(_stackes[_stackIndex], mTemp, mRotate);
-	}
-
-
-	// I've always wanted vector versions of these
-	void Scalev(const M3DVector3f vScale) {
-		M3DMatrix44f mTemp, mScale;
-		m3dScaleMatrix44(mScale, vScale);
-		m3dCopyMatrix44(mTemp, _stackes[_stackIndex]);
-		m3dMatrixMultiply44(_stackes[_stackIndex], mTemp, mScale);
-	}
-
-
-	void Translatev(const M3DVector3f vTranslate) {
+	void moveTo(const M3DVector3f vTranslate) {
 		M3DMatrix44f mTemp, mTranslate;
 		m3dLoadIdentity44(mTranslate);
 		m3dSetMatrixColumn44(mTranslate, vTranslate, 3);
@@ -130,14 +99,43 @@ public:
 		m3dMatrixMultiply44(_stackes[_stackIndex], mTemp, mTranslate);
 	}
 
+	/*
+	 * 旋转到某点
+	 */
+	void rotateTo(GLfloat angle, GLfloat x, GLfloat y, GLfloat z) {
+		M3DMatrix44f mTemp, mRotate;
+		m3dRotationMatrix44(mRotate, float(m3dDegToRad(angle)), x, y, z);
+		m3dCopyMatrix44(mTemp, _stackes[_stackIndex]);
+		m3dMatrixMultiply44(_stackes[_stackIndex], mTemp, mRotate);
+	}
 
-	void Rotatev(GLfloat angle, M3DVector3f vAxis) {
+	void rotateTo(GLfloat angle, M3DVector3f vAxis) {
 		M3DMatrix44f mTemp, mRotation;
 		m3dRotationMatrix44(mRotation, float(m3dDegToRad(angle)), vAxis[0], vAxis[1], vAxis[2]);
 		m3dCopyMatrix44(mTemp, _stackes[_stackIndex]);
 		m3dMatrixMultiply44(_stackes[_stackIndex], mTemp, mRotation);
 	}
 
+	/*
+	 * 缩放到某点
+	 */
+	void scaleTo(const M3DVector3f vScale) {
+		M3DMatrix44f mTemp, mScale;
+		m3dScaleMatrix44(mScale, vScale);
+		m3dCopyMatrix44(mTemp, _stackes[_stackIndex]);
+		m3dMatrixMultiply44(_stackes[_stackIndex], mTemp, mScale);
+	}
+
+	void scaleTo(GLfloat x, GLfloat y, GLfloat z) {
+		M3DMatrix44f mTemp, mScale;
+		m3dScaleMatrix44(mScale, x, y, z);
+		m3dCopyMatrix44(mTemp, _stackes[_stackIndex]);
+		m3dMatrixMultiply44(_stackes[_stackIndex], mTemp, mScale);
+	}
+
+	/*
+	 * 入栈&出栈
+	 */
 	void push(void) {
 		if (_stackIndex < _stackDepth) {
 			_stackIndex++;
@@ -164,12 +162,19 @@ public:
 		this->push(m);
 	}
 
+	void pop(void) {
+		if (_stackIndex > 0)
+			_stackIndex--;
+		else
+			_lastError = GLT_STACK_UNDERFLOW;
+	}
+
 	// Two different ways to get the matrix
 	const M3DMatrix44f& GetMatrix(void) { return _stackes[_stackIndex]; }
 	void GetMatrix(M3DMatrix44f mMatrix) { m3dCopyMatrix44(mMatrix, _stackes[_stackIndex]); }
 
 
-	inline GLT_STACK_ERROR GetLastError(void) {
+	inline GLT_STACK_ERROR getError(void) {
 		GLT_STACK_ERROR retval = _lastError;
 		_lastError = GLT_STACK_NOERROR;
 		return retval; 

@@ -62,7 +62,7 @@ void updateFrameCount()
 
 	// Do periodic frame rate calulation
 	if (iFrames == 101) {
-		float fps = 100.0f / frameTimer.GetElapsedSeconds();
+		float fps = 100.0f / frameTimer.delta();
 		if (isUsePBO) {
 			log("Pix_buffs - Using PBOs  %.1f fps", fps);
 		}
@@ -83,8 +83,8 @@ void ChangeSize(int w, int h)
 {
 	glViewport(0, 0, w, h);
 
-	transformPipeline.SetMatrixStacks(modelViewMatrix, projectionMatrix);
-	viewFrustum.SetPerspective(35.0f, float(w) / float(h), 1.0f, 100.0f);
+	transformPipeline.setMatrixStacks(modelViewMatrix, projectionMatrix);
+	viewFrustum.setPerspective(35.0f, float(w) / float(h), 1.0f, 100.0f);
 	projectionMatrix.setMatrix(viewFrustum.GetProjectionMatrix());
 	modelViewMatrix.identity();
 
@@ -205,7 +205,7 @@ void SpecialKeys(int key, int x, int y)
 void KeyPressFunc(unsigned char key, int x, int y)
 {
 	static CStopWatch cameraTimer;
-	float fTime = cameraTimer.GetElapsedSeconds();
+	float fTime = cameraTimer.delta();
 	float linear = fTime * 12.0f;
 	cameraTimer.Reset();
 
@@ -249,7 +249,7 @@ void RenderScene(void)
 	static float totalTime = 6; // To go back and forth
 	static float halfTotalTime = totalTime / 2;
 
-	float seconds = animationTimer.GetElapsedSeconds() * speedFactor;
+	float seconds = animationTimer.delta() * speedFactor;
 	float xPos = 0;
 
 	// Calculate the next postion of the moving object
@@ -390,9 +390,9 @@ void DrawWorld(GLfloat yRot, GLfloat xPos)
 
 	// draw stuff relative to the camera
 	modelViewMatrix.push();
-	modelViewMatrix.Translate(0.0f, 0.2f, -2.5f);
-	modelViewMatrix.Translate(xPos, 0.0f, 0.0f);
-	modelViewMatrix.Rotate(yRot, 0.0f, 1.0f, 0.0f);
+	modelViewMatrix.moveTo(0.0f, 0.2f, -2.5f);
+	modelViewMatrix.moveTo(xPos, 0.0f, 0.0f);
+	modelViewMatrix.rotateTo(yRot, 0.0f, 1.0f, 0.0f);
 
 	shaderManager.useStockShader(GLT_SHADER_POINT_LIGHT_DIFF, modelViewMatrix.GetMatrix(),
 		transformPipeline.GetMVPMatrix(), vLightTransformed, vGreen, 0);

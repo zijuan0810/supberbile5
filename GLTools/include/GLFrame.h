@@ -95,7 +95,7 @@ public:
 
 
 	/**
-	 * Translate along orthonormal axis... world or local
+	 * moveTo along orthonormal axis... world or local
 	 */
 	inline void TranslateWorld(float x, float y, float z) { 
 		_vectorOrigin[0] += x; 
@@ -223,16 +223,16 @@ public:
 
 
 	/**
-	* Rotate around local Y
+	* rotateTo around local Y
 	*/
 	void RotateLocalY(float fAngle) {
 		M3DMatrix44f rotMat;
 
-		// Just Rotate around the up vector
+		// Just rotateTo around the up vector
 		// Create a rotation matrix around my Up (Y) vector
 		m3dRotationMatrix44(rotMat, fAngle, _vectorUp[0], _vectorUp[1], _vectorUp[2]);
 
-		// Rotate forward pointing vector (inlined 3x3 transform)
+		// rotateTo forward pointing vector (inlined 3x3 transform)
 		M3DVector3f newVect;
 		newVect[0] = rotMat[0] * _vectorForward[0] + rotMat[4] * _vectorForward[1] + rotMat[8] *  _vectorForward[2];	
 		newVect[1] = rotMat[1] * _vectorForward[0] + rotMat[5] * _vectorForward[1] + rotMat[9] *  _vectorForward[2];	
@@ -242,7 +242,7 @@ public:
 
 
 	/**
-	* Rotate around local Z
+	* rotateTo around local Z
 	*/
 	void RotateLocalZ(float fAngle) {
 		M3DMatrix44f rotMat;
@@ -259,7 +259,7 @@ public:
 
 
 	/**
-	* Rotate around local X
+	* rotateTo around local X
 	*/
 	void RotateLocalX(float fAngle) {
 		M3DMatrix33f rotMat;
@@ -272,7 +272,7 @@ public:
 		// Make a Rotation Matrix
 		m3dRotationMatrix33(rotMat, fAngle, localX[0], localX[1], localX[2]);
 
-		// Rotate Y, and Z
+		// rotateTo Y, and Z
 		m3dRotateVector(rotVec, _vectorUp, rotMat);
 		m3dCopyVector3(_vectorUp, rotVec);
 
@@ -301,7 +301,7 @@ public:
 
 
 	/**
-	* Rotate in world coordinates...
+	* rotateTo in world coordinates...
 	*/
 	void RotateWorld(float fAngle, float x, float y, float z) {
 		M3DMatrix44f rotMat;
@@ -326,7 +326,7 @@ public:
 
 
 	/**
-	* Rotate around a local axis
+	* rotateTo around a local axis
 	*/
 	void RotateLocal(float fAngle, float x, float y, float z) {
 		M3DVector3f vWorldVect;
@@ -355,7 +355,7 @@ public:
 		vWorld[1] = rotMat[1] * vLocal[0] + rotMat[5] * vLocal[1] + rotMat[9] *  vLocal[2];	
 		vWorld[2] = rotMat[2] * vLocal[0] + rotMat[6] * vLocal[1] + rotMat[10] * vLocal[2];	
 
-		// Translate the point
+		// moveTo the point
 		if(!bRotOnly) {
 			vWorld[0] += _vectorOrigin[0];
 			vWorld[1] += _vectorOrigin[1];
@@ -367,7 +367,7 @@ public:
 	* Change world coordinates into "local" coordinates
 	*/
 	void WorldToLocal(const M3DVector3f vWorld, M3DVector3f vLocal) {
-		// Translate the origin
+		// moveTo the origin
 		M3DVector3f vNewWorld;
 		vNewWorld[0] = vWorld[0] - _vectorOrigin[0];
 		vNewWorld[1] = vWorld[1] - _vectorOrigin[1];
@@ -392,18 +392,18 @@ public:
 	*/
 	void TransformPoint(M3DVector3f vPointSrc, M3DVector3f vPointDst) {
 		M3DMatrix44f m;
-		GetMatrix(m, false);    // Rotate and translate
+		GetMatrix(m, false);    // rotateTo and translate
 		vPointDst[0] = m[0] * vPointSrc[0] + m[4] * vPointSrc[1] + m[8] *  vPointSrc[2] + m[12];// * v[3];	 
 		vPointDst[1] = m[1] * vPointSrc[0] + m[5] * vPointSrc[1] + m[9] *  vPointSrc[2] + m[13];// * v[3];	
 		vPointDst[2] = m[2] * vPointSrc[0] + m[6] * vPointSrc[1] + m[10] * vPointSrc[2] + m[14];// * v[3];	
 	}
 
 	/**
-	* Rotate a vector by frame matrix
+	* rotateTo a vector by frame matrix
 	*/
 	void RotateVector(M3DVector3f vVectorSrc, M3DVector3f vVectorDst) {
 		M3DMatrix44f m;
-		GetMatrix(m, true);    // Rotate only
+		GetMatrix(m, true);    // rotateTo only
 
 		vVectorDst[0] = m[0] * vVectorSrc[0] + m[4] * vVectorSrc[1] + m[8] *  vVectorSrc[2];	 
 		vVectorDst[1] = m[1] * vVectorSrc[0] + m[5] * vVectorSrc[1] + m[9] *  vVectorSrc[2];	

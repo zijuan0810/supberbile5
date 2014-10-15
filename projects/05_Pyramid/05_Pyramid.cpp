@@ -172,9 +172,9 @@ bool _loadTgaTexture(const char* szFileName, GLenum minFilter, GLenum magFilter,
 void ChangeSize(int w, int h)
 {
 	glViewport(0, 0, w, h);
-	viewFrustum.SetPerspective(35.0f, (float)w/(float)h, 1.0f, 500.f);
+	viewFrustum.setPerspective(35.0f, (float)w/(float)h, 1.0f, 500.f);
 	projectionMatrix.setMatrix(viewFrustum.GetProjectionMatrix());
-	transformPipeline.SetMatrixStacks(modelViewMarix, projectionMatrix);
+	transformPipeline.setMatrixStacks(modelViewMarix, projectionMatrix);
 }
 
 /**

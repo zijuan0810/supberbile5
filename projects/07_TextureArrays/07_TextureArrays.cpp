@@ -108,7 +108,7 @@ void RenderScene(void)
 	glUniform1i(locMoonTexture, 0);
 
 	// fTime goes from 0.0 to 28.0 and recycles
-	float fTime = timer.GetElapsedSeconds();
+	float fTime = timer.delta();
 	fTime = fmod(fTime, 28.0f);
 	glUniform1f(locTimeStamp, fTime);
 

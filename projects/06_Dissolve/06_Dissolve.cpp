@@ -44,10 +44,10 @@ void ChangeSize(int w, int h)
 {
 	glViewport(0, 0, w, h);
 
-	viewFrustum.SetPerspective(35.0f, float(w)/float(h), 1.0f, 100.0f);
+	viewFrustum.setPerspective(35.0f, float(w)/float(h), 1.0f, 100.0f);
 
 	projectionMatrix.setMatrix(viewFrustum.GetProjectionMatrix());
-	transformPipeline.SetMatrixStacks(modelViewMatrix, projectionMatrix);
+	transformPipeline.setMatrixStacks(modelViewMatrix, projectionMatrix);
 }
 
 /**
@@ -127,7 +127,7 @@ void RenderScene(void)
 
 	modelViewMatrix.push(viewFrame);
 
-	modelViewMatrix.Rotate(rotTimer.GetElapsedSeconds() * 10.0f, 0.0f, 1.0f, 0.0f);
+	modelViewMatrix.rotateTo(rotTimer.delta() * 10.0f, 0.0f, 1.0f, 0.0f);
 
 	GLfloat vEyeLight[] = {-100.0f, 100.f, 100.f};
 	GLfloat vAmbientColor[] = { 0.1f, 0.1f, 0.1f, 1.0f };
@@ -147,7 +147,7 @@ void RenderScene(void)
 
 	glUniform1i(locTexture, 1);
 
-	float fFactor = fmod(rotTimer.GetElapsedSeconds(), 10.0f) / 10.0f;
+	float fFactor = fmod(rotTimer.delta(), 10.0f) / 10.0f;
 	glUniform1f(locDissolveFactor, fFactor);
 
 	torusBatch.draw();

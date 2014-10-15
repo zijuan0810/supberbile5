@@ -37,11 +37,11 @@ void ChangeSize(int w, int h)
 	glViewport(0, 0, w, h);
 
 	// Create the projection matrix, and load it on the projection matrix stack
-	viewFrustum.SetPerspective(35.0f, (float)w/(float)h, 1.0f, 1000.0f);
+	viewFrustum.setPerspective(35.0f, (float)w/(float)h, 1.0f, 1000.0f);
 	projectionMatrix.setMatrix(viewFrustum.GetProjectionMatrix());
 
 	// Set the transform pipeline to use the two matrix stack
-	tranformPipeline.SetMatrixStacks(modelViewMatrix, projectionMatrix);
+	tranformPipeline.setMatrixStacks(modelViewMatrix, projectionMatrix);
 }
 
 /**
@@ -138,7 +138,7 @@ void RenderScene(void)
 
 	// Time Based animation
 	static CStopWatch	rotTimer;
-	float yRot = rotTimer.GetElapsedSeconds() * 60.0f;
+	float yRot = rotTimer.delta() * 60.0f;
 
 	// Save the current modelview matrix (the identity matrix)
 	modelViewMatrix.push();
@@ -158,12 +158,12 @@ void RenderScene(void)
 	floorBatch.draw();
 
 	// draw the spinning Torus
-	modelViewMatrix.Translate(0.0f, 0.0f, -2.5f);
+	modelViewMatrix.moveTo(0.0f, 0.0f, -2.5f);
 	// 保存平移
 	modelViewMatrix.push();
 
 	// 应用旋转并绘制圆环
-	modelViewMatrix.Rotate(yRot, 0.0f, 1.0f, 0.0f);
+	modelViewMatrix.rotateTo(yRot, 0.0f, 1.0f, 0.0f);
 	//shaderManager.useStockShader(GLT_SHADER_FLAT, tranformPipeline.GetMVPMatrix(), 
 	//	vTorusColor);
 	shaderManager.useStockShader(GLT_SHADER_POINT_LIGHT_DIFF,
@@ -178,8 +178,8 @@ void RenderScene(void)
 
 	// 应用另一个旋转，然后平移，再绘制球体
 	//modelViewMatrix.push();
-	modelViewMatrix.Rotate(-2.0f*yRot, 0.0f, 1.0f, 0.0f);
-	modelViewMatrix.Translate(0.8f, 0.0f, 0.0f);
+	modelViewMatrix.rotateTo(-2.0f*yRot, 0.0f, 1.0f, 0.0f);
+	modelViewMatrix.moveTo(0.8f, 0.0f, 0.0f);
 	//shaderManager.useStockShader(GLT_SHADER_FLAT, tranformPipeline.GetMVPMatrix(),
 	//							vSphereColor);
 

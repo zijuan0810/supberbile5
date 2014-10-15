@@ -21,14 +21,17 @@
     <ClInclude Include="include\GLTools.h" />
     <ClInclude Include="include\GLTriangleBatch.h" />
     <ClInclude Include="include\math3d.h" />
+    <ClInclude Include="include\sbm.h" />
     <ClInclude Include="include\StopWatch.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\GLBatch.cpp" />
+    <ClCompile Include="src\GLMatrixStack.cpp" />
     <ClCompile Include="src\GLShaderManager.cpp" />
     <ClCompile Include="src\GLTools.cpp" />
     <ClCompile Include="src\GLTriangleBatch.cpp" />
     <ClCompile Include="src\math3d.cpp" />
+    <ClCompile Include="src\sbm.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{0607CF8B-CFBB-4EF5-A23C-C8D85564424C}</ProjectGuid>

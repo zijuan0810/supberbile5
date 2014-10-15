@@ -164,6 +164,12 @@ enum class ConsoleColor {
 	White = 15,
 };
 
+//gltCheckGL(__FILE__, __FUNCTION__, __LINE__); 
+#define CHECK_GL_ERROR() \
+    do { \
+		gltCheckGL(__FUNCTION__, __LINE__); \
+    } while (false)
+
 // Print OpenGL version information
 extern void gltPrintOpenGLInfo();
 
@@ -260,6 +266,7 @@ GLuint gltLoadShaderWithFileEx(const char *szVertexProg, const char *szFragmentP
 GLuint gltLoadShaderPairString(const char *szVertexSrc, const char *szFragmentSrc);
 GLuint gltLoadShaderPairSrcWithAttributes(const char *szVertexProg, const char *szFragmentProg, ...);
 
+bool gltCheckGL(const char* file_name, const char* func_name, int line);
 bool gltCheckErrors(GLuint progName = 0);
 void gltGenerateOrtho2DMat(GLuint width, GLuint height, M3DMatrix44f &orthoMatrix, GLBatch &screenQuad);
 

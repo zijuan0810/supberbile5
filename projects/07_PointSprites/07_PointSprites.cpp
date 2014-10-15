@@ -55,7 +55,7 @@ void ChangeSize(int w, int h)
 	// Set Viewport to window dimensions
 	glViewport(0, 0, w, h);
 
-	viewFrustum.SetPerspective(35.0f, float(w) / float(h), 1.0f, 1000.0f);
+	viewFrustum.setPerspective(35.0f, float(w) / float(h), 1.0f, 1000.0f);
 }
 
 /**
@@ -177,7 +177,7 @@ void RenderScene(void)
 	glUniform1i(locTexture, 0);
 
 	// fTime goes form 0.0 to 999.0 and recycles
-	float fTime = timer.GetElapsedSeconds() * 10.0f;
+	float fTime = timer.delta() * 10.0f;
 	fTime = fmod(fTime, 999.0f);
 	glUniform1f(locTexture, fTime);
 

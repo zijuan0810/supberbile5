@@ -40,7 +40,7 @@ void ChangeSize(int w, int h)
 {
 	glViewport(0, 0, w, h);
 
-	viewFrustum.SetPerspective(35.0f, float(w)/(float)h, 1.0f, 500.0f);
+	viewFrustum.setPerspective(35.0f, float(w)/(float)h, 1.0f, 500.0f);
 	projectionMatrix.setMatrix(viewFrustum.GetProjectionMatrix());
 	modelViewMatrix.identity();
 }
@@ -56,7 +56,7 @@ void SetupRC()
 
 	glEnable(GL_DEPTH_TEST);
 
-	transformPipeline.SetMatrixStacks(modelViewMatrix, projectionMatrix);
+	transformPipeline.setMatrixStacks(modelViewMatrix, projectionMatrix);
 
 	cameraFrame.MoveForward(-15.0f);
 

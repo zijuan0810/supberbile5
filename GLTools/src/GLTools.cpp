@@ -1417,6 +1417,70 @@ GLuint gltLoadShaderPairSrcWithAttributes(const char *szVertexSrc, const char *s
 }   
 
 
+/*
+ * Check for any GL errors that may affect rendering
+ * Check the framebuffer, the shader, and general errors
+ */
+bool gltCheckGL(const char* file_name, const char* func_name, int line)
+{
+	bool bFoundError = false;
+	GLenum error = glGetError();
+
+	if (error != GL_NO_ERROR) {
+		log_error("%s[%s,%d]: A GL Error has occured", func_name, file_name, line);
+		bFoundError = true;
+	}
+#ifndef OPENGL_ES
+	// 检查帧缓冲区的完整性
+	GLenum fboStatus = glCheckFramebufferStatus(GL_DRAW_FRAMEBUFFER);
+	if (fboStatus != GL_FRAMEBUFFER_COMPLETE) {
+		bFoundError = true;
+		std::string err_msg("The framebuffer is not complete - ");
+		switch (fboStatus) {
+		case GL_FRAMEBUFFER_UNDEFINED:
+			// Oops, no window exists?
+			err_msg += "GL_FRAMEBUFFER_UNDEFINED";
+			break;
+		case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
+			// Check the status of each attachment
+			err_msg += "GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT";
+			break;
+		case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
+			// Attach at least one buffer to the FBO
+			err_msg += "GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT";
+			break;
+		case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER:
+			// Check that all attachments enabled via
+			// glDrawBuffers exist in FBO
+			err_msg += "GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER";
+			break;
+		case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER:
+			// Check that the buffer specified via
+			// glReadBuffer exists in FBO
+			err_msg += "GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER";
+			break;
+		case GL_FRAMEBUFFER_UNSUPPORTED:
+			// Reconsider formats used for attached buffers
+			err_msg += "GL_FRAMEBUFFER_UNSUPPORTED";
+			break;
+		case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE:
+			// Make sure the number of samples for each 
+			// attachment is the same 
+			err_msg += "GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE";
+			break;
+		case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS:
+			// Make sure the number of layers for each 
+			// attachment is the same 
+			err_msg += "GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS";
+			break;
+		}
+		log_error(err_msg.c_str());
+	}
+
+#endif
+
+	return bFoundError;
+}
 
 
 /////////////////////////////////////////////////////////////////
@@ -1432,8 +1496,8 @@ bool gltCheckErrors(GLuint progName)
 		bFoundError = true;
 	}
 #ifndef OPENGL_ES
+	// 检查帧缓冲区的完整性
 	GLenum fboStatus = glCheckFramebufferStatus(GL_DRAW_FRAMEBUFFER);
-
 	if(fboStatus != GL_FRAMEBUFFER_COMPLETE) {
 		bFoundError = true;
 		std::string err_msg("The framebuffer is not complete - ");

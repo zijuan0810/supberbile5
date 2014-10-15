@@ -43,7 +43,7 @@ void _DrawSongAndDance(GLfloat yRot)
 
 	// draw the light source
 	modelViewMatrix.push();
-	modelViewMatrix.Translatev(vLightPos);
+	modelViewMatrix.moveTo(vLightPos);
 	shaderManager.useStockShader(GLT_SHADER_FLAT, transformPipeline.GetMVPMatrix(),
 								vWhite);
 	sphereBatch.draw();
@@ -64,9 +64,9 @@ void _DrawSongAndDance(GLfloat yRot)
 	}
 
 	// Song and dance
-	modelViewMatrix.Translate(0.0f, 0.2f, -2.5f);
+	modelViewMatrix.moveTo(0.0f, 0.2f, -2.5f);
 	modelViewMatrix.push();	// Saves the translated origin
-	modelViewMatrix.Rotate(yRot, 0.0f, 1.0f, 0.0f);
+	modelViewMatrix.rotateTo(yRot, 0.0f, 1.0f, 0.0f);
 
 	// draw stuff relative to the camera
 	glBindTexture(GL_TEXTURE_2D, uiTextures[1]);
@@ -79,8 +79,8 @@ void _DrawSongAndDance(GLfloat yRot)
 	torusBatch.draw();
 	modelViewMatrix.pop();
 
-	modelViewMatrix.Rotate(-2.0f*yRot, 0.0f, 1.0f, 0.0f);
-	modelViewMatrix.Translate(0.8f, 0.0f, 0.0f);
+	modelViewMatrix.rotateTo(-2.0f*yRot, 0.0f, 1.0f, 0.0f);
+	modelViewMatrix.moveTo(0.8f, 0.0f, 0.0f);
 
 	glBindTexture(GL_TEXTURE_2D, uiTextures[2]);
 	shaderManager.useStockShader(GLT_SHADER_TEXTURE_POINT_LIGHT_DIFF,
@@ -131,9 +131,9 @@ bool LoadTGATexture(const char *szFileName, GLenum minFilter, GLenum magFilter, 
 void ChangeSize(int w, int h)
 {
 	glViewport(0, 0, w, h);
-	transformPipeline.SetMatrixStacks(modelViewMatrix, projectionMatrix);
+	transformPipeline.setMatrixStacks(modelViewMatrix, projectionMatrix);
 
-	viewFrustum.SetPerspective(35.0f, (float)w/(float)h, 1.0f, 100.0f);
+	viewFrustum.setPerspective(35.0f, (float)w/(float)h, 1.0f, 100.0f);
 	projectionMatrix.setMatrix(viewFrustum.GetProjectionMatrix());
 	modelViewMatrix.identity();
 }
@@ -241,7 +241,7 @@ void RenderScene(void)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 	static CStopWatch	rotTimer;
-	float yRot = rotTimer.GetElapsedSeconds() * 60.0f;
+	float yRot = rotTimer.delta() * 60.0f;
 
 	modelViewMatrix.push();	
 	M3DMatrix44f mCamera;
@@ -250,8 +250,8 @@ void RenderScene(void)
 
 	// draw the world upside down
 	modelViewMatrix.push();
-	modelViewMatrix.Scale(1.0f, -1.0f, 1.0f); // Flips the Y Axis
-	modelViewMatrix.Translate(0.0f, 0.8f, 0.0f); // Scootch the world down a bit...
+	modelViewMatrix.scaleTo(1.0f, -1.0f, 1.0f); // Flips the Y Axis
+	modelViewMatrix.moveTo(0.0f, 0.8f, 0.0f); // Scootch the world down a bit...
 	glFrontFace(GL_CW);
 	_DrawSongAndDance(yRot);
 	glFrontFace(GL_CCW);

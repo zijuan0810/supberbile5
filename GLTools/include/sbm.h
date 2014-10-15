@@ -1,7 +1,7 @@
 #ifndef __SBM_H__
 #define __SBM_H__
 
-#include <gltools.h>
+#include <GLTools.h>
 
 typedef struct SBM_HEADER_t
 {

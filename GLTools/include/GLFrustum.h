@@ -18,7 +18,7 @@ public:
 
 	// Set the View Frustum
 	GLFrustum(GLfloat fFov, GLfloat fAspect, GLfloat fNear, GLfloat fFar) { 
-		this->SetPerspective(fFov, fAspect, fNear, fFar); 
+		this->setPerspective(fFov, fAspect, fNear, fFar); 
 	}
 
 	GLFrustum(GLfloat xMin, GLfloat xMax, GLfloat yMin, GLfloat yMax, GLfloat zMin, GLfloat zMax) { 
@@ -74,7 +74,7 @@ public:
 	 * Perspective Matrix Projection
 	 * Calculates the corners of the Frustum and sets the projection matrix.
 	 */
-	void SetPerspective(float fFov, float fAspect, float fNear, float fFar) {
+	void setPerspective(float fFov, float fAspect, float fNear, float fFar) {
 		float xmin, xmax, ymin, ymax;       // Dimensions of near clipping plane
 		float xFmin, xFmax, yFmin, yFmax;   // Dimensions of far clipping plane
 

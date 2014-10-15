@@ -178,7 +178,7 @@ inline void m3dSubtractVectors4(M3DVector4d r, const M3DVector4d a, const M3DVec
 
 
 ///////////////////////////////////////////////////////////////////////////////////////
-// Scale Vectors (in place)
+// scaleTo Vectors (in place)
 inline void m3dScaleVector2(M3DVector2f v, const float scale) 
 { v[0] *= scale; v[1] *= scale; }
 inline void m3dScaleVector2(M3DVector2d v, const double scale) 
@@ -256,7 +256,7 @@ inline double m3dGetVectorLength3(const M3DVector3d u)
 
 //////////////////////////////////////////////////////////////////////////////////////
 // Normalize a vector
-// Scale a vector to unit length. Easy, just scale the vector by it's length
+// scaleTo a vector to unit length. Easy, just scale the vector by it's length
 inline void m3dNormalizeVector3(M3DVector3f u)
 { m3dScaleVector3(u, 1.0f / m3dGetVectorLength3(u)); }
 

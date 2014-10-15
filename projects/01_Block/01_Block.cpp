@@ -249,7 +249,7 @@ void SetupRC()
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
 
-	transformPipeline.SetMatrixStacks(modelViewMatrix, projectionMatrix);
+	transformPipeline.setMatrixStacks(modelViewMatrix, projectionMatrix);
 
 	cameraFrame.MoveForward(-15.0f);
 	cameraFrame.MoveUp(6.0f);
@@ -534,9 +534,9 @@ void RenderScene(void)
 	if(nStep == 5) {
 		glDisable(GL_CULL_FACE);
 		modelViewMatrix.push();
-		modelViewMatrix.Scale(1.0f, -1.0f, 1.0f);
-		modelViewMatrix.Translate(0.0f, 2.0f, 0.0f);
-		modelViewMatrix.Rotate(35.0f, 0.0f, 1.0f, 0.0f);
+		modelViewMatrix.scaleTo(1.0f, -1.0f, 1.0f);
+		modelViewMatrix.moveTo(0.0f, 2.0f, 0.0f);
+		modelViewMatrix.rotateTo(35.0f, 0.0f, 1.0f, 0.0f);
 		RenderBlock();
 		modelViewMatrix.pop();
 		glEnable(GL_BLEND);
@@ -549,7 +549,7 @@ void RenderScene(void)
 	modelViewMatrix.push();
 
 	// draw normally
-	modelViewMatrix.Rotate(35.0f, 0.0f, 1.0f, 0.0f);
+	modelViewMatrix.rotateTo(35.0f, 0.0f, 1.0f, 0.0f);
 	RenderBlock();
 	modelViewMatrix.pop();
 
@@ -590,7 +590,7 @@ void KeyPressFunc(unsigned char key, int x, int y)
 void ChangeSize(int w, int h)
 {
 	glViewport(0, 0, w, h);
-	viewFrustum.SetPerspective(35.0f, float(w) / float(h), 1.0f, 500.0f);
+	viewFrustum.setPerspective(35.0f, float(w) / float(h), 1.0f, 500.0f);
 	projectionMatrix.setMatrix(viewFrustum.GetProjectionMatrix());
 	modelViewMatrix.identity();
 }

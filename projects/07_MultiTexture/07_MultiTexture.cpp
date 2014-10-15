@@ -48,10 +48,10 @@ void ChangeSize(int w, int h)
 	// Set Viewport to window dimensions
 	glViewport(0, 0, w, h);
 
-	viewFrustum.SetPerspective(35.0f, float(w) / float(h), 1.0f, 1000.0f);
+	viewFrustum.setPerspective(35.0f, float(w) / float(h), 1.0f, 1000.0f);
 
 	projectionMatrix.setMatrix(viewFrustum.GetProjectionMatrix());
-	transformPipeline.SetMatrixStacks(modelViewMatrix, projectionMatrix);
+	transformPipeline.setMatrixStacks(modelViewMatrix, projectionMatrix);
 }
 
 /**

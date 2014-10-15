@@ -35,10 +35,10 @@ void ChangeSize(int w, int h)
 {
 	glViewport(0, 0, w, h);
 
-	viewFrustum.SetPerspective(35.0f, (float)w/(float)h, 1.0f, 100.0f);
+	viewFrustum.setPerspective(35.0f, (float)w/(float)h, 1.0f, 100.0f);
 
 	projectionMatrix.setMatrix(viewFrustum.GetProjectionMatrix());
-	transformPipeline.SetMatrixStacks(modelViewMatrix, projectionMatrix);
+	transformPipeline.setMatrixStacks(modelViewMatrix, projectionMatrix);
 }
 
 /**
@@ -102,7 +102,7 @@ void RenderScene(void)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 	modelViewMatrix.push(viewFrame);
-	modelViewMatrix.Rotate(10.0f* rotTimer.GetElapsedSeconds(), 0.0f, 1.0f, 0.0f);
+	modelViewMatrix.rotateTo(10.0f* rotTimer.delta(), 0.0f, 1.0f, 0.0f);
 	
 	GLfloat vColor[] = {1.0f, 0.1f, 1.0f, 1.0f};
 	glUseProgram(flatShader);

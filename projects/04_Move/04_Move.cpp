@@ -89,10 +89,10 @@ void RenderScene(void)
 	M3DMatrix44f mTranslationMatrix;
 	M3DMatrix44f mRotationMatrix;
 
-	// Just Translate
+	// Just moveTo
 	m3dTranslationMatrix44(mTranslationMatrix, 0.0f, yPos, 0.0f);
 
-	// Rotate 5 degrees everytime we redraw
+	// rotateTo 5 degrees everytime we redraw
 	m3dRotationMatrix44(mRotationMatrix, m3dDegToRad(yRot), 0.0f, 1.0f, 0.0f);
 
 	// Calculate the result

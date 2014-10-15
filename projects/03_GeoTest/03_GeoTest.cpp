@@ -31,10 +31,10 @@ void ChangeSize(int w, int h)
 
 	glViewport(0, 0, w, h);
 
-	viewFrustum.SetPerspective(35.0f, float(w)/float(h), 1.0f, 100.0f);
+	viewFrustum.setPerspective(35.0f, float(w)/float(h), 1.0f, 100.0f);
 
 	projectionMatrix.setMatrix(viewFrustum.GetProjectionMatrix());
-	transformPiepline.SetMatrixStacks(modelViewMatrix, projectionMatrix);
+	transformPiepline.setMatrixStacks(modelViewMatrix, projectionMatrix);
 }
 
 // This function does any needed initialization on the rendering context. 

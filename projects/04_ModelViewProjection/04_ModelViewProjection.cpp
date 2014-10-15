@@ -26,7 +26,7 @@ void ChangeSize(int w, int h)
 {
 	glViewport(0, 0, w, h);
 
-	viewFrustum.SetPerspective(35.0f, (float)w/(float)h, 1.0f, 1000.0f);
+	viewFrustum.setPerspective(35.0f, (float)w/(float)h, 1.0f, 1000.0f);
 }
 
 /**
@@ -80,7 +80,7 @@ void RenderScene(void)
 
 	// Set up time based animation
 	static CStopWatch rotTimer;
-	float yRot = rotTimer.GetElapsedSeconds() * 60.0f;
+	float yRot = rotTimer.delta() * 60.0f;
 
 	std::cout << yRot << std::endl;
 

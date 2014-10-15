@@ -42,6 +42,9 @@
     <ClInclude Include="include\StopWatch.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="include\sbm.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\GLBatch.cpp">
@@ -57,6 +60,12 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\math3d.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GLMatrixStack.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sbm.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
