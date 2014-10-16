@@ -30,7 +30,7 @@ GLuint				processProg;
 GLuint				texBO[3];
 GLuint				texBOTexture;
 bool                isUseFBO;
-GLuint              fboBuffer;
+GLuint              fboName;
 GLuint              depthBufferName;
 GLuint				renderBufferNames[3];
 
@@ -226,8 +226,8 @@ void SetupRC()
 	glGetIntegerv(GL_MAX_RENDERBUFFER_SIZE, &maxRenderbufferSize);
 	log("GL_MAX_RENDERBUFFER_SIZE: %d", maxRenderbufferSize);
 
-	// 创建帧缓存区
-	glGenFramebuffers(1, &fboBuffer);
+	// 创建帧缓存区FBO
+	glGenFramebuffers(1, &fboName);
 
 	// 创建RBO
 	// Create depth renderbuffer
@@ -248,25 +248,24 @@ void SetupRC()
 	log("GL_MAX_COLOR_ATTACHMENTS: %d", maxColorAttachments);
 
 	// Attach all 4 renderbuffers to FBO
-	// 将FBO与RBO链接起来
+	// 将FBO与RBO链接起来，即将4个渲染缓冲区绑定到FBO
 	// 一个帧缓冲区（FBO）可以有多个绑定点：一个深度绑定点，一个模版绑定点和多个颜色绑定点
-	glBindRenderbuffer(GL_DRAW_FRAMEBUFFER, fboBuffer);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fboName); // 先绑定FBO
 	glFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBufferName);
 	glFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, renderBufferNames[0]);
 	glFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_RENDERBUFFER, renderBufferNames[1]);
 	glFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_RENDERBUFFER, renderBufferNames[2]);
 
 	// See bind frag location in Chapter 9
-	processProg = gltLoadShaderWithFileEx("multibuffer.vs.glsl", "multibuffer_frag_location.fs.glsl", 3,
+	processProg = gltLoadShaderWithFileEx("multibuffer.vs.glsl", "multibuffer.fs.glsl", 3,
 		GLT_ATTRIBUTE_VERTEX, "vVertex",
 		GLT_ATTRIBUTE_NORMAL, "vNormal",
 		GLT_ATTRIBUTE_TEXTURE0, "texCoord0");
-	glBindFragDataLocation(processProg, 0, "oStraightColor");
-	glBindFragDataLocation(processProg, 1, "oGreyscale");
-	glBindFragDataLocation(processProg, 2, "oLumAdjColor");
+	//glBindFragDataLocation(processProg, 0, "oStraightColor");
+	//glBindFragDataLocation(processProg, 1, "oGreyscale");
+	//glBindFragDataLocation(processProg, 2, "oLumAdjColor");
 	glLinkProgram(processProg);
 
-	CHECK_GL_ERROR();
 
 	// Create 3 new buffer objects
 	glGenBuffers(3, texBO);
@@ -296,17 +295,17 @@ void SetupRC()
 	}
 
 	// Load the Ta ramp first
-	glBindBuffer(GL_TEXTURE_BUFFER, 0);
+	// 加载正切曲线
+	glBindBuffer(GL_TEXTURE_BUFFER_ARB, 0);
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_BUFFER_ARB, texBOTexture);
-	glTexBufferARB(GL_TEXTURE_BUFFER_ARB, GL_R32F, texBO[0]);
+	glTexBuffer(GL_TEXTURE_BUFFER_ARB, GL_R32F, texBO[0]);
 	glActiveTexture(GL_TEXTURE0);
 
 	// Reset framebuffer binding
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 
-	// Make sure all went well
-	gltCheckErrors();
+	CHECK_GL_ERROR();
 }
 
 /**
@@ -397,7 +396,7 @@ void RenderScene(void)
 
 	GLfloat vFloorColor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
 	if (isUseFBO) {
-		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fboBuffer);
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fboName);
 		glDrawBuffers(3, fboBuffs); // 自定义着色器输入路由
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -426,7 +425,7 @@ void RenderScene(void)
 		glViewport(0, 0, screenWidth, screenHeight);
 
 		// Source buffer reads from the framebuffer object
-		glBindFramebuffer(GL_READ_FRAMEBUFFER, fboBuffer);
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, fboName);
 
 		// Copy greyscale output to the left half of the screen
 		glReadBuffer(GL_COLOR_ATTACHMENT1); // 指定glBlitFramebuffer读取的缓冲区
@@ -478,7 +477,7 @@ void OnExit()
 	glDeleteRenderbuffers(1, &depthBufferName);
 
 	// cleanup FBOs
-	glDeleteFramebuffers(1, &fboBuffer);
+	glDeleteFramebuffers(1, &fboName);
 
 	// cleanup Buffer objects
 	glDeleteBuffers(3, texBO);

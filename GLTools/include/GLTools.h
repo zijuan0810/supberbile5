@@ -167,7 +167,7 @@ enum class ConsoleColor {
 //gltCheckGL(__FILE__, __FUNCTION__, __LINE__); 
 #define CHECK_GL_ERROR() \
     do { \
-		gltCheckGL(__FUNCTION__, __LINE__); \
+		gltCheckGL(__FILE__, __FUNCTION__, __LINE__); \
     } while (false)
 
 // Print OpenGL version information

@@ -1474,7 +1474,7 @@ bool gltCheckGL(const char* file_name, const char* func_name, int line)
 			err_msg += "GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS";
 			break;
 		}
-		log_error(err_msg.c_str());
+		log_error("%s[%s,%d]: %s", func_name, file_name, line, err_msg.c_str());
 	}
 
 #endif
