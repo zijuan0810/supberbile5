@@ -54,7 +54,7 @@ void updateFrameCount()
 
 	// Reset the stopwatch on first time
 	if (iFrames == 0) {
-		frameTimer.Reset();
+		frameTimer.reset();
 		iFrames++;
 	}
 
@@ -70,7 +70,7 @@ void updateFrameCount()
 			log("Pix_buffs - Using Client mem copies  %.1f fps", fps);
 		}
 
-		frameTimer.Reset();
+		frameTimer.reset();
 		iFrames = 1;
 	}
 }
@@ -207,7 +207,7 @@ void KeyPressFunc(unsigned char key, int x, int y)
 	static CStopWatch cameraTimer;
 	float fTime = cameraTimer.delta();
 	float linear = fTime * 12.0f;
-	cameraTimer.Reset();
+	cameraTimer.reset();
 
 	// Alternate between PBOs and local memory when 'P' is pressed
 	if (key == KEY_P || key == 'p') {

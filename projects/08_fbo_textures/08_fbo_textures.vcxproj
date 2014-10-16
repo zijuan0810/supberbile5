@@ -14,7 +14,7 @@
     <ClCompile Include="08_fbo_textures.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{5B9CB6B5-2B99-4A18-9476-2852CBEBE4DB}</ProjectGuid>
+    <ProjectGuid>{D11130A3-0260-47AC-B975-39B5D29BF095}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>08_fbo_textures</RootNamespace>
   </PropertyGroup>

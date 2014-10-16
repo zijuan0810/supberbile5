@@ -39,7 +39,7 @@ public:
 	/**
 	 * Resets timer (difference) to zero
 	 */
-	inline void Reset(void) {
+	void reset(void) {
 #ifdef WIN32
 		QueryPerformanceCounter(&m_LastCount);
 #else

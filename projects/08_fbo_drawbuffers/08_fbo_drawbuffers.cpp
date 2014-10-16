@@ -315,7 +315,7 @@ void SpecialKeys(int key, int x, int y)
 {
 	static CStopWatch cameraTimer;
 	float fTime = cameraTimer.delta();
-	cameraTimer.Reset();
+	cameraTimer.reset();
 
 	float linear = fTime * 3.0f;
 	float angular = fTime * float(m3dDegToRad(60.0f));
