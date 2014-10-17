@@ -48,6 +48,8 @@ Debug.win32/
 freeglut-2.8.1/VisualStudio/2012/build/Debug/
 glew-1.10.0/build/vc10/tmp/
 GLTools/Debug/
+external/
+Deploy/
 
 # Ignore python compiled files
 *.pyc
