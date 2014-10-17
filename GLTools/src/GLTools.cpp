@@ -381,7 +381,7 @@ void gltCreateSphere(GLTriangleBatch& sphereBatch, GLfloat fRadius, GLint iSlice
 }
 
 
-void gltMakeDisk(GLTriangleBatch& diskBatch, GLfloat innerRadius, GLfloat outerRadius, 
+void gltCreateDisk(GLTriangleBatch& diskBatch, GLfloat innerRadius, GLfloat outerRadius, 
 				 GLint iSlices, GLint iStacks)
 {
 	// How much to step out each stack
@@ -484,7 +484,7 @@ void gltMakeDisk(GLTriangleBatch& diskBatch, GLfloat innerRadius, GLfloat outerR
 }
 
 // draw a cylinder. Much like gluCylinder
-void gltMakeCylinder(GLTriangleBatch& cylinderBatch, GLfloat baseRadius, GLfloat topRadius, 
+void gltCreateCylinder(GLTriangleBatch& cylinderBatch, GLfloat baseRadius, GLfloat topRadius, 
 					 GLfloat fLength, GLint iSlices, GLint iStacks)
 {	
 	float fRadiusStep = (topRadius - baseRadius) / float(iStacks);

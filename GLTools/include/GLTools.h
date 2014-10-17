@@ -224,7 +224,7 @@ void gltCreateSphere(GLTriangleBatch& sphereBatch, GLfloat fRadius, GLint iSlice
  * Create a disk(Ô²ÅÌ)
  * @param diskBatch ´´½¨µÄbatch
  */
-void gltMakeDisk(GLTriangleBatch& diskBatch, GLfloat innerRadius, GLfloat outerRadius, 
+void gltCreateDisk(GLTriangleBatch& diskBatch, GLfloat innerRadius, GLfloat outerRadius, 
 				 GLint iSlices, GLint iStacks);
 
 /**
@@ -236,7 +236,7 @@ void gltMakeDisk(GLTriangleBatch& diskBatch, GLfloat innerRadius, GLfloat outerR
  * @param iSlices The number of triangle pairs that circle the z-axis
  * @param iStacks The number of rings stacked from the bottom to the top of the cylinder
  */
-void gltMakeCylinder(GLTriangleBatch& cylinderBatch, GLfloat baseRadius, GLfloat topRadius, 
+void gltCreateCylinder(GLTriangleBatch& cylinderBatch, GLfloat baseRadius, GLfloat topRadius, 
 					 GLfloat fLength, GLint iSlices, GLint iStacks);
 
 /**

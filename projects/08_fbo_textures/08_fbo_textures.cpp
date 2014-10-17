@@ -99,7 +99,7 @@ void SetupRC()
 
 	gltCreateTorus(torusBatch, 0.4f, 0.15f, 35, 35);
 	gltCreateSphere(sphereBatch, 0.1f, 26, 13);
-	gltMakeCylinder(cylinderBatch, 0.3f, 0.2f, 1.0, 10, 10);
+	gltCreateCylinder(cylinderBatch, 0.3f, 0.2f, 1.0, 10, 10);
 
 	GLfloat alpha = 0.25f;
 	floorBatch.begin(GL_TRIANGLE_FAN, 4, 1);

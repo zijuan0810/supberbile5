@@ -68,11 +68,11 @@ void SetupRC()
 	// Torus
 	gltCreateTorus(torusBatch, 3.0f, 0.75f, 15, 15);
 	// Cylinder
-	gltMakeCylinder(cylinderBatch, 2.0f, 2.0f, 3.0f, 13, 2);
+	gltCreateCylinder(cylinderBatch, 2.0f, 2.0f, 3.0f, 13, 2);
 	// Cone
-	gltMakeCylinder(coneBatch, 2.0f, 0.0f, 3.0f, 13, 2);
+	gltCreateCylinder(coneBatch, 2.0f, 0.0f, 3.0f, 13, 2);
 	// Disk
-	gltMakeDisk(diskBatch, 1.5f, 3.0f, 13, 3);
+	gltCreateDisk(diskBatch, 1.5f, 3.0f, 13, 3);
 }
 
 // Respond to arrow keys by moving the camera frame of reference
