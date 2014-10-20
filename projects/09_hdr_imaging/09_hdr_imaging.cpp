@@ -1,6 +1,6 @@
 // openEXR
-#include "IlmImf/ImfRgbaFile.h"
-#include "IlmImf/ImfArray.h"
+//#include "IlmImf/ImfRgbaFile.h"
+//#include "IlmImf/ImfArray.h"
 
 #include "GLTool-ext.h"
 
@@ -56,14 +56,6 @@ bool LoadOpenEXRImage(char *fileName, GLint textureName, GLuint &texWidth, GLuin
 {
 	// The OpenEXR uses exception handling to report errors or failures
 	// Do all work in a try block to catch any thrown exceptions.
-	try {
-		//Imf::Array2D<Imf::Rgba> pixels;
-		//Imf::RgbaInputFile file(fileName);
-		//Imath::Box2i dw = file.dataWindow();
-	}
-	catch (Iex::BaseExc & e) {
-		log_error("%s", e.what());
-	}
 
 	/*
 	try {

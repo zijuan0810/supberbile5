@@ -136,6 +136,9 @@ void RenderScene(void)
 	GLfloat vBlue[] = { 0.0f, 0.0f, 1.0f, 1.0f };
 	GLfloat vBlack[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_DST_ALPHA, GL_ZERO);
+
 	shaderManager.useStockShader(GLT_SHADER_IDENTITY, vGreen);
 	greenBatch.draw();
 
@@ -148,9 +151,12 @@ void RenderScene(void)
 	shaderManager.useStockShader(GLT_SHADER_IDENTITY, vBlack);
 	blackBatch.draw();
 
+	glDisable(GL_BLEND);
+
 	// begin blending
 	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glBlendFunc(GL_ONE, GL_ZERO);
 	shaderManager.useStockShader(GLT_SHADER_IDENTITY, vRed);
 	squareBatch.draw();
 	glDisable(GL_BLEND);
