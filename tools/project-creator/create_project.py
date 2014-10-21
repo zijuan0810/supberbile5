@@ -43,8 +43,12 @@ def checkParams(context):
         elif "-p" == sys.argv[i]:
             # read the next param as project_name
             context["dst_project_name"] = sys.argv[i+1]
- 
-    context["dst_project_name"] = "%02d_%s" % (string.atoi(context["chapter_name"]), context["dst_project_name"])
+
+    if context["dst_project_name"].isdigit():
+        context["dst_project_name"] = "%02d_%s" % (string.atoi(context["chapter_name"]), context["dst_project_name"])
+    else:
+        context["dst_project_name"] = context["dst_project_name"]
+
     # set project path
     context["dst_project_path"] = os.getcwd() + "/../../projects/" + context["dst_project_name"]
     
