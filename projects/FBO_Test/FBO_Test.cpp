@@ -11,14 +11,14 @@ const double FAR_PLANE = 1000.0f;
 
 GLuint fbo = 0;		// FBO对象的句柄
 GLuint depthbuffer = 0;
-GLuint rendertarget = 0;		// 纹理对象的句柄
+GLuint textureId = 0;		// 纹理对象的句柄
 
 // 初始化几何形体
 void SetupResource(void)
 {
 	// 创建纹理
-	glGenTextures(1, &rendertarget);
-	glBindTexture(GL_TEXTURE_2D, rendertarget);
+	glGenTextures(1, &textureId);
+	glBindTexture(GL_TEXTURE_2D, textureId);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
@@ -28,15 +28,15 @@ void SetupResource(void)
 
 	// 创建深度缓冲区
 	glGenRenderbuffers(1, &depthbuffer);
-	glBindRenderbuffer(GL_RENDERBUFFER, depthbuffer);
+	glBindRenderbuffer(GL_RENDERBUFFER, depthbuffer); // target must be GL_RENDERBUFFER
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, TEXTURE_WIDTH, TEXTURE_HEIGHT);
 	glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
 	// 创建FBO对象
 	glGenFramebuffers(1, &fbo);
 	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, rendertarget, 0);
-	glFramebufferRenderbufferEXT(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthbuffer);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureId, GLT_MIPMAP_LEVEL_0); // GL_FRAMEBUFFER is equivalent to GL_DRAW_FRAMEBUFFER
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthbuffer); // 绑定RBO
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
@@ -46,7 +46,7 @@ void SetupResource(void)
 }
 
 // 渲染到纹理
-void RenderToTarget(void)
+void RenderToTexture(void)
 {
 	glBindTexture(GL_TEXTURE_2D, 0); // 取消绑定，因为如果不取消，渲染到纹理的时候会使用纹理本身
 
@@ -54,8 +54,8 @@ void RenderToTarget(void)
 	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 	glViewport(0, 0, TEXTURE_WIDTH, TEXTURE_HEIGHT);
 
-	// 渲染
-	glClearColor(1, 1, 0, 1);
+	// clear color Green
+	glClearColor(0, 1, 0, 1);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glBegin(GL_POLYGON);
@@ -63,6 +63,7 @@ void RenderToTarget(void)
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
+	// create the red triangle
 	glColor4f(1, 0, 0, 1);
 	glVertex3d(0, 1, 0);
 	glVertex3d(-1, -1, 0);
@@ -70,6 +71,7 @@ void RenderToTarget(void)
 
 	glEnd();
 
+	// 删除当前绑定的FBO，由于窗体系统创建的FBO的ID默认为0，这里相当于将FBO恢复到默认
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
@@ -100,6 +102,8 @@ void SetupRC()
 
 	// 启用2D贴图
 	glEnable(GL_TEXTURE_2D);
+
+	SetupResource();
 }
 
 // Respond to arrow keys by moving the camera frame of reference
@@ -113,15 +117,15 @@ void RenderScene(void)
 	// Clear the window with current clearing color
 	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-	RenderToTarget();
+	RenderToTexture();
 
 	// 绑定默认FBO（窗体帧缓冲区的ID是0）
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	glBindTexture(GL_TEXTURE_2D, rendertarget);
+	glBindTexture(GL_TEXTURE_2D, textureId);
 	glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 
 	// 渲染
-	glClearColor(0, 0, 1, 0);
+	glClearColor(0, 0, 0, 0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glBegin(GL_POLYGON);
@@ -131,6 +135,7 @@ void RenderScene(void)
 
 	glColor3f(1, 1, 1);
 
+	// 开始纹理贴图
 	glTexCoord2f(1, 1);
 	glVertex3d(1, 1, 0);
 
